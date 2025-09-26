@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OvoMeet - Dating Flutter Ui-Kit</title>
+  <!-- favicon -->
+  <link rel="icon" href="assets/images/favicon.png" sizes="16x16" type="image/png" />
+  <!-- bootstrap 5  -->
+  <link rel="stylesheet" href="assets/css/lib/bootstrap.min.css" />
+  <!-- fontawesome 5  -->
+  <link rel="stylesheet" href="assets/css/lib/font-awesome.css" />
+
+  <link rel="stylesheet" href="assets/css/lib/line-awesome.css" />
+
+  <link rel="stylesheet" href="assets/css/lib/simplebar.css" />
+  <link rel="stylesheet" href="assets/css/lib/file-explore.css" />
+
+
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#docNav" data-bs-offset="50">
+
+  <header class="mobile-header">
+    <div class="container">
+      <div class="row g-4 align-items-center justify-content-between">
+        <div class="col-6">
+          <!-- Logo  -->
+          <a href="index.html" class="logo">
+            <img src="assets/images/logo.png" alt="images" class="img-fluid logo__is" />
+          </a>
+          <!-- Logo End -->
+        </div>
+        <div class="col-6">
+          <div class="text-end">
+            <button type="button" class="btn btn--sqr sidebar-toggler">
+              <i class="fas fa-bars"></i>
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="doc">
+    <div class="doc__sidebar" id="docNav">
+      <div class="doc-logo">
+        <!-- Logo  -->
+        <a href="index.html" class="logo">
+          <img src="assets/images/logo.png" alt="images" class="img-fluid logo__is" />
+        </a>
+        <!-- Logo End -->
+      </div>
+      <nav class="doc-nav" data-simplebar>
+        <ul class="list doc-nav__list">
+          <li>
+            <a href="#introduction" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="lar la-clone"></i> <span
+                  class="d-block">introduction</span></span>
+            </a>
+          </li>
+          <li>
+            <a href="#requirements" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-server"></i> <span
+                  class="d-block">requirements</span></span>
+            </a>
+          </li>
+          <li>
+            <a href="#installation" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-cog"></i> <span class="d-block">how to
+                  install </span></span> </a>
+          </li>
+          <li>
+            <a href="#folder" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-folder"></i> <span class="d-block">
+                  Folder structure
+                </span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#screens" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-desktop"></i>
+                <span class="d-block">
+                  Screens
+                </span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#mconfig" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-cog"></i>
+                <span class="d-block">
+                  Main Configuration
+                </span>
+              </span>
+            </a>
+            <ul>
+              <a href="#flutterSetup" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    Flutter Setup
+                  </span>
+                </span>
+              </a>
+            </ul>
+          </li>
+          <li>
+            <a href="#appsetup" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-cog"></i>
+                <span class="d-block">
+                  App Setup
+                </span>
+              </span>
+            </a>
+            <ul>
+              <a href="#cngAppName" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    Change App name
+                  </span>
+                </span>
+              </a>
+              <a href="#cnglogo" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    App Icon Change
+                  </span>
+                </span>
+              </a>
+              <a href="#cngApplogo" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    App Logo Change
+                  </span>
+                </span>
+              </a>
+              <a href="#appTextChange" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    App Text Change
+                  </span>
+                </span>
+              </a>
+
+
+              <a href="#cngColor" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    Change App Color
+                  </span>
+                </span>
+              </a>
+              <a href="#cngPolicy" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    Change App Color
+                  </span>
+                </span>
+              </a>
+              <a href="#cngPackName" class="doc-nav__link nav-link">
+                <span class="list list--row align-items-center"><i class="las la-list"></i>
+                  <span class="d-block">
+                    Change Package Name
+                  </span>
+                </span>
+              </a>
+            </ul>
+          </li>
+          <li>
+            <a href="#publishapp" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-check-circle"></i>
+                <span class="d-block">
+                  Publish App
+                </span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="#support" class="doc-nav__link nav-link">
+              <span class="list list--row align-items-center"><i class="las la-headset"></i>
+                <span class="d-block">
+                  Support
+                </span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="copyright">
+        <p class="m-0 text--white px-3 text-center">Copyright © <a href="https://ovosolution.com/"
+            class="t-link t-link--canvas">Ovosolution</a> 2024</p>
+      </div>
+    </div>
+    <div class="doc__body">
+      <div id="introduction" class="section--sm section--first">
+        <div class="list">
+          <div class="doc-head">
+            <div class="doc-head__content d-flex align-items-center justify-content-between">
+              <div class="div">
+                <h5 class="doc-head__title">
+                  OvoMeet
+                </h5>
+                <span class="documents-head__sub-title">
+                  Dating Flutter Ui-Kit
+                </span>
+              </div>
+              <a href="#" class="btn btn-link">My Portfolio</a>
+            </div>
+          </div>
+          <div class="doc-body">
+            <ul class="list" style="--gap: 0.2rem">
+              <li><strong>Created :</strong> 2024-10-16</li>
+              <li>
+                <strong>By : <a href="https://ovosolution.com/">Ovosolution</a></strong>
+              </li>
+              <li><strong>Email :</strong> <a class="t-link"
+                  href="mailto:support@ovosolution.com">support@ovosolution.com</a>
+              </li>
+            </ul>
+            <p class="mt-4 lg-text">
+
+              Clubbie is a sleek and modern UI kit designed specifically for creating dating apps. With its clean and
+              intuitive design, Clubbie offers a comprehensive set of pre-built screens and components, making it easy
+              to build a dating app that stands out. The kit includes essential features like user profiles, matching
+              interfaces, chat screens, notifications, and onboarding flows. Every element is fully customizable and
+              follows the latest design trends, ensuring a seamless user experience across devices. Ideal for developers
+              and designers looking to quickly prototype or develop dating platforms, Clubbie balances functionality
+              with elegance.
+
+            </p>
+
+            <p class="mt-4 lg-text">
+              Thank you for choosing OvoMeet Mobile Application. Should you have any questions or need assistance not
+              covered in
+              this documentation, please don't hesitate to reach out to us via email. We aim to provide prompt
+              assistance to all inquiries.
+              <br>
+              <br>
+              Thank you for your support. Happy shopping!
+            </p>
+          </div>
+        </div>
+      </div>
+      <div id="requirements" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Requirements</h5>
+                  <span class="doc-head__sub-title">
+                    Follow the below requirements.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4 align-items-center">
+                <div class="col-xl-12">
+                  <div class="doc-body">
+                    <ul class="list list--base" style="--gap: 0.5rem">
+                      <li>Download and install Any one from these IDE(Android studio, Vs Code)</li>
+                      <li>Flutter and Dart must be successfully installed and setup on your device in order to edit this
+                        project.(Recommended Flutter SDK version: 3.24.3)</li>
+                      <li>Install the Flutter and Dart plugins after setting up your editor</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="installation" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Installation</h5>
+                  <span class="doc-head__sub-title">
+                    Follow the below instruction to install the system.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4 align-items-center">
+                <div class="col-xl-12">
+                  <div class="doc-body">
+                    <ul class="list list--base" style="--gap: 0.5rem">
+                      <li>Unzip the downloaded project and navigate to the flutter/file section, and open the project to
+                        the preferred IDE (Android Studio /
+                        Visual Code)</li>
+
+                      <li>On IDE go to the pubspecs.yaml file then clicks on the Pub Get button top of the IDE to
+                        install the libraries.</li>
+                      <li>To run the project, connect an emulator or a real device.</li>
+                      <li>Then press the Run button to run the project on the connected device</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="folder" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Folder Structure</h5>
+                  <span class="doc-head__sub-title">
+                    Folders and files structure are showing below
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4 align-items-center">
+                <div class="col-xl-12">
+                  <div class="doc-body">
+                    <ul class="file-tree">
+                      <li><a href="#">assets</a>
+                        <ul>
+
+                          <li>animation
+                            <ul></ul>
+                          </li>
+
+                          <li>
+                            images <ul></ul>
+                          </li>
+                          <li>
+                            product <ul></ul>
+                          </li>
+
+                        </ul>
+                      </li>
+
+                      <li><a href="#">lib</a>
+                        <ul>
+                          <li><a href="#">core</a>
+                            <ul>
+
+                              <li><a href="#">helper</a>
+                                <ul></ul>
+                              </li>
+                              <li><a href="#">route</a>
+                                <ul></ul>
+                              </li>
+
+                              <li>
+                                <a href="#">utils</a>
+                                <ul></ul>
+                              </li>
+                            </ul>
+                          </li>
+
+                          <li><a href="#">data</a>
+                            <ul>
+                              <li><a href="#">controller</a>
+                                <ul></ul>
+                              </li>
+                              <li><a href="#">product</a>
+                                <ul></ul>
+                              </li>
+
+                            </ul>
+                          </li>
+
+                          <li><a href="#">view</a>
+                            <ul>
+                              <li><a href="#">components</a>
+                                <ul></ul>
+                              </li>
+                              <li><a href="#">screens</a>
+                                <ul></ul>
+                              </li>
+                            </ul>
+                          </li>
+                          <li>main.dart</li>
+
+                        </ul>
+                      </li>
+                      <li>pubspec.yaml</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="screens" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Screens</h5>
+                  <span class="doc-head__sub-title">
+                    Our app screens list are showing below
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4">
+                <div class="col-xl-12">
+                  <div class="doc-body h-auto">
+                    <ul class="list list--base" style="--gap: 0.5rem">
+                      <li>Splash Screen</li>
+                      <li>Onboard Screen</li>
+                      <li>Login and Registration Screen</li>
+                      <li>Forget Password and Reset Password Screen</li>
+                      <li>Interest Screen,</li>
+                      <li>Gender Screen,</li>
+                      <li>Motive Screen,</li>
+                      <li>Home Screen</li>
+                      <li>Search Connection Screen</li>
+                      <li>Favourite Screen</li>
+                      <li>Chat List Screen</li>
+                      <li>Private Chat Screen</li>
+                      <li>Profile Screen</li>
+                      <li>Personal Details Screen</li>
+                      <li>Terms and Conditions Screen</li>
+                      <li>Drawer Screen</li>
+                      <li>Notification Screen</li>
+                      <li>Filter Screen</li>
+                      <li>And more...</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="row g-4">
+              <div class="col-xl-10">
+                <div class="doc-body h-auto">
+                  <div class="mt-4">
+                    <h5 id="flutterSetup">1. Flutter Setup</h5>
+                    <div class="container-fluid">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="row g-4">
+                            <p>Follow the guidelines in the following link to install the Flutter environment</p>
+                            <p>OFFICIAL DOC LINK: <a href="https://docs.flutter.dev/get-started/install"
+                                target="_blank">https://docs.flutter.dev/get-started/install</a></p>
+
+
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </ul>
+                  </li>
+                  <br><br>
+
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="appsetup" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Setup</h5>
+                  <span class="doc-head__sub-title">
+                    Application Setup
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4">
+                <div class="col-xl-10">
+                  <div class="doc-body h-auto">
+                    <div id="cngAppName" class="mt-4">
+                      <h5>1. Change App Name</h5>
+                      <p>
+                      <ul style="list-style: none;">
+                        <li><strong><i class="las la-dot-circle"></i> For Android</strong>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Open AndroidMainfest.xml to IDE from
+                              android/app/src/main
+                            </li>
+                            <li><i class="las la-circle"></i> Change the label name inside the application tag from
+                              this
+                              file</li>
+                            <li>
+                              <img src="assets/images/app_setup/android_name.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="mt-4"><strong><i class="las la-dot-circle"></i> For IOS</strong>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Open Info.plist file to IDE from ios/Runner</li>
+                            <li><i class="las la-circle"></i> Change the app name inside the dict. Please follow the
+                              below instruction.</li>
+                            <li>
+                              <img src="assets/images/app_setup/ios_name.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                      </p>
+                    </div>
+                    <div id="cnglogo" class="mt-4">
+                      <h5>2. App Icon Change</h5>
+                      <ul style="list-style: none;">
+                        <li><strong><i class="las la-dot-circle"></i> For Android</strong>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Go to /android/app/src/main/res and replace all mipmap
+                              folder with your generated icon android folder.</li>
+                            <li>
+                              <img src="assets/images/android_logo.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                        <li class="mt-4"><strong><i class="las la-dot-circle"></i> For IOS</strong>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Go to /ios/Runner and replace Assets.xcassets with your
+                              generated Assets.xcassets folder.</li>
+                            <li>
+                              <img src="assets/images/ios_logo.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                      <p><strong>Note:</strong> For different type of device we need to add different size of icon. So
+                        that you should to need to resize them. You can use <a href="https://appicon.co/"
+                          target="_blank">https://appicon.co/</a> platform to generate multiple size icons for android
+                        and ios. It will provide you the icon with a correct folder structure.</p>
+                    </div>
+                    <div id="cngApplogo" class="mt-4">
+                      <h5>3. App Logo Change</h5>
+
+                      <ul style="list-style: none;">
+                        <li>
+                          <ul style="list-style:none">
+
+                            <li><i class="las la-circle"></i> Go to the <b>AppFolder/assets/images/app_logo</b> and
+                              replace
+                              it with your dark and light logo image</li>
+                            <li>
+                              <img src="assets/images/app_setup/logoSet.png" class="w-50 mt-3" alt="">
+                            </li>
+                          </ul>
+                        </li>
+
+                      </ul>
+
+                    </div>
+
+
+                    <div id="appTextChange" class="mt-4">
+                      <h5>4. Text Change</h5>
+
+                      <ul id="appTextChange" style="list-style: none;"><i class="las la-dot-circle"></i> <b>Change App
+                          Text
+                        </b>
+                        <li>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Go to the <b>AppFolder/lib/core/utils/my_strings.dart</b>
+                              and
+                              replace
+                              it with your Own TEXT.</li>
+                            <li>
+                              <img src="assets/images/app_setup/app_name.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <ul style="list-style:none">
+                            <li><i class="las la-circle"></i> Go to the
+                              <b>AppFolder/android/app/src/main/AndroidManifest.xml</b>
+                              and
+                              replace
+                              it with your Own TEXT.
+                            </li>
+                            <li>
+                              <img src="assets/images/app_setup/app_name2.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+
+                      </ul>
+
+
+                    </div>
+
+                    <div id="cngColor" class="mt-4">
+                      <h5>5. Change App Color</h5>
+                      <ul style="list-style: none;">
+                        <li><i class="las la-dot-circle"></i> Open <b>lib/core/utils/my_color.dart</b> folder and
+                          Replace
+                          the
+                          value in the primary Color field with the prepared color code. From here, you can easily
+                          change the color of something else.
+                          <ul style="list-style:none">
+                            <li>
+                              <img src="assets/images/app_setup/app_color.png" style="width: 70%;" alt="">
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                    <div id="cngPackName" class="mt-4">
+                      <h5>6. Change Package Name</h5>
+                      <ul style="list-style: none;">
+                        <li><i class="las la-dot-circle"></i> Right click on project folder and click on Replace in
+                          Files
+                          <ul style="list-style:none">
+                            <li>
+                              <img src="assets/images/app_setup/package_1.png" class="w-60 mt-3" style="width: 70%;"
+                                alt="">
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <br><i class="las la-dot-circle"></i> Search <b>com.ovo_meet.ovo</b> in the first
+                          indicated
+                          box and your
+                          own package name in the second marked box. Then click Replace All button
+                          <ul style="list-style:none">
+                            <li>
+                              <img src="assets/images/app_setup/package_name.png" class="w-60 mt-3" style="width: 70%;"
+                                alt="">
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                    <!-- END -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="publishapp" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Publish App</h5>
+                  <span class="doc-head__sub-title">
+                    Follow below instruction to publish the app
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4">
+                <div class="col-xl-6">
+                  <div class="doc-body h-auto">
+                    <h5>1. Android</h5>
+                    <p>Follow the guidelines in the following link to publish the app to Play Store.</p>
+                    <p>PlayStore: <a href="https://flutter.dev/docs/deployment/android"
+                        target="_blank">https://flutter.dev/docs/deployment/android</a></p>
+                    <h5 class="mt-5">2. IOS</h5>
+                    <p>Follow the guidelines in the following link to publish the app to AppStore.</p>
+                    <p>AppStore: <a href="https://flutter.dev/docs/deployment/ios"
+                        target="_blank">https://flutter.dev/docs/deployment/ios</a></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="support" class="section--sm">
+        <div class="container-fluid p-0">
+          <div class="row g-0">
+            <div class="col-12">
+              <div class="doc-head">
+                <div class="doc-head__content">
+                  <h5 class="doc-head__title">Support</h5>
+                  <span class="doc-head__sub-title">
+                    Support information details
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="row g-4">
+                <div class="col-xl-6">
+                  <div class="doc-body h-auto">
+                    <p>
+                      Once again, thank you so much for purchasing this App. As I said at the beginning, I'd be glad
+                      to
+                      help you if you have any questions relating to this App. No guarantees, but I'll do my best to
+                      assist. If you have any queries, please feel free to contact us at Support Center.
+                    </p>
+                    <p class="m-0 xl-text">
+                      Email Us:
+                      <a href="https://ovosolution.com/support" class="t-link">
+                        https://ovosolution.com/support
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery library -->
+  <script src="assets/js/lib/jquery-3.6.0.min.js"></script>
+  <!-- bootstrap 5 js -->
+  <script src="assets/js/lib/bootstrap.bundle.min.js"></script>
+  <!-- Simplebar Js  -->
+  <script src="assets/js/lib/simplebar.js"></script>
+  <script src="assets/js/lib/file-explore.js"></script>
+  <!-- main js -->
+  <script src="assets/js/app.js"></script>
+  <script>
+    $(document).ready(function () {
+      $(".file-tree").filetree();
+    });
+  </script>
+</body>
+
+</html>

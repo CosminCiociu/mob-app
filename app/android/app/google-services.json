@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "576890475561",
+    "project_id": "clubbie-32937",
+    "storage_bucket": "clubbie-32937.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:576890475561:android:e238d2a4b56eadf9063838",
+        "android_client_info": {
+          "package_name": "com.company.clubbie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQ6NaJr8mG3iROMVlKbZBK8CSRM8z0V_I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
