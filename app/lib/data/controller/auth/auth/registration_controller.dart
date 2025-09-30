@@ -4,16 +4,9 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/data/model/auth/sign_up_model/sign_up_model.dart';
 import 'package:ovo_meet/data/model/model/error_model.dart';
 
-
-
 class RegistrationController extends GetxController {
-
-
-
-
   bool isLoading = true;
   bool agreeTC = false;
-
 
   bool checkPasswordStrength = false;
   bool needAgree = true;
@@ -48,9 +41,6 @@ class RegistrationController extends GetxController {
   RegExp regex = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
   bool submitLoading = false;
 
-
- 
-
   setCountryNameAndCode(String cName, String countryCode, String mobileCode) {
     countryName = cName;
     this.countryCode = countryCode;
@@ -75,8 +65,6 @@ class RegistrationController extends GetxController {
     return model;
   }
 
-
-
   void closeAllController() {
     isLoading = false;
     emailController.text = '';
@@ -100,7 +88,6 @@ class RegistrationController extends GetxController {
 
   bool isCountryLoading = true;
 
-
   String? validatePassword(String value) {
     if (value.isEmpty) {
       return MyStrings.enterYourPassword_.tr;
@@ -117,13 +104,15 @@ class RegistrationController extends GetxController {
     }
   }
 
-
-
   void updateValidationList(String value) {
-    passwordValidationRules[0].hasError = value.contains(RegExp(r'[A-Z]')) ? false : true;
-    passwordValidationRules[1].hasError = value.contains(RegExp(r'[a-z]')) ? false : true;
-    passwordValidationRules[2].hasError = value.contains(RegExp(r'[0-9]')) ? false : true;
-    passwordValidationRules[3].hasError = value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')) ? false : true;
+    passwordValidationRules[0].hasError =
+        value.contains(RegExp(r'[A-Z]')) ? false : true;
+    passwordValidationRules[1].hasError =
+        value.contains(RegExp(r'[a-z]')) ? false : true;
+    passwordValidationRules[2].hasError =
+        value.contains(RegExp(r'[0-9]')) ? false : true;
+    passwordValidationRules[3].hasError =
+        value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]')) ? false : true;
     passwordValidationRules[4].hasError = value.length >= 6 ? false : true;
 
     update();

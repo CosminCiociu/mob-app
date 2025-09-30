@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
 class OnboardScreen extends StatefulWidget {
+  //
   const OnboardScreen({super.key});
 
   @override
@@ -32,9 +33,7 @@ class _OnboardScreenState extends State<OnboardScreen> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-       Orientation orientation = MediaQuery.of(context).orientation;
-
-    
+    Orientation orientation = MediaQuery.of(context).orientation;
 
     return GetBuilder<OnBoardController>(builder: (controller) {
       return currentIndex == 0
@@ -80,7 +79,8 @@ class _OnboardScreenState extends State<OnboardScreen> {
                             color: MyColor.getPrimaryColor().withOpacity(0.2),
                           ),
                         ),
-                        controller.currentIndex == controller.appBanners.length - 1
+                        controller.currentIndex ==
+                                controller.appBanners.length - 1
                             ? Text(
                                 "Done",
                                 style: boldDefault.copyWith(fontSize: 18),
@@ -96,7 +96,11 @@ class _OnboardScreenState extends State<OnboardScreen> {
               ),
             )
           : AnnotatedRegion<SystemUiOverlayStyle>(
-              value: SystemUiOverlayStyle.light.copyWith(statusBarColor: MyColor.getTransparentColor(), statusBarIconBrightness: Brightness.light, systemNavigationBarColor: MyColor.getTransparentColor(), systemNavigationBarIconBrightness: Brightness.dark),
+              value: SystemUiOverlayStyle.light.copyWith(
+                  statusBarColor: MyColor.getTransparentColor(),
+                  statusBarIconBrightness: Brightness.light,
+                  systemNavigationBarColor: MyColor.getTransparentColor(),
+                  systemNavigationBarIconBrightness: Brightness.dark),
               child: Scaffold(
                 body: PageView.builder(
                   controller: controller.controller,
@@ -107,7 +111,9 @@ class _OnboardScreenState extends State<OnboardScreen> {
                   itemBuilder: (_, index) {
                     return Stack(
                       children: [
-                        OnBoardRippleBody(data: controller.appBanners[index], controller: controller),
+                        OnBoardRippleBody(
+                            data: controller.appBanners[index],
+                            controller: controller),
                         Positioned.fill(
                           bottom: height * 0.01,
                           child: Align(
@@ -118,52 +124,78 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    height:orientation == Orientation.portrait? MediaQuery.of(context).size.height / 2.5:MediaQuery.of(context).size.height / 1.7,
-                                    width:orientation == Orientation.portrait? 330: 800,
-                                    decoration: BoxDecoration(color: MyColor.getWhiteColor(), borderRadius: BorderRadius.circular(12)),
-                                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.space15, vertical: Dimensions.space20),
+                                    height: orientation == Orientation.portrait
+                                        ? MediaQuery.of(context).size.height /
+                                            2.5
+                                        : MediaQuery.of(context).size.height /
+                                            1.7,
+                                    width: orientation == Orientation.portrait
+                                        ? 330
+                                        : 800,
+                                    decoration: BoxDecoration(
+                                        color: MyColor.getWhiteColor(),
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: Dimensions.space15,
+                                        vertical: Dimensions.space20),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Text(
                                           controller.appBanners[index].title,
-                                          style: title.copyWith(fontSize: 24, fontWeight: FontWeight.w400, color: MyColor.getBlackColor()),
+                                          style: title.copyWith(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w400,
+                                              color: MyColor.getBlackColor()),
                                           textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: Dimensions.space10),
+                                        const SizedBox(
+                                            height: Dimensions.space10),
                                         Text(
                                           controller.appBanners[index].subtitle,
-                                          style: regularDefault.copyWith(color: MyColor.getGreyColor(), fontSize: 14),
+                                          style: regularDefault.copyWith(
+                                              color: MyColor.getGreyColor(),
+                                              fontSize: 14),
                                           textAlign: TextAlign.center,
                                         ),
-                                        const SizedBox(height: Dimensions.space10),
+                                        const SizedBox(
+                                            height: Dimensions.space10),
                                         DotsIndicator(
-                                          dotsCount: controller.appBanners.length,
+                                          dotsCount:
+                                              controller.appBanners.length,
                                           position: controller.currentIndex,
                                           mainAxisSize: MainAxisSize.min,
                                           decorator: DotsDecorator(
                                             size: const Size.square(8),
                                             activeColor: MyColor.buttonColor,
-                                            color: MyColor.getGreyColor().withOpacity(.2),
+                                            color: MyColor.getGreyColor()
+                                                .withOpacity(.2),
                                           ),
                                         ),
                                         const Spacer(),
-                                        controller.currentIndex == controller.appBanners.length - 1
+                                        controller.currentIndex ==
+                                                controller.appBanners.length - 1
                                             ? InkWell(
                                                 onTap: () {},
                                                 child: Container(
-                                                  padding: const EdgeInsets.all(14),
+                                                  padding:
+                                                      const EdgeInsets.all(14),
                                                   decoration: BoxDecoration(
-                                                    boxShadow: MyUtils.getCardShadow(),
+                                                    boxShadow:
+                                                        MyUtils.getCardShadow(),
                                                     shape: BoxShape.circle,
                                                     color: Colors.white24,
                                                   ),
                                                   child: SizedBox(
                                                     height: 50,
                                                     child: CustomElevatedBtn(
-                                                      bgColor: MyColor.buttonColor,
+                                                      bgColor:
+                                                          MyColor.buttonColor,
                                                       press: () {
-                                                       Get.toNamed(RouteHelper.loginScreen);
+                                                        Get.toNamed(RouteHelper
+                                                            .loginScreen);
                                                       },
                                                       text: MyStrings.done,
                                                     ),
@@ -173,19 +205,31 @@ class _OnboardScreenState extends State<OnboardScreen> {
                                             : InkWell(
                                                 onTap: () {},
                                                 child: Container(
-                                                  padding: const EdgeInsets.all(14),
+                                                  padding:
+                                                      const EdgeInsets.all(14),
                                                   decoration: BoxDecoration(
-                                                    boxShadow: MyUtils.getCardShadow(),
+                                                    boxShadow:
+                                                        MyUtils.getCardShadow(),
                                                     shape: BoxShape.circle,
                                                     color: Colors.white24,
                                                   ),
                                                   child: SizedBox(
                                                     height: 50,
                                                     child: CustomElevatedBtn(
-                                                      bgColor: MyColor.buttonColor,
+                                                      bgColor:
+                                                          MyColor.buttonColor,
                                                       press: () {
-                                                        controller.setCurrentIndex(controller.currentIndex + 1);
-                                                        controller.controller?.nextPage(duration: const Duration(microseconds: 500), curve: Curves.decelerate);
+                                                        controller.setCurrentIndex(
+                                                            controller
+                                                                    .currentIndex +
+                                                                1);
+                                                        controller.controller?.nextPage(
+                                                            duration:
+                                                                const Duration(
+                                                                    microseconds:
+                                                                        500),
+                                                            curve: Curves
+                                                                .decelerate);
                                                       },
                                                       text: MyStrings.next,
                                                     ),

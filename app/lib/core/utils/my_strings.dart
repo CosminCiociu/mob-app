@@ -454,4 +454,18 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String welcomeBack = 'Welcome back!';
   static const String signedInWithGoogleSuccessfully =
       'Signed in with Google successfully!';
+
+  // Form validation error strings
+  static const String enterFirstName = 'Enter your first name';
+  static const String enterLastName = 'Enter your last name';
+  static const String enterYourEmail_ = 'Enter your email';
+  static const String enterValidEmail = 'Enter a valid email';
+  static const String passwordNotMatch = "Passwords don't match";
+  static const String agreeTerms = 'You must agree to the terms and conditions';
+  static const String noUserFound = 'No user found for that email';
+  static const String operationNotAllowed =
+      'This operation is not allowed. Please contact support.';
+  static const String signOutError = 'Error signing out. Please try again.';
+  static const String bySigningUpYouAgreeToOur =
+      'By Signing up you agree to our Terms and Conditions and Privacy Policy';
 }

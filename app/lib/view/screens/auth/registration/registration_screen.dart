@@ -20,18 +20,12 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-
   @override
   void initState() {
-    
-    
-    
     Get.put(RegistrationController());
 
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-   
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
@@ -47,9 +41,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         child: Scaffold(
           backgroundColor: MyColor.getScreenBgColor(),
           appBar: const CustomAppBar(title: MyStrings.signUp, fromAuth: true),
-          body: 
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: Dimensions.space30, horizontal: Dimensions.space15),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+                vertical: Dimensions.space30, horizontal: Dimensions.space15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -59,12 +53,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   style: boldMediumLarge.copyWith(),
                 ),
                 const SizedBox(height: Dimensions.space8),
-                Text(
-                  MyStrings.startLearntingWithCreateAccount.tr,
-                  style: lightDefault.copyWith(
-                    color: MyColor.getBodyTextColor(),
-                  )
-                ),
+                Text(MyStrings.startLearntingWithCreateAccount.tr,
+                    style: lightDefault.copyWith(
+                      color: MyColor.getBodyTextColor(),
+                    )),
                 SizedBox(height: MediaQuery.of(context).size.height * .03),
                 const RegistrationForm(),
                 const SocialLoginSection(),
@@ -72,7 +64,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(MyStrings.alreadyAccount.tr, style: regularLarge.copyWith(color: MyColor.getTextColor(), fontWeight: FontWeight.w500)),
+                    Text(MyStrings.alreadyAccount.tr,
+                        style: regularLarge.copyWith(
+                            color: MyColor.getTextColor(),
+                            fontWeight: FontWeight.w500)),
                     const SizedBox(width: Dimensions.space5),
                     CustomTextButton(
                       press: () {
@@ -80,7 +75,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         Get.offAndToNamed(RouteHelper.loginScreen);
                       },
                       text: MyStrings.signIn.tr,
-                      style: regularLarge.copyWith(color: MyColor.getPrimaryColor()),
+                      style: regularLarge.copyWith(
+                          color: MyColor.getPrimaryColor()),
                     )
                   ],
                 ),

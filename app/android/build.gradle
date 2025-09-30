@@ -1,3 +1,8 @@
+plugins {
+    // Declare Google Services plugin without version here; version is managed in settings.gradle
+    id 'com.google.gms.google-services' apply false
+}
+
 allprojects {
     repositories {
         google()

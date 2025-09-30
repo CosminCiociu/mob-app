@@ -60,42 +60,18 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * .15),
+                  SizedBox(height: MediaQuery.of(context).size.height * .25),
                   Image.asset(
                     MyImages.appLogo,
                     height: Dimensions.space100,
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * .05),
-                  Text(MyStrings.signUptoContinue,
-                      style:
-                          boldOverLarge.copyWith(fontSize: Dimensions.space25)),
-                  Text(MyStrings.pleaseLogintoContinue,
-                      style: regularDefault.copyWith(
-                          color: MyColor.getGreyText())),
-                  SizedBox(height: MediaQuery.of(context).size.height * .01),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Form(
                     key: formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: Dimensions.space30),
-                        InkWell(
-                          onTap: () {
-                            Get.toNamed(RouteHelper.enterEmailScreen);
-                          },
-                          child: const CustomGradiantButton(
-                            text: MyStrings.continuewithEmail,
-                          ),
-                        ),
-                        const SizedBox(height: Dimensions.space20),
-                        InkWell(
-                            onTap: () {
-                              Get.toNamed(RouteHelper.enterPhNumberScreen);
-                            },
-                            child: const CustomGradiantButton(
-                                text: MyStrings.continuewithPhone,
-                                hasBorder: true,
-                                textColor: MyColor.buttonColor)),
                         const SocialLoginSection(),
                         const SizedBox(height: 35),
                         Container(

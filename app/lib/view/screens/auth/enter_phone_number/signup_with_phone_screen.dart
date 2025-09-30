@@ -17,10 +17,12 @@ class EnterPhoneNumberRegistrationScreen extends StatefulWidget {
   const EnterPhoneNumberRegistrationScreen({super.key});
 
   @override
-  State<EnterPhoneNumberRegistrationScreen> createState() => _EnterPhoneNumberRegistrationScreenState();
+  State<EnterPhoneNumberRegistrationScreen> createState() =>
+      _EnterPhoneNumberRegistrationScreenState();
 }
 
-class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberRegistrationScreen> {
+class _EnterPhoneNumberRegistrationScreenState
+    extends State<EnterPhoneNumberRegistrationScreen> {
   @override
   void initState() {
     final controller = Get.put(ProfileCompleteController());
@@ -35,12 +37,13 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(
+      appBar: const CustomAppBar(
         title: "",
       ),
       body: GetBuilder<ProfileCompleteController>(
         builder: (controller) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,9 +55,10 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
               const SizedBox(height: Dimensions.space10),
               Text(
                 MyStrings.pleaseEnterYourPhoneNumbertoContinue,
-                style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                style: regularDefault.copyWith(
+                    color: MyColor.getSecondaryTextColor()),
               ),
-             const SizedBox(height: Dimensions.space20),
+              const SizedBox(height: Dimensions.space20),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -71,10 +75,13 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
                       children: [
                         GestureDetector(
                           onTap: () {
-                            CountryBottomSheet.profileCompleteCountryBottomSheet(context, controller);
+                            CountryBottomSheet
+                                .profileCompleteCountryBottomSheet(
+                                    context, controller);
                           },
                           child: Container(
-                            padding: const EdgeInsetsDirectional.symmetric(horizontal: Dimensions.space12),
+                            padding: const EdgeInsetsDirectional.symmetric(
+                                horizontal: Dimensions.space12),
                             decoration: BoxDecoration(
                               color: MyColor.getTransparentColor(),
                               borderRadius: BorderRadius.circular(5),
@@ -83,7 +90,12 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
                             child: Row(
                               children: [
                                 MyImageWidget(
-                                  imageUrl: UrlContainer.countryFlagImageLink.replaceAll('{countryCode}', controller.countryCode.toString().toLowerCase()),
+                                  imageUrl: UrlContainer.countryFlagImageLink
+                                      .replaceAll(
+                                          '{countryCode}',
+                                          controller.countryCode
+                                              .toString()
+                                              .toLowerCase()),
                                   height: Dimensions.space25,
                                   width: Dimensions.space40 + Dimensions.space2,
                                 ),
@@ -109,7 +121,7 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
                   ),
                 ),
               ),
-             const SizedBox(height: Dimensions.space20),
+              const SizedBox(height: Dimensions.space20),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -121,7 +133,7 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-               const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -133,12 +145,13 @@ class _EnterPhoneNumberRegistrationScreenState extends State<EnterPhoneNumberReg
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-               const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               InkWell(
                   onTap: () {
-                    Get.toNamed(RouteHelper.verificationCodeScreen,arguments: [true]);
+                    Get.toNamed(RouteHelper.verificationCodeScreen,
+                        arguments: [true]);
                   },
-                  child:const CustomGradiantButton(text: MyStrings.continues)),
+                  child: const CustomGradiantButton(text: MyStrings.continues)),
             ],
           ),
         ),

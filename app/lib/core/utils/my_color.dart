@@ -299,6 +299,10 @@ class MyColor {
     return buttonColor;
   }
 
+  static Color getSecondaryColor() {
+    return secondaryColor;
+  }
+
   static Color getPrimaryTextColor() {
     return Get.find<ThemeController>().darkTheme
         ? dPrimaryTextColor

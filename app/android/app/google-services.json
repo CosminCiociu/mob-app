@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:576890475561:android:e238d2a4b56eadf9063838",
+        "mobilesdk_app_id": "1:576890475561:android:715aa5566a6737d0063838",
         "android_client_info": {
-          "package_name": "com.company.clubbie"
+          "package_name": "com.ovo_meet.ovo"
         }
       },
       "oauth_client": [],
