@@ -33,7 +33,23 @@ class _SocialLoginSectionState extends State<SocialLoginSection> {
             const SizedBox(height: 30),
             CustomOutlinedBtn(
               btnText: MyStrings.signInWithGoogle.tr,
-              onTap: () {},
+              onTap: () {
+                controller.isGoogleSignInLoading = true;
+                controller.signInWithGoogle().then((user) {
+                  controller.isGoogleSignInLoading = false;
+                  if (user != null) {
+                    Get.offAllNamed('/bottom_nav_bar');
+                    // Handle successful sign-in (e.g., navigate to home screen)
+                  } else {
+                    print("❌ Google sign-in failed or was canceled by user.");
+                    // Handle sign-in failure or cancellation
+                  }
+                }).catchError((error) {
+                  controller.isGoogleSignInLoading = false;
+                  print("❌ Google sign-in error: $error");
+                  // Handle error during sign-in
+                });
+              },
               bgColor: Colors.white,
               isLoading: controller.isGoogleSignInLoading,
               textColor: Colors.black87,

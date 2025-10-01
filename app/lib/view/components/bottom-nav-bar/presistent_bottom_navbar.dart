@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/data/controller/home/home_controller.dart';
-import 'package:ovo_meet/view/screens/chat/chat_screen.dart';
 import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
 import 'package:ovo_meet/view/screens/my_favourites/my_favourite_screen.dart';
@@ -30,33 +29,47 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
   }
 
   List<Widget> _buildScreens() {
-    return [const HomeScreen(), const SearchConnectionScreen(), const MyFavouriteScreen(), const MessageListScreen(), const ProfileScreen()];
+    return [
+      const HomeScreen(),
+      // Removed: const SearchConnectionScreen(),
+      const MyFavouriteScreen(),
+      const MessageListScreen(),
+      const ProfileScreen()
+    ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageOne, color: _controller.index == 0 ? MyColor.buttonColor : MyColor.greyColor),
+        icon: Image.asset(MyImages.presistentOnBoardImageOne,
+            color: _controller.index == 0
+                ? MyColor.buttonColor
+                : MyColor.greyColor),
+        activeColorPrimary: MyColor.buttonColor,
+        inactiveColorPrimary: MyColor.greyColor,
+      ),
+      // Removed: PersistentBottomNavBarItem for index 1
+      PersistentBottomNavBarItem(
+        icon: Image.asset(MyImages.presistentOnBoardImageThree,
+            color: _controller.index == 1
+                ? MyColor.buttonColor
+                : MyColor.greyColor),
         activeColorPrimary: MyColor.buttonColor,
         inactiveColorPrimary: MyColor.greyColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageTwo, color: _controller.index == 1 ? MyColor.buttonColor : MyColor.greyColor),
+        icon: Image.asset(MyImages.presistentOnBoardImageFour,
+            color: _controller.index == 2
+                ? MyColor.buttonColor
+                : MyColor.greyColor),
         activeColorPrimary: MyColor.buttonColor,
         inactiveColorPrimary: MyColor.greyColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageThree, color: _controller.index == 2 ? MyColor.buttonColor : MyColor.greyColor),
-        activeColorPrimary: MyColor.buttonColor,
-        inactiveColorPrimary: MyColor.greyColor,
-      ),
-      PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageFour, color: _controller.index == 3 ? MyColor.buttonColor : MyColor.greyColor),
-        activeColorPrimary: MyColor.buttonColor,
-        inactiveColorPrimary: MyColor.greyColor,
-      ),
-      PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageFive, color: _controller.index == 4 ? MyColor.buttonColor : MyColor.greyColor),
+        icon: Image.asset(MyImages.presistentOnBoardImageFive,
+            color: _controller.index == 3
+                ? MyColor.buttonColor
+                : MyColor.greyColor),
         activeColorPrimary: MyColor.buttonColor,
         inactiveColorPrimary: MyColor.greyColor,
       ),
@@ -71,7 +84,7 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
       onItemSelected: (value) {
         setState(() {
           _controller.index = value;
-           Get.find<HomeController>().currentIndex = 0;
+          Get.find<HomeController>().currentIndex = 0;
           Get.find<HomeController>().update();
         });
       },
@@ -81,15 +94,18 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
       confineToSafeArea: true,
       backgroundColor: MyColor.colorWhite, // Default is Colors.white.
       handleAndroidBackButtonPress: true, // Default is true.
-      resizeToAvoidBottomInset: true, // This needs to be true if you want to move up the screen when the keyboard appears.
+      resizeToAvoidBottomInset:
+          true, // This needs to be true if you want to move up the screen when the keyboard appears.
       stateManagement: true, // Default is true.
-      hideNavigationBarWhenKeyboardAppears: true, // Recommended to set 'true' to avoid bottom nav bar interfering with typing.
+      hideNavigationBarWhenKeyboardAppears:
+          true, // Recommended to set 'true' to avoid bottom nav bar interfering with typing.
 
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.circular(10.0),
         colorBehindNavBar: MyColor.colorWhite,
       ),
-      navBarStyle: NavBarStyle.style3, // Choose the nav bar style with pre-built styles.
+      navBarStyle:
+          NavBarStyle.style3, // Choose the nav bar style with pre-built styles.
     );
   }
 }

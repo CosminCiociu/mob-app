@@ -9,7 +9,6 @@ import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/data/controller/auth/login_controller.dart';
 import 'package:ovo_meet/data/controller/auth/social_login_controller.dart';
 
-import 'package:ovo_meet/view/components/buttons/custom_gradiant_button.dart';
 import 'package:ovo_meet/view/components/will_pop_widget.dart';
 import 'package:ovo_meet/view/screens/auth/login/widget/social_login_section.dart';
 import 'package:get/get.dart';

@@ -48,12 +48,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     return widget.isShowBackBtn
         ? AppBar(
-          systemOverlayStyle:const SystemUiOverlayStyle(
-    statusBarColor: MyColor.transparentColor, 
-    statusBarIconBrightness: Brightness.dark,
-    statusBarBrightness: Brightness.light, 
-  ),
-            elevation:0,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarColor: MyColor.transparentColor,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+            ),
+            elevation: 0,
             shadowColor: MyColor.getBlackColor().withOpacity(0.1),
             titleSpacing: 0,
             surfaceTintColor: MyColor.getTransparentColor(),
@@ -77,9 +77,12 @@ class _CustomAppBarState extends State<CustomAppBar> {
                         widget.backButtonOnPress!();
                       }
                     },
-                    icon: Icon(Icons.arrow_back_ios_new, color: Theme.of(context).appBarTheme.foregroundColor, size: 20))
+                    icon: Icon(Icons.arrow_back_ios_new,
+                        color: Theme.of(context).appBarTheme.foregroundColor,
+                        size: 20))
                 : const SizedBox.shrink(),
-            backgroundColor: widget.bgColor ?? Theme.of(context).appBarTheme.backgroundColor,
+            backgroundColor:
+                widget.bgColor ?? Theme.of(context).appBarTheme.backgroundColor,
             title: Text(
               widget.title.tr,
               style: boldOverLarge.copyWith(
@@ -94,7 +97,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
             elevation: 0,
             surfaceTintColor: MyColor.getTransparentColor(),
             backgroundColor: widget.bgColor ?? MyColor.getBackgroundColor(),
-            title: Text(widget.title.tr, style: boldOverLarge.copyWith(color: MyColor.getTextColor())),
+            title: Text(widget.title.tr,
+                style: boldOverLarge.copyWith(color: MyColor.getTextColor())),
             systemOverlayStyle: SystemUiOverlayStyle(
               statusBarColor: MyColor.transparentColor,
               statusBarIconBrightness: Brightness.light,

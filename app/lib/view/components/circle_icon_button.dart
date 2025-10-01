@@ -7,19 +7,20 @@ class CircleIconButton extends StatefulWidget {
   final Color backgroundColor;
 
   const CircleIconButton({
-    Key? key,
+    super.key,
     required this.child,
     required this.onTap,
     this.height = 40,
     this.width = 40,
     required this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   State<CircleIconButton> createState() => _CircleIconButtonState();
 }
 
-class _CircleIconButtonState extends State<CircleIconButton> with SingleTickerProviderStateMixin {
+class _CircleIconButtonState extends State<CircleIconButton>
+    with SingleTickerProviderStateMixin {
   late double _scale;
   late AnimationController _controller;
 
@@ -59,7 +60,8 @@ class _CircleIconButtonState extends State<CircleIconButton> with SingleTickerPr
             height: widget.height,
             width: widget.width,
             alignment: Alignment.center,
-            decoration: BoxDecoration(color: widget.backgroundColor, shape: BoxShape.circle),
+            decoration: BoxDecoration(
+                color: widget.backgroundColor, shape: BoxShape.circle),
             child: widget.child,
           ),
         ),

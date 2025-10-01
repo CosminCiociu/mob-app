@@ -22,7 +22,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     Get.put(ProfileController());
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
@@ -42,26 +41,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         body: controller.isLoading
             ? const CustomLoader()
-            :  Align(
+            : Align(
                 alignment: Alignment.topCenter,
                 child: SingleChildScrollView(
-                  padding:const EdgeInsets.only(left: Dimensions.space15, right: Dimensions.space15, top: Dimensions.space20, bottom: Dimensions.space20),
+                  padding: const EdgeInsets.only(
+                      left: Dimensions.space15,
+                      right: Dimensions.space15,
+                      top: Dimensions.space20,
+                      bottom: Dimensions.space20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                     const ProfileTopSection(),
-                    const SizedBox(height: Dimensions.space150),
-                       InkWell(
-          onTap: () {
-            Get.offAllNamed(RouteHelper.loginScreen);
-          },
-          child: Container(margin: const EdgeInsets.symmetric(vertical: Dimensions.space80, horizontal: Dimensions.defaultScreenPadding), height: Dimensions.space60, child: const CustomGradiantButton(text: MyStrings.logout)),
-        ),
+                      const ProfileTopSection(),
+                      const SizedBox(height: Dimensions.space150),
+                      InkWell(
+                        onTap: () {
+                          controller.signOut();
+                          Get.offAllNamed(RouteHelper.loginScreen);
+                        },
+                        child: Container(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: Dimensions.space80,
+                                horizontal: Dimensions.defaultScreenPadding),
+                            height: Dimensions.space60,
+                            child: const CustomGradiantButton(
+                                text: MyStrings.logout)),
+                      ),
                     ],
                   ),
                 ),
               ),
-      
       ),
     );
   }

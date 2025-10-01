@@ -47,7 +47,8 @@ class _DrawerMenuState extends State<DrawerMenu> {
                 ),
                 const SizedBox(height: Dimensions.space40),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Dimensions.space17),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space17),
                   child: InkWell(
                     onTap: () {
                       Get.toNamed(RouteHelper.profileScreen);
@@ -60,13 +61,15 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       const SizedBox(width: Dimensions.space10),
                       Text(
                         MyStrings.myProfile,
-                        style: regularMediumLarge.copyWith(color: MyColor.colorWhite),
+                        style: regularMediumLarge.copyWith(
+                            color: MyColor.colorWhite),
                       )
                     ]),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Dimensions.space17),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space17),
                   child: InkWell(
                     onTap: () {
                       Get.toNamed(RouteHelper.notificationScreen);
@@ -79,13 +82,15 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       const SizedBox(width: Dimensions.space10),
                       Text(
                         MyStrings.notifications,
-                        style: regularMediumLarge.copyWith(color: MyColor.colorWhite),
+                        style: regularMediumLarge.copyWith(
+                            color: MyColor.colorWhite),
                       )
                     ]),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Dimensions.space17),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space17),
                   child: InkWell(
                     onTap: () {
                       Get.toNamed(RouteHelper.myFavouriteScreen);
@@ -98,33 +103,38 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       const SizedBox(width: Dimensions.space10),
                       Text(
                         MyStrings.myFavourites,
-                        style: regularMediumLarge.copyWith(color: MyColor.colorWhite),
+                        style: regularMediumLarge.copyWith(
+                            color: MyColor.colorWhite),
                       )
                     ]),
                   ),
                 ),
                 const CustomDivider(color: MyColor.colorWhite, thickness: 2),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Dimensions.space10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space10),
                   child: InkWell(
                     onTap: () {
                       Get.toNamed(RouteHelper.privacyScreen);
                     },
                     child: Text(
                       MyStrings.privacyPolicy,
-                      style: regularMediumLarge.copyWith(color: MyColor.colorWhite),
+                      style: regularMediumLarge.copyWith(
+                          color: MyColor.colorWhite),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Dimensions.space10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space10),
                   child: InkWell(
                     onTap: () {
                       Get.toNamed(RouteHelper.termsAndConditionsScreen);
                     },
                     child: Text(
                       MyStrings.termsAndConditions,
-                      style: regularMediumLarge.copyWith(color: MyColor.colorWhite),
+                      style: regularMediumLarge.copyWith(
+                          color: MyColor.colorWhite),
                     ),
                   ),
                 ),

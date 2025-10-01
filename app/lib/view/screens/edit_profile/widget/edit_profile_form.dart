@@ -23,58 +23,38 @@ class _EditProfileFormState extends State<EditProfileForm> {
     return GetBuilder<ProfileController>(
       builder: (controller) => Container(
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(vertical: Dimensions.space15, horizontal: Dimensions.space15),
+        padding: const EdgeInsets.symmetric(
+            vertical: Dimensions.space15, horizontal: Dimensions.space15),
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(10)),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(10)),
         child: Form(
           child: Column(
             children: [
-              ProfileWidget(isEdit: true, imagePath: controller.imageUrl, onClicked: () async {}),
+              ProfileWidget(
+                  isEdit: true,
+                  imagePath: controller.imageUrl,
+                  onClicked: () async {}),
               const SizedBox(height: Dimensions.space15),
-              Align(alignment: Alignment.center, child: Text(MyStrings.demoName, style: boldMediumLarge)),
-              Align(alignment: Alignment.center, child: Text(MyStrings.demoMail, style: regularDefault.copyWith(color: MyColor.getGreyText1()))),
+              Align(
+                  alignment: Alignment.center,
+                  child: Text(controller.displayNameController.text,
+                      style: boldMediumLarge)),
+              Align(
+                  alignment: Alignment.center,
+                  child: Text(controller.emailController.text,
+                      style: regularDefault.copyWith(
+                          color: MyColor.getGreyText1()))),
               const SizedBox(height: Dimensions.space15),
               const SizedBox(height: Dimensions.space20),
               LabelTextField(
-                labelText: MyStrings.firstName.tr,
-                hintText: MyStrings.enterYourFirstName,
+                labelText: MyStrings.displayName.tr,
+                hintText: MyStrings.enterDisplayName.tr,
                 textInputType: TextInputType.text,
                 inputAction: TextInputAction.next,
-                controller: controller.firstNameController,
+                controller: controller.displayNameController,
                 nextFocus: controller.zipCodeFocusNode,
-                onChanged: (value) {
-                  return;
-                },
-              ),
-              const SizedBox(height: Dimensions.space5),
-              LabelTextField(
-                labelText: MyStrings.lastName.tr,
-                hintText: MyStrings.enterYourLastName,
-                textInputType: TextInputType.text,
-                inputAction: TextInputAction.next,
-                controller: controller.lastNameController,
-                onChanged: (value) {
-                  return;
-                },
-              ),
-              const SizedBox(height: Dimensions.space5),
-              LabelTextField(
-                labelText: MyStrings.address.tr,
-                hintText: MyStrings.enterAddress,
-                textInputType: TextInputType.text,
-                inputAction: TextInputAction.next,
-                controller: controller.addressController,
-                onChanged: (value) {
-                  return;
-                },
-              ),
-              const SizedBox(height: Dimensions.space5),
-              LabelTextField(
-                labelText: MyStrings.state.tr,
-                hintText: MyStrings.enterYour,
-                textInputType: TextInputType.text,
-                inputAction: TextInputAction.next,
-                controller: controller.stateController,
                 onChanged: (value) {
                   return;
                 },
@@ -84,9 +64,11 @@ class _EditProfileFormState extends State<EditProfileForm> {
                   ? const RoundedLoadingBtn()
                   : InkWell(
                       onTap: () {
+                        controller.updateProfile();
                         Get.back();
                       },
-                      child: CustomGradiantButton(text: MyStrings.updateProfile.tr))
+                      child: CustomGradiantButton(
+                          text: MyStrings.updateProfile.tr))
             ],
           ),
         ),

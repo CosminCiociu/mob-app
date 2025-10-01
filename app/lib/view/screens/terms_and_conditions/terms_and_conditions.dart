@@ -11,21 +11,32 @@ class TermsAndConditions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(title: MyStrings.termsAndConditions,isTitleCenter: true,),
-      body: SingleChildScrollView(child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-          Text(MyStrings.lastUpdate+MyStrings.demoDate,style: regularDefault.copyWith(color: MyColor.getGreyText1(),)),
-          const SizedBox(height: Dimensions.space15),
-         const Text(MyStrings.pleaseReadTheseTermsandConditions),
-          const SizedBox(height: Dimensions.space15),
-          Text(MyStrings.conditionsofUses,style: boldExtraLarge.copyWith(color: MyColor.buttonColor)),
-           const SizedBox(height: Dimensions.space15),
-         const Text(MyStrings.conditionsofUse),
-        ],),
-      ),),
+      appBar: const CustomAppBar(
+        title: MyStrings.termsAndConditions,
+        isTitleCenter: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(MyStrings.lastUpdate + MyStrings.demoDate,
+                  style: regularDefault.copyWith(
+                    color: MyColor.getGreyText1(),
+                  )),
+              const SizedBox(height: Dimensions.space15),
+              const Text(MyStrings.pleaseReadTheseTermsandConditions),
+              const SizedBox(height: Dimensions.space15),
+              Text(MyStrings.conditionsofUses,
+                  style: boldExtraLarge.copyWith(color: MyColor.buttonColor)),
+              const SizedBox(height: Dimensions.space15),
+              const Text(MyStrings.conditionsofUse),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

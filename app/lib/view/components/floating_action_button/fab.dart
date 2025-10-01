@@ -6,16 +6,14 @@ class FAB extends StatelessWidget {
   final Callback callback;
   final IconData icon;
 
-  const FAB({Key? key, required this.callback, this.icon = Icons.add}) : super(key: key);
+  const FAB({super.key, required this.callback, this.icon = Icons.add});
 
   @override
   Widget build(BuildContext context) {
     return ClipOval(
-      
       child: Container(
         decoration: const BoxDecoration(shape: BoxShape.circle),
         child: FloatingActionButton(
-          
           onPressed: callback,
           backgroundColor: MyColor.getPrimaryColor(),
           child: Icon(

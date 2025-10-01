@@ -1,4 +1,4 @@
-library flutter_tindercard;
+library;
 
 import 'dart:math';
 
@@ -48,6 +48,7 @@ class TinderSwapCard extends StatefulWidget {
   /// value of alignment, 0.0 means middle, so it need bigger than zero.
   /// and size control params;
   TinderSwapCard({
+    super.key,
     required CardBuilder cardBuilder,
     required int totalNum,
     AmassOrientation orientation = AmassOrientation.bottom,
@@ -127,11 +128,11 @@ class TinderSwapCard extends StatefulWidget {
 
 class _TinderSwapCardState extends State<TinderSwapCard>
     with TickerProviderStateMixin {
-   late Alignment frontCardAlign;
+  late Alignment frontCardAlign;
 
-   late AnimationController _animationController;
+  late AnimationController _animationController;
 
-   late int _currentFront;
+  late int _currentFront;
 
   static TriggerDirection? _trigger;
 
@@ -157,7 +158,7 @@ class _TinderSwapCardState extends State<TinderSwapCard>
           angle: (pi / 180.0) *
               (_animationController.status == AnimationStatus.forward
                   ? CardAnimation.frontCardRota(
-                      _animationController, frontCardAlign.x)
+                          _animationController, frontCardAlign.x)
                       .value
                   : frontCardAlign.x),
           child: SizedBox.fromSize(

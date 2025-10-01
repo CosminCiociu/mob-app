@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/style.dart';
@@ -15,12 +14,14 @@ class DemoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: Dimensions.space10, vertical: Dimensions.space15),
+      padding: const EdgeInsets.symmetric(
+          horizontal: Dimensions.space10, vertical: Dimensions.space15),
       margin: const EdgeInsets.only(right: Dimensions.space10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: MyColor.getCardBgColor(),
-        boxShadow: MyUtils.getShadow(color: MyColor.getShadowColor(), blurRadius: 1),
+        boxShadow:
+            MyUtils.getShadow(color: MyColor.getShadowColor(), blurRadius: 1),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -39,7 +40,8 @@ class DemoCard extends StatelessWidget {
               Text(
                 "Dr. Kenny Adeola",
                 // style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontSize: Dimensions.fontLarge, fontWeight: FontWeight.w700),
-                style: title.copyWith(color: MyColor.getTextColor(), fontSize: 15),
+                style:
+                    title.copyWith(color: MyColor.getTextColor(), fontSize: 15),
               ),
               const SizedBox(height: Dimensions.space2),
               Text("General Practitioner", style: regularSmall),
@@ -54,7 +56,7 @@ class DemoCard extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                         Icon(
+                        Icon(
                           CupertinoIcons.star_fill,
                           color: MyColor.getPendingColor(),
                           size: 14,

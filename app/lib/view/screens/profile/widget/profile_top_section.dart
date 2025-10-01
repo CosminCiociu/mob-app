@@ -22,12 +22,26 @@ class ProfileTopSection extends StatefulWidget {
 
 class _ProfileTopSectionState extends State<ProfileTopSection> {
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (!Get.isRegistered<ProfileController>()) {
+        Get.put(ProfileController());
+      }
+      Get.find<ProfileController>().fetchProfileData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GetBuilder<ProfileController>(
       builder: (controller) => Container(
         width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(vertical: Dimensions.space15, horizontal: Dimensions.space15),
-        decoration: BoxDecoration(color: MyColor.getCardBgColor(), borderRadius: BorderRadius.circular(10)),
+        padding: const EdgeInsets.symmetric(
+            vertical: Dimensions.space15, horizontal: Dimensions.space15),
+        decoration: BoxDecoration(
+            color: MyColor.getCardBgColor(),
+            borderRadius: BorderRadius.circular(10)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,8 +51,15 @@ class _ProfileTopSectionState extends State<ProfileTopSection> {
               onClicked: () async {},
             ),
             const SizedBox(height: Dimensions.space15),
-            Align(alignment: Alignment.center, child: Text(MyStrings.demoName, style: boldMediumLarge)),
-            Align(alignment: Alignment.center, child: Text(MyStrings.demoMail, style: regularDefault.copyWith(color: MyColor.getGreyText1()))),
+            Align(
+                alignment: Alignment.center,
+                child: Text(controller.displayNameController.text,
+                    style: boldMediumLarge)),
+            Align(
+                alignment: Alignment.center,
+                child: Text(controller.emailController.text,
+                    style: regularDefault.copyWith(
+                        color: MyColor.getGreyText1()))),
             const SizedBox(height: Dimensions.space15),
             InkWell(
               onTap: () {
@@ -92,7 +113,10 @@ class _ProfileTopSectionState extends State<ProfileTopSection> {
               },
               child: Row(
                 children: [
-                  CircleShapeImage(imageColor: MyColor.getIconColor(), image: MyImages.termsAndConditions, backgroundColor: MyColor.getCircleColor()),
+                  CircleShapeImage(
+                      imageColor: MyColor.getIconColor(),
+                      image: MyImages.termsAndConditions,
+                      backgroundColor: MyColor.getCircleColor()),
                   const SizedBox(width: Dimensions.space15),
                   CardColumn(
                     header: MyStrings.termsAndConditions.tr,
@@ -111,7 +135,10 @@ class _ProfileTopSectionState extends State<ProfileTopSection> {
               },
               child: Row(
                 children: [
-                  CircleShapeImage(imageColor: MyColor.getIconColor(), image: MyImages.privacyPolicy, backgroundColor: MyColor.getCircleColor()),
+                  CircleShapeImage(
+                      imageColor: MyColor.getIconColor(),
+                      image: MyImages.privacyPolicy,
+                      backgroundColor: MyColor.getCircleColor()),
                   const SizedBox(width: Dimensions.space15),
                   CardColumn(
                     header: MyStrings.privacyPolicy.tr,
@@ -130,7 +157,10 @@ class _ProfileTopSectionState extends State<ProfileTopSection> {
               },
               child: Row(
                 children: [
-                  CircleShapeImage(imageColor: MyColor.getIconColor(), image: MyImages.about, backgroundColor: MyColor.getCircleColor()),
+                  CircleShapeImage(
+                      imageColor: MyColor.getIconColor(),
+                      image: MyImages.about,
+                      backgroundColor: MyColor.getCircleColor()),
                   const SizedBox(width: Dimensions.space15),
                   CardColumn(
                     header: MyStrings.about.tr,

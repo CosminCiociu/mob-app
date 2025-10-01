@@ -7,7 +7,6 @@ import '../../../core/utils/my_color.dart';
 import '../text/label_text.dart';
 
 class CustomDropDownTextField2 extends StatefulWidget {
-
   final dynamic selectedValue;
   final String? labelText;
   final String? hintText;
@@ -38,84 +37,103 @@ class CustomDropDownTextField2 extends StatefulWidget {
   });
 
   @override
-  State<CustomDropDownTextField2> createState() => _CustomDropDownTextField2State();
+  State<CustomDropDownTextField2> createState() =>
+      _CustomDropDownTextField2State();
 }
 
 class _CustomDropDownTextField2State extends State<CustomDropDownTextField2> {
-
   @override
   Widget build(BuildContext context) {
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        widget.needLabel ? LabelText(text: widget.labelText.toString()) : const SizedBox(),
-        widget.needLabel ? const SizedBox(height: Dimensions.textToTextSpace) : const SizedBox(),
-        widget.isUnderLined?SizedBox(
-          height: 50,
-          child: DropdownButtonFormField(
-            value: widget.selectedValue,
-            dropdownColor: widget.dropDownColor,
-            focusColor: widget.focusColor,
-            style: regularDefault,
-            alignment: Alignment.centerLeft,
-            decoration: InputDecoration(
-              hintText: widget.hintText.toString().tr,
-              filled: true,
-              fillColor: widget.fillColor,
-              hintStyle: regularDefault.copyWith(color: MyColor.getTextColor()),
-              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
-              border:  UnderlineInputBorder(borderSide: BorderSide(color: MyColor.getBorderColor())),
-              focusedBorder:  UnderlineInputBorder(borderSide: BorderSide(color: MyColor.getPrimaryColor())),
-              enabledBorder:  UnderlineInputBorder(borderSide: BorderSide(color: MyColor.getBorderColor())),
-            ),
-            isExpanded: true,
-            onChanged: widget.onChanged,
-            items: widget.items,
-            icon: Icon(Icons.arrow_drop_down, color: widget.iconColor),
-          ),
-        ):
-        SizedBox(
-          height: 50,
-          child: DropdownButtonFormField(
-            value: widget.selectedValue,
-            dropdownColor: widget.dropDownColor,
-            focusColor: widget.focusColor,
-            style: regularDefault,
-            alignment: Alignment.centerLeft,
-            decoration: InputDecoration(
-              hintText: widget.hintText.toString(),
-              filled: true,
-              fillColor: widget.fillColor,
-              hintStyle: regularDefault.copyWith(color: MyColor.getTextColor()),
-              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.radius),
-                borderSide:  BorderSide(color: MyColor.getBorderColor(), width: 1),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.radius),
-                borderSide:  BorderSide(color: MyColor.getBorderColor(), width: 1),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.radius),
-                borderSide:  BorderSide(color: MyColor.getPrimaryColor(), width: 1),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.radius),
-                borderSide:  BorderSide(color: MyColor.getRedColor(), width: 1),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(widget.radius),
-                borderSide:  BorderSide(color: MyColor.getBorderColor(), width: 1),
-              ),
-            ),
-            isExpanded: false,
-            onChanged: widget.onChanged,
-            items: widget.items,
-            icon: Icon(Icons.arrow_drop_down, color: widget.iconColor),
-          ),
-        )
+        widget.needLabel
+            ? LabelText(text: widget.labelText.toString())
+            : const SizedBox(),
+        widget.needLabel
+            ? const SizedBox(height: Dimensions.textToTextSpace)
+            : const SizedBox(),
+        widget.isUnderLined
+            ? SizedBox(
+                height: 50,
+                child: DropdownButtonFormField(
+                  initialValue: widget.selectedValue,
+                  dropdownColor: widget.dropDownColor,
+                  focusColor: widget.focusColor,
+                  style: regularDefault,
+                  alignment: Alignment.centerLeft,
+                  decoration: InputDecoration(
+                    hintText: widget.hintText.toString().tr,
+                    filled: true,
+                    fillColor: widget.fillColor,
+                    hintStyle:
+                        regularDefault.copyWith(color: MyColor.getTextColor()),
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                    border: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColor.getBorderColor())),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColor.getPrimaryColor())),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide:
+                            BorderSide(color: MyColor.getBorderColor())),
+                  ),
+                  isExpanded: true,
+                  onChanged: widget.onChanged,
+                  items: widget.items,
+                  icon: Icon(Icons.arrow_drop_down, color: widget.iconColor),
+                ),
+              )
+            : SizedBox(
+                height: 50,
+                child: DropdownButtonFormField(
+                  initialValue: widget.selectedValue,
+                  dropdownColor: widget.dropDownColor,
+                  focusColor: widget.focusColor,
+                  style: regularDefault,
+                  alignment: Alignment.centerLeft,
+                  decoration: InputDecoration(
+                    hintText: widget.hintText.toString(),
+                    filled: true,
+                    fillColor: widget.fillColor,
+                    hintStyle:
+                        regularDefault.copyWith(color: MyColor.getTextColor()),
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.radius),
+                      borderSide:
+                          BorderSide(color: MyColor.getBorderColor(), width: 1),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.radius),
+                      borderSide:
+                          BorderSide(color: MyColor.getBorderColor(), width: 1),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.radius),
+                      borderSide: BorderSide(
+                          color: MyColor.getPrimaryColor(), width: 1),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.radius),
+                      borderSide:
+                          BorderSide(color: MyColor.getRedColor(), width: 1),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(widget.radius),
+                      borderSide:
+                          BorderSide(color: MyColor.getBorderColor(), width: 1),
+                    ),
+                  ),
+                  isExpanded: false,
+                  onChanged: widget.onChanged,
+                  items: widget.items,
+                  icon: Icon(Icons.arrow_drop_down, color: widget.iconColor),
+                ),
+              )
       ],
     );
   }

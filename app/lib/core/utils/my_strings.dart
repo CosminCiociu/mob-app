@@ -468,4 +468,7 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String signOutError = 'Error signing out. Please try again.';
   static const String bySigningUpYouAgreeToOur =
       'By Signing up you agree to our Terms and Conditions and Privacy Policy';
+  static const String displayName = 'Display Name';
+  static const String enterDisplayName = 'Enter your display name';
+  static const String addressNotFound = 'Address not found';
 }

@@ -12,7 +12,20 @@
           "package_name": "com.ovo_meet.ovo"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "576890475561-it97ppmfmspdsibst0mgl7m8dc51sl26.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ovo_meet.ovo",
+            "certificate_hash": "04ccb942d8e33fb6ea4bdbac7e0f00845007a044"
+          }
+        },
+        {
+          "client_id": "576890475561-lep7pk3lcekkaucoippe6bbjms3bfomr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAQ6NaJr8mG3iROMVlKbZBK8CSRM8z0V_I"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "576890475561-lep7pk3lcekkaucoippe6bbjms3bfomr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

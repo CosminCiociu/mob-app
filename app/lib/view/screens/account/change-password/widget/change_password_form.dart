@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/data/controller/account/change_password_controller.dart';
-import 'package:ovo_meet/view/components/buttons/rounded_button.dart';
-import 'package:ovo_meet/view/components/buttons/rounded_loading_button.dart';
 import 'package:ovo_meet/view/components/text-field/custom_text_field.dart';
 
 class ChangePasswordForm extends StatefulWidget {
@@ -71,7 +69,8 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                       return;
                     },
                     validator: (value) {
-                      if (controller.confirmPassController.text != controller.passController.text) {
+                      if (controller.confirmPassController.text !=
+                          controller.passController.text) {
                         return MyStrings.kMatchPassError.tr;
                       } else {
                         return null;
@@ -86,7 +85,8 @@ class _ChangePasswordFormState extends State<ChangePasswordForm> {
                       onTap: () {
                         Get.back();
                       },
-                      child: const CustomGradiantButton(text: MyStrings.continues))
+                      child:
+                          const CustomGradiantButton(text: MyStrings.continues))
                 ],
               ),
             ));

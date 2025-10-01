@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class CircleAnimatedButtonWithText extends StatefulWidget {
-
   final Widget child;
   final VoidCallback onTap;
   final String buttonName;
@@ -22,17 +20,18 @@ class CircleAnimatedButtonWithText extends StatefulWidget {
   });
 
   @override
-  State<CircleAnimatedButtonWithText> createState() => _CircleAnimatedButtonWithTextState();
+  State<CircleAnimatedButtonWithText> createState() =>
+      _CircleAnimatedButtonWithTextState();
 }
 
-class _CircleAnimatedButtonWithTextState extends State<CircleAnimatedButtonWithText> with SingleTickerProviderStateMixin{
-
+class _CircleAnimatedButtonWithTextState
+    extends State<CircleAnimatedButtonWithText>
+    with SingleTickerProviderStateMixin {
   late double _scale;
   late AnimationController _controller;
 
   @override
   void initState() {
-
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -41,15 +40,14 @@ class _CircleAnimatedButtonWithTextState extends State<CircleAnimatedButtonWithT
       lowerBound: 0.0,
       upperBound: 0.1,
     )..addListener(() {
-      setState(() {});
-    });
+        setState(() {});
+      });
 
     super.initState();
   }
 
   @override
   void dispose() {
-
     super.dispose();
     _controller.dispose();
   }
@@ -57,7 +55,7 @@ class _CircleAnimatedButtonWithTextState extends State<CircleAnimatedButtonWithT
   @override
   Widget build(BuildContext context) {
     _scale = 1 - _controller.value;
-    return  Center(
+    return Center(
       child: GestureDetector(
         onTap: widget.onTap,
         onTapDown: _tapDown,
@@ -72,17 +70,17 @@ class _CircleAnimatedButtonWithTextState extends State<CircleAnimatedButtonWithT
                   width: widget.width,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                      color: widget.backgroundColor,
-                      shape: BoxShape.circle
-                  ),
-                  child: widget.child
-              ),
+                      color: widget.backgroundColor, shape: BoxShape.circle),
+                  child: widget.child),
               const SizedBox(height: 10),
-              Text(widget.buttonName.tr, textAlign: TextAlign.center, style: regularExtraSmall.copyWith(color: Theme.of(context).textTheme.bodySmall?.color, fontWeight: FontWeight.w500))
+              Text(widget.buttonName.tr,
+                  textAlign: TextAlign.center,
+                  style: regularExtraSmall.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color,
+                      fontWeight: FontWeight.w500))
             ],
           ),
         ),
-
       ),
     );
   }
@@ -90,6 +88,7 @@ class _CircleAnimatedButtonWithTextState extends State<CircleAnimatedButtonWithT
   void _tapDown(TapDownDetails details) {
     _controller.forward();
   }
+
   void _tapUp(TapUpDetails details) {
     _controller.reverse();
   }

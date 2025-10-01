@@ -36,8 +36,10 @@ class CustomBottomNavBar extends StatefulWidget {
     this.boxShadow,
     this.showDot = false,
     this.radius = Dimensions.mediumRadius,
-  })  : assert(items.length < 6 || items.isEmpty, "Items cannot be empty and not more than 5 "),
-        assert(BOTTOMNAVSTYLE.STYLE3 != bottomNavStyle, "Bottom nav style3 is under construction");
+  })  : assert(items.length < 6 || items.isEmpty,
+            "Items cannot be empty and not more than 5 "),
+        assert(BOTTOMNAVSTYLE.STYLE3 != bottomNavStyle,
+            "Bottom nav style3 is under construction");
 
   @override
   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
@@ -65,7 +67,13 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
         decoration: BoxDecoration(
           color: widget.bottomNavBGColor ?? MyColor.getBottomNavBgColor(),
           borderRadius: BorderRadius.circular(widget.radius),
-          boxShadow: widget.boxShadow ?? [BoxShadow(color: MyColor.getShadowColor(), offset: const Offset(-2, -2), blurRadius: 2)],
+          boxShadow: widget.boxShadow ??
+              [
+                BoxShadow(
+                    color: MyColor.getShadowColor(),
+                    offset: const Offset(-2, -2),
+                    blurRadius: 2)
+              ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -83,7 +91,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
                 decoration: BoxDecoration(
-                  color: widget.selectedItemBGColor ?? MyColor.getTransparentColor(),
+                  color: widget.selectedItemBGColor ??
+                      MyColor.getTransparentColor(),
                   borderRadius: BorderRadius.circular(Dimensions.mediumRadius),
                 ),
                 child: Column(
@@ -97,7 +106,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                           ? SvgPicture.asset(
                               widget.items[index].image,
                               colorFilter: ColorFilter.mode(
-                                widget.items[index].index == currentIndex ? widget.selectedIconColor! : widget.iconColor!,
+                                widget.items[index].index == currentIndex
+                                    ? widget.selectedIconColor!
+                                    : widget.iconColor!,
                                 BlendMode.srcIn,
                               ),
                               width: 16,
@@ -105,7 +116,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                             )
                           : Image.asset(
                               widget.items[index].image,
-                              color: widget.items[index].index == currentIndex ? widget.selectedIconColor : widget.iconColor,
+                              color: widget.items[index].index == currentIndex
+                                  ? widget.selectedIconColor
+                                  : widget.iconColor,
                               width: 16,
                               height: 16,
                             ),
@@ -115,7 +128,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                       Text(
                         widget.items[index].name.tr,
                         textAlign: TextAlign.center,
-                        style: widget.labelStyle ?? regularSmall.copyWith(color: widget.items[index].index == currentIndex ? widget.selectedIconColor : MyColor.getTextColor()),
+                        style: widget.labelStyle ??
+                            regularSmall.copyWith(
+                                color: widget.items[index].index == currentIndex
+                                    ? widget.selectedIconColor
+                                    : MyColor.getTextColor()),
                       ),
                     ]
                   ],
@@ -130,7 +147,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   Widget styleThree(BuildContext context) {
     return AnimatedBottomNavigationBar(
-      icons: const[
+      icons: const [
         Icons.home,
         Icons.transform,
         Icons.wallet,
@@ -158,7 +175,13 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: widget.bottomNavBGColor ?? MyColor.getBottomNavBgColor(),
-        boxShadow: widget.boxShadow ?? [BoxShadow(color: MyColor.getShadowColor(), offset:const Offset(-2, -2), blurRadius: 2)],
+        boxShadow: widget.boxShadow ??
+            [
+              BoxShadow(
+                  color: MyColor.getShadowColor(),
+                  offset: const Offset(-2, -2),
+                  blurRadius: 2)
+            ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -186,7 +209,8 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     padding: const EdgeInsets.all(Dimensions.space8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: widget.selectedItemBGColor ?? MyColor.getWhiteColor().withOpacity(0.1),
+                      color: widget.selectedItemBGColor ??
+                          MyColor.getWhiteColor().withOpacity(0.1),
                     ),
                     child: widget.items[index].isIconData == true
                         ? Icon(widget.items[index].icon)
@@ -194,7 +218,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                             ? SvgPicture.asset(
                                 widget.items[index].image,
                                 colorFilter: ColorFilter.mode(
-                                  widget.items[index].index == currentIndex ? widget.selectedIconColor! : widget.iconColor!,
+                                  widget.items[index].index == currentIndex
+                                      ? widget.selectedIconColor!
+                                      : widget.iconColor!,
                                   BlendMode.srcIn,
                                 ),
                                 width: 16,
@@ -202,7 +228,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                               )
                             : Image.asset(
                                 widget.items[index].image,
-                                color: widget.items[index].index == currentIndex ? widget.selectedIconColor : widget.iconColor,
+                                color: widget.items[index].index == currentIndex
+                                    ? widget.selectedIconColor
+                                    : widget.iconColor,
                                 width: 16,
                                 height: 16,
                               ),
@@ -221,7 +249,12 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                         : Text(
                             widget.items[index].name.tr,
                             textAlign: TextAlign.center,
-                            style: widget.labelStyle ?? regularSmall.copyWith(color: widget.items[index].index == currentIndex ? widget.selectedIconColor : widget.iconColor),
+                            style: widget.labelStyle ??
+                                regularSmall.copyWith(
+                                    color: widget.items[index].index ==
+                                            currentIndex
+                                        ? widget.selectedIconColor
+                                        : widget.iconColor),
                           ),
                   ]
                 ],
@@ -236,13 +269,20 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   Container styleOne(BuildContext context) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(horizontal: Dimensions.space10, vertical: Dimensions.space10),
+      margin: const EdgeInsets.symmetric(
+          horizontal: Dimensions.space10, vertical: Dimensions.space10),
       padding: const EdgeInsets.symmetric(vertical: Dimensions.space15),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: widget.bottomNavBGColor ?? MyColor.getBottomNavBgColor(),
         borderRadius: BorderRadius.circular(widget.radius),
-        boxShadow: widget.boxShadow ?? [ BoxShadow(color: MyColor.getShadowColor(), offset:const Offset(-2, -2), blurRadius: 2)],
+        boxShadow: widget.boxShadow ??
+            [
+              BoxShadow(
+                  color: MyColor.getShadowColor(),
+                  offset: const Offset(-2, -2),
+                  blurRadius: 2)
+            ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -257,9 +297,12 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
             },
             child: AnimatedContainer(
               duration: const Duration(microseconds: 500),
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.space10, vertical: Dimensions.space5),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.space10, vertical: Dimensions.space5),
               decoration: BoxDecoration(
-                color: currentIndex == widget.items[index].index ? (widget.selectedItemBGColor ?? MyColor.getPrimaryColor()) : MyColor.getTransparentColor(),
+                color: currentIndex == widget.items[index].index
+                    ? (widget.selectedItemBGColor ?? MyColor.getPrimaryColor())
+                    : MyColor.getTransparentColor(),
                 borderRadius: BorderRadius.circular(Dimensions.mediumRadius),
               ),
               child: Row(
@@ -273,7 +316,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                         ? SvgPicture.asset(
                             widget.items[index].image,
                             colorFilter: ColorFilter.mode(
-                              widget.items[index].index == currentIndex ? widget.selectedIconColor! : widget.iconColor!,
+                              widget.items[index].index == currentIndex
+                                  ? widget.selectedIconColor!
+                                  : widget.iconColor!,
                               BlendMode.srcIn,
                             ),
                             width: 16,
@@ -281,7 +326,9 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                           )
                         : Image.asset(
                             widget.items[index].image,
-                            color: widget.items[index].index == currentIndex ? widget.selectedIconColor : widget.iconColor,
+                            color: widget.items[index].index == currentIndex
+                                ? widget.selectedIconColor
+                                : widget.iconColor,
                             width: 16,
                             height: 16,
                           ),
@@ -291,7 +338,11 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
                     Text(
                       widget.items[index].name.tr,
                       textAlign: TextAlign.center,
-                      style: widget.labelStyle ?? regularSmall.copyWith(color: widget.items[index].index == currentIndex ? widget.selectedIconColor : MyColor.getPrimaryTextColor()),
+                      style: widget.labelStyle ??
+                          regularSmall.copyWith(
+                              color: widget.items[index].index == currentIndex
+                                  ? widget.selectedIconColor
+                                  : MyColor.getPrimaryTextColor()),
                     ),
                   ]
                 ],

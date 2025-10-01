@@ -38,7 +38,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 inputAction: TextInputAction.next,
                 validator: (value) {
                   if (value != null && value.isEmpty) {
-                    return MyStrings.enterYourFirstName.tr;
+                    return MyStrings.enterDisplayName.tr;
                   } else {
                     return null;
                   }
@@ -77,7 +77,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 validator: (value) {
                   if (value != null && value.isEmpty) {
                     return MyStrings.enterYourEmail.tr;
-                  } else if (!MyStrings.emailValidatorRegExp.hasMatch(value ?? '')) {
+                  } else if (!MyStrings.emailValidatorRegExp
+                      .hasMatch(value ?? '')) {
                     return MyStrings.invalidEmailMsg.tr;
                   } else {
                     return null;
@@ -109,12 +110,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     return controller.validatePassword(value ?? '');
                   },
                   labelTextStyle: boldDefault.copyWith(),
-          
                 ),
               ),
               const SizedBox(height: Dimensions.textToTextSpace),
               Visibility(
-                visible: controller.hasPasswordFocus && controller.checkPasswordStrength,
+                visible: controller.hasPasswordFocus &&
+                    controller.checkPasswordStrength,
                 child: ValidationWidget(
                   list: controller.passwordValidationRules,
                 ),
@@ -129,7 +130,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 isPassword: true,
                 onChanged: (value) {},
                 validator: (value) {
-                  if (controller.passwordController.text.toLowerCase() != controller.cPasswordController.text.toLowerCase()) {
+                  if (controller.passwordController.text.toLowerCase() !=
+                      controller.cPasswordController.text.toLowerCase()) {
                     return MyStrings.kMatchPassError.tr;
                   } else {
                     return null;
@@ -145,12 +147,18 @@ class _RegistrationFormState extends State<RegistrationForm> {
                         width: 25,
                         height: 25,
                         child: Checkbox(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  Dimensions.defaultRadius)),
                           activeColor: MyColor.getPrimaryColor(),
                           checkColor: MyColor.getWhiteColor(),
                           value: controller.agreeTC,
                           side: WidgetStateBorderSide.resolveWith(
-                            (states) => BorderSide(width: 1.0, color: controller.agreeTC ? MyColor.getTextFieldEnableBorder() : MyColor.getTextFieldDisableBorder()),
+                            (states) => BorderSide(
+                                width: 1.0,
+                                color: controller.agreeTC
+                                    ? MyColor.getTextFieldEnableBorder()
+                                    : MyColor.getTextFieldDisableBorder()),
                           ),
                           onChanged: (bool? value) {
                             controller.updateAgreeTC();
@@ -160,13 +168,20 @@ class _RegistrationFormState extends State<RegistrationForm> {
                       const SizedBox(width: Dimensions.space8),
                       Row(
                         children: [
-                          Text(MyStrings.iAgreeWith.tr, style: regularDefault.copyWith(color: MyColor.getTextColor())),
+                          Text(MyStrings.iAgreeWith.tr,
+                              style: regularDefault.copyWith(
+                                  color: MyColor.getTextColor())),
                           const SizedBox(width: Dimensions.space3),
                           GestureDetector(
                             onTap: () {
                               Get.toNamed(RouteHelper.privacyScreen);
                             },
-                            child: Text(MyStrings.policies.tr.toLowerCase(), style: regularDefault.copyWith(color: MyColor.getPrimaryColor(), decoration: TextDecoration.underline, decorationColor: MyColor.getPrimaryColor())),
+                            child: Text(MyStrings.policies.tr.toLowerCase(),
+                                style: regularDefault.copyWith(
+                                    color: MyColor.getPrimaryColor(),
+                                    decoration: TextDecoration.underline,
+                                    decorationColor:
+                                        MyColor.getPrimaryColor())),
                           ),
                           const SizedBox(width: Dimensions.space3),
                         ],
@@ -178,9 +193,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 isLoading: controller.submitLoading,
                 text: MyStrings.signUp.tr,
                 press: () {
-                  if (formKey.currentState!.validate()) {
-                
-                  }
+                  if (formKey.currentState!.validate()) {}
                 },
               ),
             ],

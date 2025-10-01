@@ -54,13 +54,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Column(
                 children: [
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: Dimensions.space5),
-                    padding: const EdgeInsets.symmetric(vertical: Dimensions.space15, horizontal: Dimensions.space10),
-                    decoration: BoxDecoration(border: Border.all(color: MyColor.colorWhite), color: MyColor.colorWhite, borderRadius: BorderRadius.circular(Dimensions.space10)),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: Dimensions.space5),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: Dimensions.space15,
+                        horizontal: Dimensions.space10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: MyColor.colorWhite),
+                        color: MyColor.colorWhite,
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.space10)),
                     child: Row(children: [
                       Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimensions.space8),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.space8),
                           gradient: const LinearGradient(
                             colors: [
                               Color(0xFFF76F96),
@@ -91,8 +99,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: boldLarge,
                             ),
                             Text(
-                              MyStrings.london,
-                              style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                              controller.addressController.text,
+                              style: regularDefault.copyWith(
+                                  color: MyColor.getSecondaryTextColor()),
                             ),
                           ],
                         ),
@@ -102,11 +111,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           onTap: () {
                             controller.drawerController.toggle!();
                           },
-                          child:  Image.asset(MyImages.burgerMenu,color: MyColor.buttonColor,height: Dimensions.space20,)),
+                          child: Image.asset(
+                            MyImages.burgerMenu,
+                            color: MyColor.buttonColor,
+                            height: Dimensions.space20,
+                          )),
                     ]),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.space10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: Dimensions.space10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -116,10 +130,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               Get.toNamed(RouteHelper.searchConnectionScreen);
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: Dimensions.space10, vertical: Dimensions.space10),
-                              decoration: BoxDecoration(color: MyColor.greyColor.withOpacity(.12), borderRadius: BorderRadius.circular(Dimensions.space8)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: Dimensions.space10,
+                                  vertical: Dimensions.space10),
+                              decoration: BoxDecoration(
+                                  color: MyColor.greyColor.withOpacity(.12),
+                                  borderRadius:
+                                      BorderRadius.circular(Dimensions.space8)),
                               child: const Row(
-                                children: [CustomSvgPicture(image: MyImages.search), SizedBox(width: Dimensions.space10), Text(MyStrings.search)],
+                                children: [
+                                  CustomSvgPicture(image: MyImages.search),
+                                  SizedBox(width: Dimensions.space10),
+                                  Text(MyStrings.search)
+                                ],
                               ),
                             ),
                           ),
@@ -127,11 +150,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(width: Dimensions.space10),
                         InkWell(
                           onTap: () {
-                            CustomBottomSheet(child: const FilterBottomSheet()).customBottomSheet(context);
+                            CustomBottomSheet(child: const FilterBottomSheet())
+                                .customBottomSheet(context);
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(Dimensions.space8),
+                              borderRadius:
+                                  BorderRadius.circular(Dimensions.space8),
                               gradient: const LinearGradient(
                                 colors: [
                                   Color(0xFFF76F96),
@@ -158,12 +183,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(width: Dimensions.space10),
                   Stack(
                     children: [
-                      controller.currentIndex == controller.girlsImages.length - 1
+                      controller.currentIndex ==
+                              controller.girlsImages.length - 1
                           ? Container(
-                            padding:const EdgeInsets.only(top: Dimensions.space200),
-                            child: Text(MyStrings.youareAllCaughtupforToday,style: semiBoldOverLarge.copyWith(fontFamily:'dancing',color: MyColor.buttonColor ),),)
+                              padding: const EdgeInsets.only(
+                                  top: Dimensions.space200),
+                              child: Text(
+                                MyStrings.youareAllCaughtupforToday,
+                                style: semiBoldOverLarge.copyWith(
+                                    fontFamily: 'dancing',
+                                    color: MyColor.buttonColor),
+                              ),
+                            )
                           : Container(
-                              margin: const EdgeInsets.symmetric(vertical: Dimensions.space10),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: Dimensions.space10),
                               height: MediaQuery.of(context).size.height * 0.7,
                               child: TinderSwapCard(
                                 swipeUp: true,
@@ -172,18 +206,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 totalNum: controller.girlsImages.length,
                                 stackNum: 3,
                                 swipeEdge: 4.0,
-                                maxWidth: MediaQuery.of(context).size.width * 0.9,
-                                maxHeight: MediaQuery.of(context).size.width * 1.8,
-                                minWidth: MediaQuery.of(context).size.width * 0.5,
-                                minHeight: MediaQuery.of(context).size.width * 0.8,
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.9,
+                                maxHeight:
+                                    MediaQuery.of(context).size.width * 1.8,
+                                minWidth:
+                                    MediaQuery.of(context).size.width * 0.5,
+                                minHeight:
+                                    MediaQuery.of(context).size.width * 0.8,
                                 cardBuilder: (context, index) => SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.7,
-                                  width: MediaQuery.of(context).size.width * 0.7,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.7,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(15.0),
                                     child: InkWell(
                                       onTap: () {
-                                        Get.toNamed(RouteHelper.partnersProfileScreen);
+                                        Get.toNamed(
+                                            RouteHelper.partnersProfileScreen);
                                       },
                                       child: Image.asset(
                                         controller.girlsImages[index],
@@ -193,49 +234,69 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   ),
                                 ),
                                 cardController: controller.cardController,
-                                swipeUpdateCallback: (DragUpdateDetails details, Alignment align) {},
-                                swipeCompleteCallback: (CardSwipeOrientation orientation, int index) {
-                                  controller.currentIndex = index % controller.names.length;
-                                  controller.currentIndex == controller.girlsImages.length - 1 ? Get.toNamed(RouteHelper.matchScreen) : null;
+                                swipeUpdateCallback: (DragUpdateDetails details,
+                                    Alignment align) {},
+                                swipeCompleteCallback:
+                                    (CardSwipeOrientation orientation,
+                                        int index) {
+                                  controller.currentIndex =
+                                      index % controller.names.length;
+                                  controller.currentIndex ==
+                                          controller.girlsImages.length - 1
+                                      ? Get.toNamed(RouteHelper.matchScreen)
+                                      : null;
                                   controller.resetCardController();
-                                   controller.currentIndex = 0;
-                                 
-                                  controller.onSwipeComplete(orientation, index);
+                                  controller.currentIndex = 0;
+
+                                  controller.onSwipeComplete(
+                                      orientation, index);
                                   controller.update();
                                 },
                               ),
                             ),
                       Padding(
-                        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .6, left: MediaQuery.of(context).size.width * .15),
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * .6,
+                            left: MediaQuery.of(context).size.width * .15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               controller.names[controller.currentIndex],
-                              style: boldOverLarge.copyWith(color: MyColor.colorWhite),
+                              style: boldOverLarge.copyWith(
+                                  color: MyColor.colorWhite),
                             ),
                             Text(
                               MyStrings.uiuxDesigner,
-                              style: regularLarge.copyWith(color: MyColor.colorWhite.withOpacity(.7)),
+                              style: regularLarge.copyWith(
+                                  color: MyColor.colorWhite.withOpacity(.7)),
                             )
                           ],
                         ),
                       ),
-                      controller.currentIndex == controller.girlsImages.length - 1
+                      controller.currentIndex ==
+                              controller.girlsImages.length - 1
                           ? const SizedBox()
                           : Padding(
-                              padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .67, right: 70, left: 70),
+                              padding: EdgeInsets.only(
+                                  top: MediaQuery.of(context).size.height * .67,
+                                  right: 70,
+                                  left: 70),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   InkWell(
                                     onTap: () {
                                       controller.cardController?.triggerLeft();
                                     },
                                     child: Container(
-                                      padding:const EdgeInsets.all(Dimensions.space15),
-                                      decoration:const BoxDecoration(color: MyColor.lBackgroundColor, shape: BoxShape.circle),
-                                      child:const CustomSvgPicture(
+                                      padding: const EdgeInsets.all(
+                                          Dimensions.space15),
+                                      decoration: const BoxDecoration(
+                                          color: MyColor.lBackgroundColor,
+                                          shape: BoxShape.circle),
+                                      child: const CustomSvgPicture(
                                         image: MyImages.cancel,
                                         color: MyColor.colorRed,
                                         height: Dimensions.space12,
@@ -247,9 +308,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       controller.cardController?.triggerUp();
                                     },
                                     child: Container(
-                                      padding:const EdgeInsets.all(Dimensions.space20),
-                                      decoration:const BoxDecoration(color: MyColor.lBackgroundColor, shape: BoxShape.circle),
-                                      child:const CustomSvgPicture(
+                                      padding: const EdgeInsets.all(
+                                          Dimensions.space20),
+                                      decoration: const BoxDecoration(
+                                          color: MyColor.lBackgroundColor,
+                                          shape: BoxShape.circle),
+                                      child: const CustomSvgPicture(
                                         image: MyImages.heart,
                                         color: MyColor.colorRed,
                                         height: Dimensions.space25,
@@ -261,9 +325,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       controller.cardController?.triggerRight();
                                     },
                                     child: Container(
-                                      padding:const EdgeInsets.all(Dimensions.space15),
-                                      decoration:const BoxDecoration(color: MyColor.lBackgroundColor, shape: BoxShape.circle),
-                                      child:const CustomSvgPicture(
+                                      padding: const EdgeInsets.all(
+                                          Dimensions.space15),
+                                      decoration: const BoxDecoration(
+                                          color: MyColor.lBackgroundColor,
+                                          shape: BoxShape.circle),
+                                      child: const CustomSvgPicture(
                                         image: MyImages.star,
                                         color: MyColor.goldenColor,
                                         height: Dimensions.space12,
