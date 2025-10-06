@@ -25,7 +25,7 @@ import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/language/language_screen.dart';
 import 'package:ovo_meet/view/screens/match/match_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
-import 'package:ovo_meet/view/screens/my_favourites/my_favourite_screen.dart';
+import 'package:ovo_meet/view/screens/events/events_screen.dart';
 import 'package:ovo_meet/view/screens/notification/notification_screen.dart';
 import 'package:ovo_meet/view/screens/onboard/onboar_screen.dart';
 import 'package:ovo_meet/view/screens/partner_profile/partner_profile_screen.dart';
@@ -36,6 +36,7 @@ import 'package:ovo_meet/view/screens/terms_and_conditions/terms_and_conditions.
 import 'package:get/get.dart';
 import '../../view/screens/auth/two_factor/two_factor_setup_screen/two_factor_setup_screen.dart';
 import '../../view/screens/auth/two_factor/two_factor_verification_screen/two_factor_verification_screen.dart';
+import '../../view/screens/events/widget/create_event_form.dart';
 
 class RouteHelper {
   //use screen in screen name and route name
@@ -68,7 +69,7 @@ class RouteHelper {
   static const String searchConnectionScreen = "/search-connection-screen";
   static const String partnersProfileScreen = "/partner-profile-screen";
   static const String matchScreen = "/match-screen";
-  static const String myFavouriteScreen = "/my-favourite-screen";
+  static const String eventsScreen = "/events-screen";
   static const String messageListScreen = "/message-list-screen";
   static const String chatScreen = "/chat-screen";
   static const String audioCallScreen = "/audio-call-screen";
@@ -77,6 +78,7 @@ class RouteHelper {
   static const String enterEmailScreen = "/enter-email-screen";
   static const String registrationwithEmailScreen = "/register-email-screen";
   static const String registrationwithPhoneScreen = "/register-phone-screen";
+  static const String createEventForm = "/create-event-form";
 
   List<GetPage> routes = [
     GetPage(
@@ -132,7 +134,7 @@ class RouteHelper {
     GetPage(
         name: partnersProfileScreen, page: () => const PartnersProfileScreen()),
     GetPage(name: matchScreen, page: () => const MatchScreen()),
-    GetPage(name: myFavouriteScreen, page: () => const MyFavouriteScreen()),
+    GetPage(name: eventsScreen, page: () => const EventsScreen()),
     GetPage(name: messageListScreen, page: () => const MessageListScreen()),
     GetPage(name: chatScreen, page: () => const ChatScreen()),
     GetPage(name: audioCallScreen, page: () => const AudioCallScreen()),
@@ -140,5 +142,6 @@ class RouteHelper {
         name: termsAndConditionsScreen, page: () => const TermsAndConditions()),
     GetPage(name: aboutScreen, page: () => const AboutScreen()),
     GetPage(name: enterEmailScreen, page: () => const EnterEmailScreen()),
+    GetPage(name: createEventForm, page: () => const CreateEventForm()),
   ];
 }

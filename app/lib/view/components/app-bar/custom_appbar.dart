@@ -46,67 +46,58 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.isShowBackBtn
-        ? AppBar(
-            systemOverlayStyle: const SystemUiOverlayStyle(
+    return AppBar(
+      systemOverlayStyle: widget.isShowBackBtn
+          ? const SystemUiOverlayStyle(
               statusBarColor: MyColor.transparentColor,
               statusBarIconBrightness: Brightness.dark,
               statusBarBrightness: Brightness.light,
-            ),
-            elevation: 0,
-            shadowColor: MyColor.getBlackColor().withOpacity(0.1),
-            titleSpacing: 0,
-            surfaceTintColor: MyColor.getTransparentColor(),
-            leading: widget.isShowBackBtn
-                ? IconButton(
-                    onPressed: () {
-                      if (widget.backButtonOnPress == null) {
-                        if (widget.fromAuth) {
-                          Get.offAllNamed(RouteHelper.loginScreen);
-                        } else if (widget.isProfileCompleted) {
-                          showExitDialog(Get.context!);
-                        } else {
-                          String previousRoute = Get.previousRoute;
-                          if (previousRoute == '/splash-screen') {
-                            Get.offAndToNamed(RouteHelper.bottomNavBar);
-                          } else {
-                            Get.back();
-                          }
-                        }
-                      } else {
-                        widget.backButtonOnPress!();
-                      }
-                    },
-                    icon: Icon(Icons.arrow_back_ios_new,
-                        color: Theme.of(context).appBarTheme.foregroundColor,
-                        size: 20))
-                : const SizedBox.shrink(),
-            backgroundColor:
-                widget.bgColor ?? Theme.of(context).appBarTheme.backgroundColor,
-            title: Text(
-              widget.title.tr,
-              style: boldOverLarge.copyWith(
-                color: Theme.of(context).appBarTheme.foregroundColor,
-              ),
-            ),
-            centerTitle: widget.isTitleCenter,
-            actions: widget.action,
-          )
-        : AppBar(
-            titleSpacing: 0,
-            elevation: 0,
-            surfaceTintColor: MyColor.getTransparentColor(),
-            backgroundColor: widget.bgColor ?? MyColor.getBackgroundColor(),
-            title: Text(widget.title.tr,
-                style: boldOverLarge.copyWith(color: MyColor.getTextColor())),
-            systemOverlayStyle: SystemUiOverlayStyle(
+            )
+          : SystemUiOverlayStyle(
               statusBarColor: MyColor.transparentColor,
               statusBarIconBrightness: Brightness.light,
               systemNavigationBarColor: MyColor.transparentColor,
               systemNavigationBarIconBrightness: Theme.of(context).brightness,
             ),
-            actions: widget.action,
-            automaticallyImplyLeading: false,
-          );
+      elevation: 0,
+      shadowColor: MyColor.getBlackColor().withOpacity(0.1),
+      titleSpacing: 0,
+      surfaceTintColor: MyColor.getTransparentColor(),
+      leading: widget.isShowBackBtn
+          ? IconButton(
+              onPressed: () {
+                if (widget.backButtonOnPress == null) {
+                  if (widget.fromAuth) {
+                    Get.offAllNamed(RouteHelper.loginScreen);
+                  } else if (widget.isProfileCompleted) {
+                    showExitDialog(Get.context!);
+                  } else {
+                    String previousRoute = Get.previousRoute;
+                    if (previousRoute == '/splash-screen') {
+                      Get.offAndToNamed(RouteHelper.bottomNavBar);
+                    } else {
+                      Get.back();
+                    }
+                  }
+                } else {
+                  widget.backButtonOnPress!();
+                }
+              },
+              icon: Icon(Icons.arrow_back_ios_new,
+                  color: Theme.of(context).appBarTheme.foregroundColor,
+                  size: 20))
+          : null, // Hide the back button if isShowBackBtn is false
+      backgroundColor:
+          widget.bgColor ?? Theme.of(context).appBarTheme.backgroundColor,
+      title: Text(
+        widget.title.tr,
+        style: boldOverLarge.copyWith(
+          color: Theme.of(context).appBarTheme.foregroundColor,
+        ),
+      ),
+      centerTitle: widget.isTitleCenter,
+      actions: widget.action,
+      automaticallyImplyLeading: false, // Prevents default back button
+    );
   }
 }

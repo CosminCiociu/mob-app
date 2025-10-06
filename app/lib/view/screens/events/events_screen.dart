@@ -1,36 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:ovo_meet/core/route/route.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
-import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
-import 'package:ovo_meet/data/controller/my_favourites/my_favourite_controller.dart';
-import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
-import 'package:ovo_meet/view/components/image/custom_svg_picture.dart';
+import 'package:ovo_meet/data/controller/events/events_controller.dart';
 import 'package:get/get.dart';
+import 'package:ovo_meet/view/components/image/custom_svg_picture.dart';
+import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
+import 'package:ovo_meet/core/route/route.dart';
+import 'package:ovo_meet/core/utils/my_images.dart';
+import 'package:ovo_meet/view/components/app-bar/action_button_icon_widget.dart';
 
-class MyFavouriteScreen extends StatefulWidget {
-  const MyFavouriteScreen({super.key});
+class EventsScreen extends StatefulWidget {
+  const EventsScreen({super.key});
 
   @override
-  State<MyFavouriteScreen> createState() => _MyFavouriteScreenState();
+  State<EventsScreen> createState() => _EventsScreenState();
 }
 
-class _MyFavouriteScreenState extends State<MyFavouriteScreen> {
+class _EventsScreenState extends State<EventsScreen> {
   @override
   void initState() {
-    Get.put(MyFavouriteController());
+    Get.put(EventsController());
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<MyFavouriteController>(
+    return GetBuilder<EventsController>(
       builder: (controller) => Scaffold(
         backgroundColor: MyColor.getScreenBgColor(),
-        appBar:const CustomAppBar(title: MyStrings.myFavourites,isTitleCenter: true),
+        appBar: CustomAppBar(
+          title: MyStrings.myEvents,
+          isTitleCenter: true,
+          isShowBackBtn: false,
+          // Add icon button
+          action: [
+            ActionButtonIconWidget(
+              icon: Icons.add,
+              iconColor: MyColor.colorBlack,
+              backgroundColor: MyColor.colorWhite,
+              size: 60,
+              pressed: () {
+                Get.toNamed(RouteHelper.createEventForm);
+              },
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
             padding: Dimensions.screenPadding,
             child: Column(
@@ -57,7 +74,8 @@ class _MyFavouriteScreenState extends State<MyFavouriteScreen> {
                             fit: StackFit.expand,
                             children: [
                               Image.asset(
-                                controller.favouritePersons[index]['image'].toString(),
+                                controller.favouritePersons[index]['image']
+                                    .toString(),
                                 fit: BoxFit.cover,
                               ),
                               const CustomSvgPicture(
@@ -69,16 +87,21 @@ class _MyFavouriteScreenState extends State<MyFavouriteScreen> {
                                 bottom: 20,
                                 left: 10,
                                 child: Text(
-                                  controller.favouritePersons[index]['name'].toString(),
-                                  style: boldLarge.copyWith(color: MyColor.colorWhite),
+                                  controller.favouritePersons[index]['name']
+                                      .toString(),
+                                  style: boldLarge.copyWith(
+                                      color: MyColor.colorWhite),
                                 ),
                               ),
                               Positioned(
                                 bottom: 5,
                                 left: 10,
                                 child: Text(
-                                  controller.favouritePersons[index]['occupation'].toString(),
-                                  style: regularSmall.copyWith(color: MyColor.colorWhite),
+                                  controller.favouritePersons[index]
+                                          ['occupation']
+                                      .toString(),
+                                  style: regularSmall.copyWith(
+                                      color: MyColor.colorWhite),
                                 ),
                               ),
                             ],

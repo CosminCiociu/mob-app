@@ -93,7 +93,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       const EdgeInsets.symmetric(vertical: Dimensions.space17),
                   child: InkWell(
                     onTap: () {
-                      Get.toNamed(RouteHelper.myFavouriteScreen);
+                      Get.toNamed(RouteHelper.eventsScreen);
                     },
                     child: Row(children: [
                       const CustomSvgPicture(

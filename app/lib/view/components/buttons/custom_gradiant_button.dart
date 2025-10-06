@@ -8,11 +8,22 @@ class CustomGradiantButton extends StatelessWidget {
   final Color textColor;
   final bool hasBorder;
   final double padding;
-  const CustomGradiantButton({super.key, required this.text, this.hasBorder = false, this.textColor = MyColor.colorWhite,this.padding=Dimensions.space15});
+  final bool isEnable;
+
+  const CustomGradiantButton({
+    super.key,
+    required this.text,
+    this.hasBorder = false,
+    this.textColor = MyColor.colorWhite,
+    this.padding = Dimensions.space15,
+    this.isEnable = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Opacity(
+      opacity: isEnable ? 1.0 : 0.5,
+      child: Container(
         padding: EdgeInsets.symmetric(vertical: padding),
         width: double.infinity,
         decoration: BoxDecoration(
@@ -32,9 +43,12 @@ class CustomGradiantButton extends StatelessWidget {
                 ),
         ),
         child: Center(
-            child: Text(
-          text,
-          style: regularLarge.copyWith(color: textColor),
-        )));
+          child: Text(
+            text,
+            style: regularLarge.copyWith(color: textColor),
+          ),
+        ),
+      ),
+    );
   }
 }

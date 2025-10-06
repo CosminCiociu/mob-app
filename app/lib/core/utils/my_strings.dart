@@ -471,4 +471,13 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String displayName = 'Display Name';
   static const String enterDisplayName = 'Enter your display name';
   static const String addressNotFound = 'Address not found';
+
+  static const String myEvents = "My Events";
+  static const String createEvent = "Create Event";
+  static const String eventName = "Event Name";
+  static const String createYourEvent = "Create your event";
+  static const String uploadImage = "Upload Image";
+  static const String eventNameHint = "Enter event name";
+  static const String eventDateTime = "Event Date & Time";
+  static const String eventDateTimeHint = "1 October 2025 14:00";
 }

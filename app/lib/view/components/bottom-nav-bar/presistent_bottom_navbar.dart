@@ -4,7 +4,7 @@ import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/data/controller/home/home_controller.dart';
 import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
-import 'package:ovo_meet/view/screens/my_favourites/my_favourite_screen.dart';
+import 'package:ovo_meet/view/screens/events/events_screen.dart';
 import 'package:ovo_meet/view/screens/profile/profile_screen.dart';
 import 'package:ovo_meet/view/screens/search_connection/search_connection_screen.dart';
 import 'package:get/get.dart';
@@ -32,7 +32,7 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
     return [
       const HomeScreen(),
       // Removed: const SearchConnectionScreen(),
-      const MyFavouriteScreen(),
+      const EventsScreen(),
       const MessageListScreen(),
       const ProfileScreen()
     ];
