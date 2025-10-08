@@ -42,6 +42,7 @@ class MyImages {
   static const String phoneHangUp = "assets/images/phone-slash.svg";
   static const String micreophone = "assets/images/microphone.svg";
   static const String star = "assets/images/star.svg";
+  static const String like = "assets/images/like.svg";
   static const String city = "assets/images/city.png";
   static const String country = "assets/images/country.png";
   static const String withdrawMoney = "assets/images/wallet.png";

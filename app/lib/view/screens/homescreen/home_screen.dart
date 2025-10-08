@@ -219,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               controller.hasFinishedAllEvents) ||
                           (controller.nearbyEvents.isEmpty &&
                               controller.currentIndex >=
-                                  controller.girlsImages.length - 1))
+                                  controller.names.length - 1))
                         Container(
                           padding:
                               const EdgeInsets.only(top: Dimensions.space200),
@@ -244,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             orientation: AmassOrientation.bottom,
                             totalNum: controller.nearbyEvents.isNotEmpty
                                 ? controller.nearbyEvents.length
-                                : controller.girlsImages.length,
+                                : controller.names.length,
                             stackNum: 3,
                             swipeEdge: 4.0,
                             maxWidth: MediaQuery.of(context).size.width * 0.9,
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               final maxLength =
                                   controller.nearbyEvents.isNotEmpty
                                       ? controller.nearbyEvents.length
-                                      : controller.girlsImages.length;
+                                      : controller.names.length;
 
                               // Don't reset currentIndex to 0, let the controller handle it
                               controller.onSwipeComplete(orientation, index);
@@ -320,7 +320,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   controller.hasFinishedAllEvents) ||
                               (controller.nearbyEvents.isEmpty &&
                                   controller.currentIndex >=
-                                      controller.girlsImages.length - 1))
+                                      controller.names.length - 1))
                           ? const SizedBox()
                           : Padding(
                               padding: EdgeInsets.only(
@@ -376,9 +376,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           color: MyColor.lBackgroundColor,
                                           shape: BoxShape.circle),
                                       child: const CustomSvgPicture(
-                                        image: MyImages.star,
-                                        color: MyColor.goldenColor,
-                                        height: Dimensions.space12,
+                                        image: MyImages.like,
+                                        color: MyColor.travelColor,
+                                        height: Dimensions.space20,
                                       ),
                                     ),
                                   ),
@@ -498,9 +498,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           onTap: () {
             Get.toNamed(RouteHelper.partnersProfileScreen);
           },
-          child: Image.asset(
-            controller.girlsImages[index],
-            fit: BoxFit.cover,
+          child: Container(
+            color: Colors.grey[300],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 80,
+                    color: Colors.grey[600],
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'No Image Available',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

@@ -10,6 +10,7 @@ import 'package:ovo_meet/core/utils/messages.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/data/controller/localization/localization_controller.dart';
 import 'core/di_service/di_services.dart' as di_service;
+import 'core/config/dependency_injection.dart';
 import 'core/theme/light/light.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,10 @@ Future<void> main() async {
   if (Firebase.apps.isEmpty) {
     await Firebase.initializeApp();
   } else {}
+
+  // Initialize services and repositories
+  DependencyInjection.init();
+
   Map<String, Map<String, String>> languages = await di_service.init();
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
