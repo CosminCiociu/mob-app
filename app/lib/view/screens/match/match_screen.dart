@@ -20,9 +20,6 @@ class _MatchScreenState extends State<MatchScreen> {
   @override
   void initState() {
     super.initState();
-
-    Get.find<HomeController>()
-        .updateUserLocation(); // ✅ Call here once when screen loads
   }
 
   @override

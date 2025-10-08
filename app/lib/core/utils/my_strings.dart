@@ -480,4 +480,57 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String eventNameHint = "Enter event name";
   static const String eventDateTime = "Event Date & Time";
   static const String eventDateTimeHint = "1 October 2025 14:00";
+
+  // Event related error/success messages
+  static const String pleaseLoginToCreateEvent =
+      "Please login to create an event";
+  static const String invalidDateFormat =
+      "Invalid date format. Please select a valid date and time.";
+  static const String eventCreatedSuccessfully = "Event created successfully!";
+  static const String failedToCreateEvent = "Failed to create event";
+  static const String failedToPickImage = "Failed to pick image";
+  static const String failedToTakePhoto = "Failed to take photo";
+  static const String unableToGetLocation =
+      "Unable to get current location for event";
+  static const String failedToFetchEvents = "Failed to fetch events";
+  static const String eventDeletedSuccessfully = "Event deleted successfully";
+  static const String failedToDeleteEvent = "Failed to delete event";
+  static const String selectImageSource = "Select Image Source";
+  static const String camera = "Camera";
+  static const String selectTimezone = "Selectează fusul orar";
+
+  // Home screen related strings
+  static const String locationNotAvailable = "Location not available";
+  static const String categoryNotAvailable = "Category not available";
+  static const String userNotLoggedIn = "User not logged in";
+  static const String userLocationNotFound = "User location not found";
+  static const String failedToGetNearbyEvents = "Failed to get nearby events";
+  static const String failedToGetNearbyUsers = "Failed to get nearby users";
+  static const String failedToUpdateLocation = "Failed to update location";
+  static const String userLocationUpdatedSuccessfully =
+      "User location updated successfully";
+  static const String errorDemonstratingGeohash =
+      "Error demonstrating geohash features";
+
+  // Success messages
+  static const String locationUpdatedSuccessfully =
+      "Location updated successfully";
+  static const String eventsLoadedSuccessfully = "Events loaded successfully";
+  static const String noEventsFoundInArea = "No events found in your area";
+  static const String noUsersFoundInArea = "No users found in your area";
+  static const String searchingForEvents = "Searching for events...";
+  static const String searchingForUsers = "Searching for users...";
+
+  // Debug messages (for development)
+  static const String debugFetchingEvents = "Fetching events from database...";
+  static const String debugCheckingLocation = "Checking location data...";
+  static const String debugCalculatingDistance = "Calculating distances...";
+  static const String geoQueryFallback = "Using manual distance calculation";
+  static const String eventsFoundNearby = "events found nearby";
+  static const String usersFoundNearby = "users found nearby";
+
+  // User feedback messages
+  static const String indexReset = "Starting from the beginning";
+  static const String connectionError = "Connection error. Please try again.";
+  static const String unexpectedError = "An unexpected error occurred";
 }

@@ -46,15 +46,38 @@ class Dimensions {
 
   static const double horizontalScreenPadding = 15;
   static const double verticalScreenPadding = 15;
-  
 
-  static const EdgeInsets screenPadding = EdgeInsets.symmetric(horizontal: horizontalScreenPadding, vertical: verticalScreenPadding);
-  static const EdgeInsets defaultPaddingHV = EdgeInsets.symmetric(vertical: space20, horizontal: space15);
-  static const EdgeInsets paddingInset = EdgeInsets.symmetric(vertical: Dimensions.verticalScreenPadding * 4, horizontal: Dimensions.horizontalScreenPadding);
+  static const EdgeInsets screenPadding = EdgeInsets.symmetric(
+      horizontal: horizontalScreenPadding, vertical: verticalScreenPadding);
+  static const EdgeInsets defaultPaddingHV =
+      EdgeInsets.symmetric(vertical: space20, horizontal: space15);
+  static const EdgeInsets paddingInset = EdgeInsets.symmetric(
+      vertical: Dimensions.verticalScreenPadding * 4,
+      horizontal: Dimensions.horizontalScreenPadding);
 
   static const double mediumRadius = 8;
   static const double largeRadius = 12;
   static const double extraRadius = 16;
 
   static const double inputIconSize = 18;
+
+  // Image related constants
+  static const double maxImageWidth = 1800;
+  static const double maxImageHeight = 1800;
+  static const int imageQuality = 80;
+
+  // Search and filter defaults
+  static const double defaultSearchRadius = 10.0;
+  static const double defaultAgeFilter = 10.0;
+  static const double minAgeRange = 10.0;
+  static const double maxAgeRange = 50.0;
+  static const double maxSearchRadius = 100.0;
+  static const double minSearchRadius = 1.0;
+
+  // Modern UI constants
+  static const double modernRadius = 16.0;
+  static const double iconSize = 24.0;
+  static const double snackbarHeight = 64.0;
+  static const double shadowBlur = 20.0;
+  static const double shadowOffset = 8.0;
 }

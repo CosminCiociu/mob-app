@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../../data/controller/common/theme_controller.dart';
 
 class MyColor {
-  static const Color dBackgroundColor = Color(0xFF191E29);
+  // Dark theme colors - Hobby Matching App Theme
+  static const Color dBackgroundColor = Color(0xFF1A1D2E); // Deep midnight blue
   static const Color dCircleColor = greyColor;
   static const Color dTextColor = Color(0xFFFFFFFF);
   static const Color dSubtitleColor = Color(0xFFD4D4D4);
@@ -13,28 +14,30 @@ class MyColor {
   static const Color dInputTextColor = Color(0xFFFFFFFF);
   static const Color dPrimaryTextColor = Color(0xFFFFFFFF);
   static const Color dSecondaryTextColor = Color(0xFFB0B0B0);
-  static const Color dAccentSecondaryColor = Color(0xFF4CAF50);
-  //static const Color dIconColor = Color(0xFFFFFFFF);
+  static const Color dAccentSecondaryColor =
+      Color(0xFFFF6B9D); // Warm pink accent
   static const Color dIconColor = Color(0xFFFFFFFF);
-  static const Color dHighlightColor = Color(0xFF2196F3);
-  static const Color dCardColor = Color(0xFF222B35);
-  static const Color dBorderColor = Color(0xff8b929c);
-  static const Color dShadowColor = Color(0xff2B303D);
+  static const Color dHighlightColor =
+      Color(0xFFFF6B9D); // Matching pink highlight
+  static const Color dCardColor = Color(0xFF252A44); // Rich navy cards
+  static const Color dBorderColor = Color(0xFF8B929C); // Muted borders
+  static const Color dShadowColor = Color(0xFF2B303D); // Deep shadows
 
-  static const Color lBackgroundColor = Color(0xFFF9F9F9);
-  static const Color lTextColor = Color(0xFF000000);
+  // Light theme colors - Hobby Matching App Theme
+  static const Color lBackgroundColor = Color(0xFFFFFBFE); // Warm white
+  static const Color lTextColor = Color(0xFF1C1B1F); // Rich dark text
   static const Color lCircleColor = colorWhite;
-  static const Color lPrimaryTextColor = Color(0xFF262626);
-  static const Color lSubtitleColor = Color(0xFF2E2E2E);
-  static const Color lDividerColor = Color(0xFF262626);
-  static const Color lInputTextColor = Color(0xFFFFFFFF);
-  static const Color lSecondaryTextColor = Color(0xFF777777);
-  static const Color lAccentSecondaryColor = Color(0xFF4CAF50);
-  static const Color lHighlightColor = Color(0xFF2196F3);
+  static const Color lPrimaryTextColor = Color(0xFF1C1B1F);
+  static const Color lSubtitleColor = Color(0xFF625B71); // Muted purple
+  static const Color lDividerColor = Color(0xFFE6E0E9); // Soft lavender
+  static const Color lInputTextColor = Color(0xFF1C1B1F);
+  static const Color lSecondaryTextColor = Color(0xFF625B71);
+  static const Color lAccentSecondaryColor = Color(0xFFFF6B9D); // Warm pink
+  static const Color lHighlightColor = Color(0xFFFF6B9D); // Matching pink
   static const Color lCardColor = Color(0xFFFFFFFF);
-  static const Color lBorderColor = Color(0xffeff1f3);
-  static const Color lIconColor = Color(0xFF161616);
-  static const Color lShadowColor = Color(0xffEAEAEA);
+  static const Color lBorderColor = Color(0xFFE6E0E9); // Soft border
+  static const Color lIconColor = Color(0xFF1C1B1F);
+  static const Color lShadowColor = Color(0xFFE6E0E9);
   static const Color ticketDateColor = Color(0xff888888);
   static const Color ticketDetails = Color(0xff5D5D5D);
   static const Color cancelRedColor = Color(0xffFF3B30);
@@ -47,10 +50,14 @@ class MyColor {
   static const Color colorGrey2 = Color(0xffEDF2F6);
   static const Color cardBorderColor = Color(0xffE7E7E7);
   static const Color depositTextColor = Color(0xff454545);
-  static const Color buttonColor = Color(0xff6C63FF);
+  static const Color buttonColor = Color(0xFFFF6B9D); // Warm pink buttons
 
-  static const Color primaryColor = Color(0xFFF5F7FF);
-  static const Color secondaryColor = Color(0xFFF0F8FF);
+  // Hobby matching theme colors
+  static const Color primaryColor = Color(0xFFFF6B9D); // Warm pink primary
+  static const Color secondaryColor = Color(0xFF6366F1); // Indigo secondary
+  static const Color accentColor = Color(0xFFFFAB00); // Amber accent
+  static const Color socialColor =
+      Color(0xFF10B981); // Emerald for social features
 
   static Color getColorById(int index) {
     List<String> randomColors = [
@@ -281,19 +288,30 @@ class MyColor {
   static const Color shadowColor = Color(0xffEAEAEA);
   static const Color colorWhite = Color(0xffFFFFFF);
   static const Color colorBlack = Color(0xff262626);
-  static const Color colorGreen = Color(0xff28C76F);
-  static const Color colorRed = Color(0xFFD92027);
-  static const Color colorGrey = Color(0xff555555);
+  // Semantic colors for hobby matching app
+  static const Color colorGreen = Color(0xFF10B981); // Emerald success
+  static const Color colorRed = Color(0xFFEF4444); // Modern red
+  static const Color colorGrey = Color(0xFF6B7280); // Modern gray
   static const Color transparentColor = Colors.transparent;
 
-  static const Color greenSuccessColor = greenP;
-  static const Color redCancelTextColor = Color(0xFFF93E2C);
-  static const Color highPriorityPurpleColor = Color(0xFF6C63FF);
-  static const Color pendingColor = Color(0xFFFF9800);
-  static const Color greenP = Color(0xFF4CAF50);
-  static const Color containerBgColor = Color(0xffF9F9F9);
-  static const Color currencyBoxColor = Color(0xff6C63FF);
-  static const Color goldenColor = Color(0xFFFFC107);
+  static const Color greenSuccessColor = Color(0xFF10B981); // Emerald
+  static const Color redCancelTextColor = Color(0xFFEF4444); // Modern red
+  static const Color highPriorityPurpleColor = Color(0xFF8B5CF6); // Purple
+  static const Color pendingColor = Color(0xFFFFAB00); // Amber warning
+  static const Color greenP = Color(0xFF10B981); // Emerald
+  static const Color containerBgColor = Color(0xFFFFFBFE); // Warm container
+  static const Color currencyBoxColor = Color(0xFF6366F1); // Indigo
+  static const Color goldenColor = Color(0xFFFFAB00); // Amber gold
+
+  // Hobby category colors
+  static const Color sportsColor = Color(0xFF059669); // Sports - emerald
+  static const Color musicColor = Color(0xFF7C3AED); // Music - violet
+  static const Color artColor = Color(0xFFEC4899); // Art - pink
+  static const Color cookingColor = Color(0xFFEA580C); // Cooking - orange
+  static const Color travelColor = Color(0xFF0284C7); // Travel - sky blue
+  static const Color gamesColor = Color(0xFF7C2D12); // Games - brown
+  static const Color fitnessColor = Color(0xFF16A34A); // Fitness - green
+  static const Color readingColor = Color(0xFF4338CA); // Reading - indigo
 
   static Color getPrimaryColor() {
     return buttonColor;
@@ -341,5 +359,74 @@ class MyColor {
     return Get.find<ThemeController>().darkTheme
         ? dSecondaryTextColor
         : lShadowColor;
+  }
+
+  // Hobby matching specific getters
+  static Color getAccentColor() {
+    return accentColor;
+  }
+
+  static Color getSocialColor() {
+    return socialColor;
+  }
+
+  // Hobby category color getters
+  static Color getSportsColor() {
+    return sportsColor;
+  }
+
+  static Color getMusicColor() {
+    return musicColor;
+  }
+
+  static Color getArtColor() {
+    return artColor;
+  }
+
+  static Color getCookingColor() {
+    return cookingColor;
+  }
+
+  static Color getTravelColor() {
+    return travelColor;
+  }
+
+  static Color getGamesColor() {
+    return gamesColor;
+  }
+
+  static Color getFitnessColor() {
+    return fitnessColor;
+  }
+
+  static Color getReadingColor() {
+    return readingColor;
+  }
+
+  // Dynamic hobby color getter by category
+  static Color getHobbyColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'sports':
+        return sportsColor;
+      case 'music':
+        return musicColor;
+      case 'art':
+        return artColor;
+      case 'cooking':
+        return cookingColor;
+      case 'travel':
+        return travelColor;
+      case 'games':
+      case 'gaming':
+        return gamesColor;
+      case 'fitness':
+      case 'workout':
+        return fitnessColor;
+      case 'reading':
+      case 'books':
+        return readingColor;
+      default:
+        return primaryColor;
+    }
   }
 }

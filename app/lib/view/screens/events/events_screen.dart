@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/data/controller/events/events_controller.dart';
 import 'package:get/get.dart';
-import 'package:ovo_meet/view/components/image/custom_svg_picture.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/core/route/route.dart';
-import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/view/components/app-bar/action_button_icon_widget.dart';
 
 class EventsScreen extends StatefulWidget {
@@ -48,72 +47,252 @@ class _EventsScreenState extends State<EventsScreen> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-            padding: Dimensions.screenPadding,
-            child: Column(
-              children: [
-                GridView.builder(
-                  padding: EdgeInsets.zero,
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: controller.favouritePersons.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 1.1,
-                  ),
-                  itemBuilder: (context, index) {
-                    return Container(
-                      padding: const EdgeInsets.all(Dimensions.space5),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: InkWell(
-                          onTap: () {
-                            Get.toNamed(RouteHelper.partnersProfileScreen);
-                          },
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Image.asset(
-                                controller.favouritePersons[index]['image']
-                                    .toString(),
-                                fit: BoxFit.cover,
-                              ),
-                              const CustomSvgPicture(
-                                image: MyImages.black,
-                                color: MyColor.colorBlack,
-                                fit: BoxFit.cover,
-                              ),
-                              Positioned(
-                                bottom: 20,
-                                left: 10,
-                                child: Text(
-                                  controller.favouritePersons[index]['name']
-                                      .toString(),
-                                  style: boldLarge.copyWith(
-                                      color: MyColor.colorWhite),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 5,
-                                left: 10,
-                                child: Text(
-                                  controller.favouritePersons[index]
-                                          ['occupation']
-                                      .toString(),
-                                  style: regularSmall.copyWith(
-                                      color: MyColor.colorWhite),
-                                ),
-                              ),
-                            ],
+        body: controller.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : controller.userEvents.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.event_busy,
+                          size: 64,
+                          color: MyColor.colorGrey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No events yet',
+                          style: boldLarge.copyWith(
+                            color: MyColor.colorGrey,
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: Dimensions.space100)
-              ],
-            )),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Create your first event by tapping the + button',
+                          style: regularDefault.copyWith(
+                            color: MyColor.colorGrey,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                : SingleChildScrollView(
+                    padding: Dimensions.screenPadding,
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: controller.userEvents.length,
+                          itemBuilder: (context, index) {
+                            final event = controller.userEvents[index];
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Event Image
+                                  if (event['imageUrl'] != null &&
+                                      event['imageUrl'].toString().isNotEmpty)
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.only(
+                                        topLeft: Radius.circular(12),
+                                        topRight: Radius.circular(12),
+                                      ),
+                                      child: event['imageUrl']
+                                              .toString()
+                                              .startsWith('/')
+                                          ? Image.file(
+                                              File(event['imageUrl']),
+                                              height: 200,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Container(
+                                                  height: 200,
+                                                  color: MyColor.colorGrey
+                                                      .withOpacity(0.3),
+                                                  child: const Icon(Icons
+                                                      .image_not_supported),
+                                                );
+                                              },
+                                            )
+                                          : Image.asset(
+                                              event['imageUrl'],
+                                              height: 200,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return Container(
+                                                  height: 200,
+                                                  color: MyColor.colorGrey
+                                                      .withOpacity(0.3),
+                                                  child: const Icon(Icons
+                                                      .image_not_supported),
+                                                );
+                                              },
+                                            ),
+                                    ),
+
+                                  // Event Details
+                                  Padding(
+                                    padding: const EdgeInsets.all(16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                event['eventName'] ??
+                                                    'Untitled Event',
+                                                style: boldLarge.copyWith(
+                                                  color: MyColor.getTextColor(),
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            PopupMenuButton(
+                                              onSelected: (value) {
+                                                if (value == 'delete') {
+                                                  controller
+                                                      .deleteEvent(event['id']);
+                                                }
+                                              },
+                                              itemBuilder: (context) => [
+                                                const PopupMenuItem(
+                                                  value: 'delete',
+                                                  child: Row(
+                                                    children: [
+                                                      Icon(Icons.delete,
+                                                          color: Colors.red),
+                                                      SizedBox(width: 8),
+                                                      Text('Delete'),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+
+                                        // Date and Time
+                                        if (event['dateTime'] != null)
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.calendar_today,
+                                                  size: 16, color: Colors.grey),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                event['dateTime'],
+                                                style: regularDefault.copyWith(
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          ),
+                                        const SizedBox(height: 8),
+
+                                        // Location/Type
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.location_on,
+                                                size: 16, color: Colors.grey),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              event['inPersonOrVirtual'] ??
+                                                  'Location TBD',
+                                              style: regularDefault.copyWith(
+                                                  color: Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 8),
+
+                                        // Description
+                                        if (event['details'] != null &&
+                                            event['details']
+                                                .toString()
+                                                .isNotEmpty)
+                                          Text(
+                                            event['details'],
+                                            style: regularDefault.copyWith(
+                                              color: MyColor.getTextColor(),
+                                            ),
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+
+                                        const SizedBox(height: 12),
+
+                                        // Status and Category
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 12,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: MyColor.primaryColor
+                                                    .withOpacity(0.1),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                event['status'] ?? 'active',
+                                                style: regularSmall.copyWith(
+                                                  color: MyColor.primaryColor,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ),
+                                            if (event['categoryId'] != null)
+                                              Text(
+                                                event['categoryId']
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: regularSmall.copyWith(
+                                                  color: Colors.grey,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: Dimensions.space100),
+                      ],
+                    ),
+                  ),
       ),
     );
   }

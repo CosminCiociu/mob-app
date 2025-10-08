@@ -23,7 +23,10 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = PersistentTabController(initialIndex: 0);
+    // Get initial tab index from arguments, default to 0 (home tab)
+    int initialTab =
+        Get.arguments != null && Get.arguments is int ? Get.arguments : 0;
+    _controller = PersistentTabController(initialIndex: initialTab);
     Get.put(HomeController());
     setState(() {});
   }

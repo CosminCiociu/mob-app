@@ -24,10 +24,15 @@ class Locations extends StatelessWidget {
                 children: [
                   InkWell(
                       onTap: () {
-                        controller.chnageSelectedAddress(controller.addresses[i]['street'].toString());
+                        controller.changeSelectedAddress(
+                            controller.addresses[i]['street'].toString());
                         Get.back();
                       },
-                      child: Container(padding: const EdgeInsets.symmetric(vertical: Dimensions.space10), child: Text(controller.addresses[i]['street'].toString()))),
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: Dimensions.space10),
+                          child: Text(
+                              controller.addresses[i]['street'].toString()))),
                 ],
               );
             }),

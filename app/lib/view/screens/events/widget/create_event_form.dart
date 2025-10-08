@@ -8,6 +8,7 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/view/components/date_time/date_time_picker.dart';
+import 'package:ovo_meet/view/components/drop_down/categories_drop_down.dart';
 
 class CreateEventForm extends StatefulWidget {
   const CreateEventForm({super.key});
@@ -41,114 +42,133 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 borderRadius: BorderRadius.circular(10)),
             child: Form(
               key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top image & GIF/Gallery/Upload buttons
-                  Stack(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        height: 180,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          image: controller.eventImagePath.isNotEmpty
-                              ? DecorationImage(
-                                  image: AssetImage(controller.eventImagePath),
-                                  fit: BoxFit.cover,
-                                )
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Top image & GIF/Gallery/Upload buttons
+                    Stack(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            image: controller.eventImagePath.isNotEmpty
+                                ? DecorationImage(
+                                    image: controller.imageFile != null
+                                        ? FileImage(controller.imageFile!)
+                                        : AssetImage(controller.eventImagePath)
+                                            as ImageProvider,
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                        ),
+                        Positioned(
+                          top: 16,
+                          right: 16,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const SizedBox(height: 10),
+                              _EventImageButton(
+                                icon: Icons.upload,
+                                label: MyStrings.uploadImage,
+                                onTap: controller.showImagePickerOptions,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Dimensions.space15),
+                    LabelTextField(
+                      labelText: MyStrings.eventName,
+                      hintText: MyStrings.eventNameHint,
+                      textInputType: TextInputType.text,
+                      inputAction: TextInputAction.next,
+                      controller: controller.eventNameController,
+                      validator: (value) {
+                        if (value != null && value.isEmpty) {
+                          return MyStrings.eventNameHint.tr;
+                        } else {
+                          return null;
+                        }
+                      },
+                      onChanged: (value) => controller.update(),
+                    ),
+                    const SizedBox(height: 12),
+                    // Replaced LabelTextField with DateTimePicker
+                    CustomDateTimePicker(
+                      title: MyStrings.eventDateTime,
+                      onDateTimeChanged: (dateTime) {
+                        controller.dateTimeController.text =
+                            dateTime.toIso8601String();
+                        controller.update();
+                      },
+                      initialDateTime:
+                          controller.dateTimeController.text.isNotEmpty
+                              ? DateTime.tryParse(
+                                  controller.dateTimeController.text)
                               : null,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: controller.onTimezonePressed,
+                          icon:
+                              const Icon(Icons.language, color: Colors.white70),
+                          label: Text(controller.timezoneLabel),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white24),
+                            backgroundColor: Colors.transparent,
+                          ),
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    CategoriesDropDown(
+                      initialCategory: controller.selectedCategoryId,
+                      initialSubcategory: controller.selectedSubcategoryId,
+                      onSelectionChanged: (categoryId, subcategoryId) {
+                        controller.updateCategorySelection(
+                            categoryId, subcategoryId);
+                      },
+                    ),
+
+                    const SizedBox(height: 12),
+                    LabelTextField(
+                      labelText: 'Care sunt detaliile?',
+                      hintText: '',
+                      maxLines: 3,
+                      controller: controller.detailsController,
+                      onChanged: (value) => controller.update(),
+                    ),
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap:
+                          controller.isSubmitLoading || !controller.isFormValid
+                              ? null
+                              : () {
+                                  if (formKey.currentState!.validate()) {
+                                    controller.createEvent();
+                                  }
+                                },
+                      child: CustomGradiantButton(
+                        text: controller.isSubmitLoading
+                            ? 'Creating...'
+                            : 'Creează un eveniment',
+                        isEnable: controller.isFormValid &&
+                            !controller.isSubmitLoading,
                       ),
-                      Positioned(
-                        top: 16,
-                        right: 16,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const SizedBox(height: 10),
-                            _EventImageButton(
-                              icon: Icons.upload,
-                              label: MyStrings.uploadImage,
-                              onTap: controller.uploadImage,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: Dimensions.space15),
-                  LabelTextField(
-                    labelText: MyStrings.eventName,
-                    hintText: MyStrings.eventNameHint,
-                    textInputType: TextInputType.text,
-                    inputAction: TextInputAction.next,
-                    controller: controller.eventNameController,
-                    validator: (value) {
-                      if (value != null && value.isEmpty) {
-                        return MyStrings.eventNameHint.tr;
-                      } else {
-                        return null;
-                      }
-                    },
-                    onChanged: (value) => controller.update(),
-                  ),
-                  const SizedBox(height: 12),
-                  // Replaced LabelTextField with DateTimePicker
-                  CustomDateTimePicker(
-                    title: MyStrings.eventDateTime,
-                    onDateTimeChanged: (dateTime) {
-                      controller.dateTimeController.text = dateTime.toString();
-                      controller.update();
-                    },
-                    initialDateTime:
-                        DateTime.tryParse(controller.dateTimeController.text),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        onPressed: controller.onTimezonePressed,
-                        icon: const Icon(Icons.language, color: Colors.white70),
-                        label: Text(controller.timezoneLabel),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white24),
-                          backgroundColor: Colors.transparent,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  LabelTextField(
-                    labelText: 'Va fi în persoană sau virtual?',
-                    hintText: '',
-                    controller: controller.inPersonOrVirtualController,
-                    onChanged: (value) => controller.update(),
-                  ),
-                  const SizedBox(height: 12),
-                  LabelTextField(
-                    labelText: 'Cine îl poate vedea?',
-                    hintText: '',
-                    controller: controller.visibilityController,
-                    onChanged: (value) => controller.update(),
-                  ),
-                  const SizedBox(height: 12),
-                  LabelTextField(
-                    labelText: 'Care sunt detaliile?',
-                    hintText: '',
-                    maxLines: 3,
-                    controller: controller.detailsController,
-                    onChanged: (value) => controller.update(),
-                  ),
-                  const SizedBox(height: 24),
-                  CustomGradiantButton(
-                    text: 'Creează un eveniment',
-                    isEnable: controller.isFormValid,
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
             ),
           ),
