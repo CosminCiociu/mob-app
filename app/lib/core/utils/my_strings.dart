@@ -533,4 +533,58 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String indexReset = "Starting from the beginning";
   static const String connectionError = "Connection error. Please try again.";
   static const String unexpectedError = "An unexpected error occurred";
+
+  // Categories related strings
+  static const String loadingCategories = "Loading categories...";
+  static const String categoriesLoaded = "Categories loaded successfully";
+  static const String categoriesUpdated = "Categories updated";
+  static const String failedToLoadCategories = "Failed to load categories";
+  static const String failedToRefreshCategories =
+      "Failed to refresh categories";
+  static const String noCategoriesFound = "No categories found";
+  static const String searchCategories = "Search categories";
+  static const String selectCategory = "Select Category";
+  static const String allCategories = "All Categories";
+  static const String activeCategoriesOnly = "Active categories only";
+  static const String eventHasSpecificTime = "Event has start/end time";
+  static const String eventHasSpecificLocation = "Event has location";
+
+  // Date Time Picker strings
+  static const String startDateTime = "Start Date & Time";
+  static const String endDateTime = "End Date & Time";
+  static const String notSelected = "Not selected";
+  static const String selectStartTime = "Select Start Time";
+  static const String changeStartTime = "Change Start Time";
+  static const String selectEndTime = "Select End Time";
+  static const String changeEndTime = "Change End Time";
+  static const String pleaseSelectStartTimeFirst =
+      "Please select start time first";
+  static const String duration = "Duration";
+
+  // Event Location strings
+  static const String eventLocation = "Event Location";
+  static const String selectLocation = "Select Location";
+  static const String changeLocation = "Change Location";
+  static const String tapToChangeLocation = "Tap to change location";
+  static const String noLocationSelected = "No location selected";
+  static const String searchLocation = "Search for a location";
+  static const String useCurrentLocation = "Use Current Location";
+  static const String locationPermissionDenied = "Location permission denied";
+  static const String currentLocation = "Current Location";
+  static const String selectFromMap = "Select from Map";
+  static const String searchForLocation = "Search for location...";
+  static const String enterLocationName = "Enter location name";
+  static const String noSearchResults = "No search results found";
+  static const String searchingLocation = "Searching for location...";
+  static const String tapToSelectLocation = "Tap on the map to select location";
+  static const String useThisLocation = "Use this location";
+  static const String unknownLocation = "Unknown location";
+  static const String metersAway = "m away";
+  static const String kilometersAway = "km away";
+  static const String tapUseLocationToConfirm =
+      "Tap 'Use this location' to confirm your selection";
+  static const String tapSearchResultInstruction =
+      "Tap a search result to view on map, then tap the map to add a pin";
+  static const String tapMapToAddPin =
+      "Tap on the map to add a pin, then confirm your selection";
 }

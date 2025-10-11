@@ -32,6 +32,13 @@ class HomeServiceImpl implements HomeService {
   @override
   void resetCurrentIndex() {
     currentIndex = 0;
+    // Remove automatic snackbar - only show when user explicitly resets
+    _notifyStateChanged();
+  }
+
+  /// Reset current index with user feedback (for manual reset)
+  void resetCurrentIndexWithFeedback() {
+    currentIndex = 0;
     CustomSnackBar.successDeferred(successList: [MyStrings.indexReset]);
     _notifyStateChanged();
   }

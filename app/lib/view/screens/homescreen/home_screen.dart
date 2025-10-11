@@ -26,18 +26,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
-    final controller = Get.put(HomeController());
     super.initState();
-    controller.cardController = CardController();
-    controller.resetCardController();
-    const SystemUiOverlayStyle(statusBarColor: MyColor.transparentColor);
 
-    // Update user location only once when screen initializes
+    // Initialize controller only once
+    final controller = Get.put(HomeController());
+
+    // Set up card controller after frame is built to avoid multiple calls
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      controller.updateUserLocation();
-      // Use manual method to avoid geo query issues
-      controller.fetchNearbyEventsManual();
+      controller.initializeCardController();
     });
+
+    const SystemUiOverlayStyle(statusBarColor: MyColor.transparentColor);
   }
 
   @override
@@ -56,339 +55,333 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         menuScreen: const DrawerMenu(),
         mainScreen: Scaffold(
           backgroundColor: MyColor.getScreenBgColor(),
-          body: GetBuilder<HomeController>(
-            builder: (controller) => SingleChildScrollView(
-              padding: Dimensions.screenPadding,
-              child: Column(
-                children: [
-                  Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: Dimensions.space5),
-                    padding: const EdgeInsets.symmetric(
-                        vertical: Dimensions.space15,
-                        horizontal: Dimensions.space10),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: MyColor.colorWhite),
-                        color: MyColor.colorWhite,
-                        borderRadius:
-                            BorderRadius.circular(Dimensions.space10)),
-                    child: Row(children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(Dimensions.space8),
-                          gradient: const LinearGradient(
-                            colors: [
-                              Color(0xFFF76F96),
-                              Color(0xFFF66D95),
-                              Color(0xFFEB507E),
-                              Color(0xFFE64375),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+          body: SingleChildScrollView(
+            padding: Dimensions.screenPadding,
+            child: Column(
+              children: [
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: Dimensions.space5),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: Dimensions.space15,
+                      horizontal: Dimensions.space10),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: MyColor.colorWhite),
+                      color: MyColor.colorWhite,
+                      borderRadius: BorderRadius.circular(Dimensions.space10)),
+                  child: Row(children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Dimensions.space8),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFFF76F96),
+                            Color(0xFFF66D95),
+                            Color(0xFFEB507E),
+                            Color(0xFFE64375),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(Dimensions.space8),
-                          child: CustomSvgPicture(
-                            image: MyImages.pinImage,
-                            color: MyColor.colorWhite,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(Dimensions.space8),
+                        child: CustomSvgPicture(
+                          image: MyImages.pinImage,
+                          color: MyColor.colorWhite,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: Dimensions.space10),
+                    SizedBox(
+                      width: Dimensions.space200 + Dimensions.space20,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            MyStrings.location,
+                            style: boldLarge,
+                          ),
+                          Text(
+                            controller.addressController.text,
+                            style: regularDefault.copyWith(
+                                color: MyColor.getSecondaryTextColor()),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    InkWell(
+                        onTap: () {
+                          controller.drawerController.toggle!();
+                        },
+                        child: Image.asset(
+                          MyImages.burgerMenu,
+                          color: MyColor.buttonColor,
+                          height: Dimensions.space20,
+                        )),
+                  ]),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Dimensions.space10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () {
+                            Get.toNamed(RouteHelper.searchConnectionScreen);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Dimensions.space10,
+                                vertical: Dimensions.space10),
+                            decoration: BoxDecoration(
+                                color: MyColor.greyColor.withOpacity(.12),
+                                borderRadius:
+                                    BorderRadius.circular(Dimensions.space8)),
+                            child: const Row(
+                              children: [
+                                CustomSvgPicture(image: MyImages.search),
+                                SizedBox(width: Dimensions.space10),
+                                Text(MyStrings.search)
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: Dimensions.space10),
-                      SizedBox(
-                        width: Dimensions.space200 + Dimensions.space20,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              MyStrings.location,
-                              style: boldLarge,
+                      InkWell(
+                        onTap: () {
+                          CustomBottomSheet(child: const FilterBottomSheet())
+                              .customBottomSheet(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(Dimensions.space8),
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFFF76F96),
+                                Color(0xFFF66D95),
+                                Color(0xFFEB507E),
+                                Color(0xFFE64375),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            Text(
-                              controller.addressController.text,
-                              style: regularDefault.copyWith(
-                                  color: MyColor.getSecondaryTextColor()),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(Dimensions.space8),
+                            child: CustomSvgPicture(
+                              image: MyImages.filter,
+                              color: MyColor.colorWhite,
                             ),
-                          ],
+                          ),
                         ),
                       ),
-                      const Spacer(),
-                      InkWell(
-                          onTap: () {
-                            controller.drawerController.toggle!();
-                          },
-                          child: Image.asset(
-                            MyImages.burgerMenu,
-                            color: MyColor.buttonColor,
-                            height: Dimensions.space20,
-                          )),
-                    ]),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: Dimensions.space10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: InkWell(
-                            onTap: () {
-                              Get.toNamed(RouteHelper.searchConnectionScreen);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: Dimensions.space10,
-                                  vertical: Dimensions.space10),
-                              decoration: BoxDecoration(
-                                  color: MyColor.greyColor.withOpacity(.12),
-                                  borderRadius:
-                                      BorderRadius.circular(Dimensions.space8)),
-                              child: const Row(
-                                children: [
-                                  CustomSvgPicture(image: MyImages.search),
-                                  SizedBox(width: Dimensions.space10),
-                                  Text(MyStrings.search)
-                                ],
+                ),
+                const SizedBox(width: Dimensions.space10),
+                Stack(
+                  children: [
+                    // Loading state
+                    if (controller.isLoadingEvents)
+                      Container(
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                color: MyColor.buttonColor,
                               ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: Dimensions.space10),
-                        InkWell(
-                          onTap: () {
-                            CustomBottomSheet(child: const FilterBottomSheet())
-                                .customBottomSheet(context);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(Dimensions.space8),
-                              gradient: const LinearGradient(
-                                colors: [
-                                  Color(0xFFF76F96),
-                                  Color(0xFFF66D95),
-                                  Color(0xFFEB507E),
-                                  Color(0xFFE64375),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(Dimensions.space8),
-                              child: CustomSvgPicture(
-                                image: MyImages.filter,
-                                color: MyColor.colorWhite,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: Dimensions.space10),
-                  Stack(
-                    children: [
-                      // Loading state
-                      if (controller.isLoadingEvents)
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(
+                              SizedBox(height: 20),
+                              Text(
+                                'Loading nearby events...',
+                                style: TextStyle(
                                   color: MyColor.buttonColor,
+                                  fontSize: 16,
                                 ),
-                                SizedBox(height: 20),
-                                Text(
-                                  'Loading nearby events...',
-                                  style: TextStyle(
-                                    color: MyColor.buttonColor,
-                                    fontSize: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    // End of cards message - show when finished all events or no events at all
+                    else if ((controller.nearbyEvents.isNotEmpty &&
+                            controller.hasFinishedAllEvents) ||
+                        (controller.nearbyEvents.isEmpty &&
+                            controller.currentIndex >=
+                                controller.names.length - 1))
+                      Container(
+                        padding:
+                            const EdgeInsets.only(top: Dimensions.space200),
+                        child: Text(
+                          controller.nearbyEvents.isNotEmpty
+                              ? "No more events nearby"
+                              : MyStrings.youareAllCaughtupforToday,
+                          style: semiBoldOverLarge.copyWith(
+                              fontFamily: 'dancing',
+                              color: MyColor.buttonColor),
+                        ),
+                      )
+                    // TinderSwapCard for events or default images
+                    else
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                            vertical: Dimensions.space10),
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: TinderSwapCard(
+                          swipeUp: true,
+                          swipeDown: true,
+                          orientation: AmassOrientation.bottom,
+                          totalNum: controller.nearbyEvents.isNotEmpty
+                              ? controller.nearbyEvents.length
+                              : controller.names.length,
+                          stackNum: 3,
+                          swipeEdge: 4.0,
+                          maxWidth: MediaQuery.of(context).size.width * 0.9,
+                          maxHeight: MediaQuery.of(context).size.width * 1.8,
+                          minWidth: MediaQuery.of(context).size.width * 0.5,
+                          minHeight: MediaQuery.of(context).size.width * 0.8,
+                          cardBuilder: (context, index) => controller
+                                  .nearbyEvents.isNotEmpty
+                              ? _buildEventCard(context, controller, index)
+                              : _buildDefaultCard(context, controller, index),
+                          cardController: controller.cardController,
+                          swipeUpdateCallback:
+                              (DragUpdateDetails details, Alignment align) {},
+                          swipeCompleteCallback:
+                              (CardSwipeOrientation orientation, int index) {
+                            final maxLength = controller.nearbyEvents.isNotEmpty
+                                ? controller.nearbyEvents.length
+                                : controller.names.length;
+
+                            // Don't reset currentIndex to 0, let the controller handle it
+                            controller.onSwipeComplete(orientation, index);
+
+                            // Check if we've reached the end
+                            if (controller.currentIndex >= maxLength - 1) {
+                              // Show "no more events" message
+                              // Or navigate to match screen for default behavior
+                              if (controller.nearbyEvents.isEmpty) {
+                                Get.toNamed(RouteHelper.matchScreen);
+                              }
+                            }
+
+                            controller.resetCardController();
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * .6,
+                          left: MediaQuery.of(context).size.width * .15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            controller.nearbyEvents.isNotEmpty
+                                ? (controller
+                                        .getCurrentEventData()?['eventName'] ??
+                                    'Event Name')
+                                : controller.names[controller.currentIndex],
+                            style: boldOverLarge.copyWith(
+                                color: MyColor.colorWhite),
+                          ),
+                          Text(
+                            controller.nearbyEvents.isNotEmpty
+                                ? controller.getCurrentEventLocation()
+                                : MyStrings.uiuxDesigner,
+                            style: regularLarge.copyWith(
+                                color: MyColor.colorWhite.withOpacity(.7)),
+                          ),
+                          if (controller.nearbyEvents.isNotEmpty)
+                            Text(
+                              controller.getCurrentEventCategory(),
+                              style: regularDefault.copyWith(
+                                  color: MyColor.colorWhite.withOpacity(.8)),
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Hide buttons when finished all events or loading
+                    (controller.isLoadingEvents ||
+                            (controller.nearbyEvents.isNotEmpty &&
+                                controller.hasFinishedAllEvents) ||
+                            (controller.nearbyEvents.isEmpty &&
+                                controller.currentIndex >=
+                                    controller.names.length - 1))
+                        ? const SizedBox()
+                        : Padding(
+                            padding: EdgeInsets.only(
+                                top: MediaQuery.of(context).size.height * .67,
+                                right: 70,
+                                left: 70),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    controller.cardController?.triggerLeft();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(
+                                        Dimensions.space15),
+                                    decoration: const BoxDecoration(
+                                        color: MyColor.lBackgroundColor,
+                                        shape: BoxShape.circle),
+                                    child: const CustomSvgPicture(
+                                      image: MyImages.cancel,
+                                      color: MyColor.colorRed,
+                                      height: Dimensions.space12,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.cardController?.triggerUp();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(
+                                        Dimensions.space20),
+                                    decoration: const BoxDecoration(
+                                        color: MyColor.lBackgroundColor,
+                                        shape: BoxShape.circle),
+                                    child: const CustomSvgPicture(
+                                      image: MyImages.heart,
+                                      color: MyColor.colorRed,
+                                      height: Dimensions.space25,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    controller.cardController?.triggerRight();
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(
+                                        Dimensions.space15),
+                                    decoration: const BoxDecoration(
+                                        color: MyColor.lBackgroundColor,
+                                        shape: BoxShape.circle),
+                                    child: const CustomSvgPicture(
+                                      image: MyImages.like,
+                                      color: MyColor.travelColor,
+                                      height: Dimensions.space20,
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        )
-                      // End of cards message - show when finished all events or no events at all
-                      else if ((controller.nearbyEvents.isNotEmpty &&
-                              controller.hasFinishedAllEvents) ||
-                          (controller.nearbyEvents.isEmpty &&
-                              controller.currentIndex >=
-                                  controller.names.length - 1))
-                        Container(
-                          padding:
-                              const EdgeInsets.only(top: Dimensions.space200),
-                          child: Text(
-                            controller.nearbyEvents.isNotEmpty
-                                ? "No more events nearby"
-                                : MyStrings.youareAllCaughtupforToday,
-                            style: semiBoldOverLarge.copyWith(
-                                fontFamily: 'dancing',
-                                color: MyColor.buttonColor),
-                          ),
-                        )
-                      // TinderSwapCard for events or default images
-                      else
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: Dimensions.space10),
-                          height: MediaQuery.of(context).size.height * 0.7,
-                          child: TinderSwapCard(
-                            swipeUp: true,
-                            swipeDown: true,
-                            orientation: AmassOrientation.bottom,
-                            totalNum: controller.nearbyEvents.isNotEmpty
-                                ? controller.nearbyEvents.length
-                                : controller.names.length,
-                            stackNum: 3,
-                            swipeEdge: 4.0,
-                            maxWidth: MediaQuery.of(context).size.width * 0.9,
-                            maxHeight: MediaQuery.of(context).size.width * 1.8,
-                            minWidth: MediaQuery.of(context).size.width * 0.5,
-                            minHeight: MediaQuery.of(context).size.width * 0.8,
-                            cardBuilder: (context, index) => controller
-                                    .nearbyEvents.isNotEmpty
-                                ? _buildEventCard(context, controller, index)
-                                : _buildDefaultCard(context, controller, index),
-                            cardController: controller.cardController,
-                            swipeUpdateCallback:
-                                (DragUpdateDetails details, Alignment align) {},
-                            swipeCompleteCallback:
-                                (CardSwipeOrientation orientation, int index) {
-                              final maxLength =
-                                  controller.nearbyEvents.isNotEmpty
-                                      ? controller.nearbyEvents.length
-                                      : controller.names.length;
-
-                              // Don't reset currentIndex to 0, let the controller handle it
-                              controller.onSwipeComplete(orientation, index);
-
-                              // Check if we've reached the end
-                              if (controller.currentIndex >= maxLength - 1) {
-                                // Show "no more events" message
-                                // Or navigate to match screen for default behavior
-                                if (controller.nearbyEvents.isEmpty) {
-                                  Get.toNamed(RouteHelper.matchScreen);
-                                }
-                              }
-
-                              controller.resetCardController();
-                              controller.update();
-                            },
-                          ),
-                        ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height * .6,
-                            left: MediaQuery.of(context).size.width * .15),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              controller.nearbyEvents.isNotEmpty
-                                  ? (controller.getCurrentEventData()?[
-                                          'eventName'] ??
-                                      'Event Name')
-                                  : controller.names[controller.currentIndex],
-                              style: boldOverLarge.copyWith(
-                                  color: MyColor.colorWhite),
-                            ),
-                            Text(
-                              controller.nearbyEvents.isNotEmpty
-                                  ? controller.getCurrentEventLocation()
-                                  : MyStrings.uiuxDesigner,
-                              style: regularLarge.copyWith(
-                                  color: MyColor.colorWhite.withOpacity(.7)),
-                            ),
-                            if (controller.nearbyEvents.isNotEmpty)
-                              Text(
-                                controller.getCurrentEventCategory(),
-                                style: regularDefault.copyWith(
-                                    color: MyColor.colorWhite.withOpacity(.8)),
-                              ),
-                          ],
-                        ),
-                      ),
-                      // Hide buttons when finished all events or loading
-                      (controller.isLoadingEvents ||
-                              (controller.nearbyEvents.isNotEmpty &&
-                                  controller.hasFinishedAllEvents) ||
-                              (controller.nearbyEvents.isEmpty &&
-                                  controller.currentIndex >=
-                                      controller.names.length - 1))
-                          ? const SizedBox()
-                          : Padding(
-                              padding: EdgeInsets.only(
-                                  top: MediaQuery.of(context).size.height * .67,
-                                  right: 70,
-                                  left: 70),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      controller.cardController?.triggerLeft();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(
-                                          Dimensions.space15),
-                                      decoration: const BoxDecoration(
-                                          color: MyColor.lBackgroundColor,
-                                          shape: BoxShape.circle),
-                                      child: const CustomSvgPicture(
-                                        image: MyImages.cancel,
-                                        color: MyColor.colorRed,
-                                        height: Dimensions.space12,
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      controller.cardController?.triggerUp();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(
-                                          Dimensions.space20),
-                                      decoration: const BoxDecoration(
-                                          color: MyColor.lBackgroundColor,
-                                          shape: BoxShape.circle),
-                                      child: const CustomSvgPicture(
-                                        image: MyImages.heart,
-                                        color: MyColor.colorRed,
-                                        height: Dimensions.space25,
-                                      ),
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      controller.cardController?.triggerRight();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(
-                                          Dimensions.space15),
-                                      decoration: const BoxDecoration(
-                                          color: MyColor.lBackgroundColor,
-                                          shape: BoxShape.circle),
-                                      child: const CustomSvgPicture(
-                                        image: MyImages.like,
-                                        color: MyColor.travelColor,
-                                        height: Dimensions.space20,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                    ],
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -402,12 +395,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     final eventData =
         controller.nearbyEvents[index].data() as Map<String, dynamic>;
-    final eventName = eventData['eventName'] as String? ?? 'Event';
-    final location = eventData['location'] as Map<String, dynamic>?;
-    final address = location?['address'] as Map<String, dynamic>?;
-    final administrativeArea =
-        address?['administrativeArea'] as String? ?? 'Location';
-    final imageUrl = eventData['imageUrl'] as String?;
+    final imageUrl = eventData['imageUrl'] is String
+        ? eventData['imageUrl'] as String
+        : null;
 
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.7,

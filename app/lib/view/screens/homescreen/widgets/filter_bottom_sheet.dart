@@ -27,13 +27,14 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     return GetBuilder<HomeController>(
       builder: (controller) => SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal:  8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
             children: [
               const BottomSheetBar(),
-              Align(alignment: Alignment.topLeft, child: Text(MyStrings.filter, style: boldOverLarge)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(MyStrings.filter, style: boldOverLarge)),
               const CustomDivider(),
-             
               LabelTextField(
                 readOnly: true,
                 onChanged: (v) {},
@@ -43,7 +44,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
                 onTap: () {
-                  CustomAlertDialog(child: const Locations()).customAlertDialog(context);
+                  CustomAlertDialog(child: const Locations())
+                      .customAlertDialog(context);
                 },
                 suffixIcon: Container(
                   padding: const EdgeInsets.all(Dimensions.space15),
@@ -56,7 +58,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ),
               ),
               const SizedBox(height: Dimensions.space20),
-              Align(alignment: Alignment.topLeft, child: Text(MyStrings.distance, style: boldOverLarge)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(MyStrings.distance, style: boldOverLarge)),
               Slider(
                 activeColor: MyColor.buttonColor,
                 divisions: 25,
@@ -70,7 +74,9 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 max: 100,
               ),
               const SizedBox(height: Dimensions.space15),
-              Align(alignment: Alignment.topLeft, child: Text(MyStrings.age, style: boldOverLarge)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(MyStrings.age, style: boldOverLarge)),
               RangeSlider(
                 activeColor: MyColor.buttonColor,
                 inactiveColor: MyColor.appBarColor,
@@ -87,12 +93,17 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 max: 100,
                 divisions: 95,
               ),
-              Align(alignment: Alignment.topLeft, child: Text(MyStrings.interstedIn, style: boldOverLarge)),
+              Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(MyStrings.interstedIn, style: boldOverLarge)),
               const SizedBox(height: Dimensions.space20),
               GridView.builder(
                   shrinkWrap: true,
                   itemCount: controller.interestedIn.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, childAspectRatio: 3, crossAxisSpacing: 10),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 3,
+                      crossAxisSpacing: 10),
                   itemBuilder: (context, i) {
                     return InkWell(
                       onTap: () {
@@ -100,8 +111,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       },
                       child: CustomGradiantButton(
                         text: controller.interestedIn[i]['genders'].toString(),
-                        hasBorder: controller.interestedIn[i]['status'] ? true : false,
-                        textColor: controller.interestedIn[i]['status'] ? MyColor.buttonColor : MyColor.colorWhite,
+                        hasBorder:
+                            controller.interestedIn[i]['status'] ? true : false,
+                        textColor: controller.interestedIn[i]['status']
+                            ? MyColor.buttonColor
+                            : MyColor.colorWhite,
                         padding: 10,
                       ),
                     );
@@ -127,7 +141,8 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           onTap: () {
                             Get.back();
                           },
-                          child: const CustomGradiantButton(text: MyStrings.apply))),
+                          child: const CustomGradiantButton(
+                              text: MyStrings.apply))),
                 ],
               ),
               const SizedBox(height: Dimensions.space15),

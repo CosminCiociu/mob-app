@@ -17,8 +17,11 @@ abstract class HomeService {
   void setLoadingEvents(bool loading);
   void setLoadingUsers(bool loading);
 
-  /// Reset swipe index and notify UI
+  /// Reset swipe index and notify UI (silent - no snackbar)
   void resetCurrentIndex();
+
+  /// Reset swipe index with user feedback (shows snackbar)
+  void resetCurrentIndexWithFeedback();
 
   /// Handle swipe completion logic
   void handleSwipeComplete(int index, List<DocumentSnapshot> events);

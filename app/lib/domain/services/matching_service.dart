@@ -8,6 +8,12 @@ abstract class MatchingService {
     required String? currentUserId,
   });
 
+  /// Search for events quietly without showing snackbars (for initialization)
+  Future<List<DocumentSnapshot>> searchNearbyEventsQuietly({
+    required double radiusInKm,
+    required String? currentUserId,
+  });
+
   /// Search for users based on preferences
   Future<List<DocumentSnapshot>> searchNearbyUsers({
     required double radiusInKm,

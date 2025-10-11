@@ -425,6 +425,8 @@ class MyColor {
       case 'reading':
       case 'books':
         return readingColor;
+      case 'social':
+        return socialColor;
       default:
         return primaryColor;
     }

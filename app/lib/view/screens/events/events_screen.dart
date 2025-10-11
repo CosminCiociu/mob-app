@@ -4,11 +4,12 @@ import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
-import 'package:ovo_meet/data/controller/events/events_controller.dart';
+import 'package:ovo_meet/data/controller/events/my_events_controller.dart';
 import 'package:get/get.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/core/route/route.dart';
 import 'package:ovo_meet/view/components/app-bar/action_button_icon_widget.dart';
+import 'package:ovo_meet/view/components/dialog/confirmation_dialog.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -20,14 +21,38 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen> {
   @override
   void initState() {
-    Get.put(EventsController());
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+    print("🎯 EventsScreen: initState called");
+
+    // Use Get.find() to avoid creating multiple instances
+    // Only create if it doesn't exist
+    if (!Get.isRegistered<MyEventsController>()) {
+      print("📝 EventsScreen: Creating new MyEventsController");
+      Get.put(MyEventsController());
+    } else {
+      print("♻️ EventsScreen: Using existing MyEventsController");
+    }
+  }
+
+  void _showDeleteConfirmation(BuildContext context, String eventId,
+      String eventName, MyEventsController controller) {
+    ConfirmationDialog.show(
+      context: context,
+      title: 'Delete Event', // Keep as is since no specific constant exists
+      message:
+          'Are you sure you want to delete "$eventName"?\n\nThis action cannot be undone.',
+      confirmText: 'Delete', // Keep as is since no specific constant exists
+      cancelText: MyStrings.cancel,
+      icon: Icons.warning_amber_rounded,
+      onConfirm: () {
+        controller.deleteEvent(eventId);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<EventsController>(
+    return GetBuilder<MyEventsController>(
       builder: (controller) => Scaffold(
         backgroundColor: MyColor.getScreenBgColor(),
         appBar: CustomAppBar(
@@ -174,8 +199,13 @@ class _EventsScreenState extends State<EventsScreen> {
                                             PopupMenuButton(
                                               onSelected: (value) {
                                                 if (value == 'delete') {
-                                                  controller
-                                                      .deleteEvent(event['id']);
+                                                  _showDeleteConfirmation(
+                                                      context,
+                                                      event['id'],
+                                                      event['eventName']
+                                                              ?.toString() ??
+                                                          'this event',
+                                                      controller);
                                                 }
                                               },
                                               itemBuilder: (context) => [

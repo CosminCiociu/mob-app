@@ -76,6 +76,47 @@ class MatchingServiceImpl implements MatchingService {
   }
 
   @override
+  Future<List<DocumentSnapshot>> searchNearbyEventsQuietly({
+    required double radiusInKm,
+    required String? currentUserId,
+  }) async {
+    try {
+      if (currentUserId == null) {
+        throw Exception(MyStrings.userNotLoggedIn);
+      }
+
+      // Validate search radius
+      if (!isValidSearchRadius(radiusInKm)) {
+        throw Exception(
+            'Invalid search radius: ${radiusInKm}km. Must be between ${Dimensions.minSearchRadius}km and ${Dimensions.maxSearchRadius}km.');
+      }
+
+      // Get user location
+      final userLocation = await LocationService.getUserLocationFromFirebase();
+      if (userLocation == null) {
+        throw Exception(MyStrings.userLocationNotFound);
+      }
+
+      final userGeoPoint = userLocation['geopoint'] as GeoPoint;
+      final userGeohash = userLocation['geohash'] as String;
+
+      // Quietly search for events without showing snackbars
+      final events = await _eventsRepository.fetchNearbyEvents(
+        userLocation: userGeoPoint,
+        userGeohash: userGeohash,
+        radiusInKm: radiusInKm,
+        currentUserId: currentUserId,
+      );
+
+      return events;
+    } catch (e) {
+      // Log error silently without showing snackbar
+      print('Failed to search nearby events quietly: $e');
+      return [];
+    }
+  }
+
+  @override
   Future<List<DocumentSnapshot>> searchNearbyUsers({
     required double radiusInKm,
     required String? currentUserId,
