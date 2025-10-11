@@ -7,9 +7,11 @@ import 'package:ovo_meet/view/components/buttons/custom_gradiant_button.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
-import 'package:ovo_meet/view/components/date_time/event_date_time_picker.dart';
 import 'package:ovo_meet/view/components/form/category_selector.dart';
 import 'package:ovo_meet/view/components/location/event_location_picker.dart';
+import 'package:ovo_meet/view/components/form/date_time_selector.dart';
+import 'package:ovo_meet/view/components/form/max_persons_selector.dart';
+import 'package:ovo_meet/view/components/form/age_range_selector.dart';
 
 class CreateEventForm extends StatefulWidget {
   const CreateEventForm({super.key});
@@ -212,93 +214,18 @@ class _CreateEventFormState extends State<CreateEventForm> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Event Time Toggle
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          MyStrings.eventDateTime,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: MyColor.getTextColor(),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        InkWell(
-                          onTap: () {
-                            controller.setHasSpecificTime(
-                                !controller.hasSpecificTime);
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(Dimensions.space15),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: controller.hasSpecificTime
-                                    ? MyColor.getPrimaryColor()
-                                    : MyColor.getBorderColor(),
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                              color: controller.hasSpecificTime
-                                  ? MyColor.getPrimaryColor().withOpacity(0.05)
-                                  : MyColor.getCardBgColor(),
-                            ),
-                            child: Row(
-                              children: [
-                                // Status indicator
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: controller.hasSpecificTime
-                                        ? MyColor.getPrimaryColor()
-                                        : MyColor.getGreyColor(),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: Dimensions.space12),
-                                // Text
-                                Expanded(
-                                  child: Text(
-                                    MyStrings.eventHasSpecificTime,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: controller.hasSpecificTime
-                                          ? MyColor.getTextColor()
-                                          : MyColor.getSecondaryTextColor(),
-                                    ),
-                                  ),
-                                ),
-                                // Arrow indicator
-                                Icon(
-                                  controller.hasSpecificTime
-                                      ? Icons.keyboard_arrow_up
-                                      : Icons.keyboard_arrow_down,
-                                  color: MyColor.getSecondaryTextColor(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    // Event Date Time Selector
+                    DateTimeSelector(
+                      initialStartDateTime: controller.dateTimeStart,
+                      initialEndDateTime: controller.dateTimeEnd,
+                      onSelectionChanged: (startDateTime, endDateTime) {
+                        // Automatically set hasSpecificTime to true when times are selected
+                        if (startDateTime != null) {
+                          controller.setHasSpecificTime(true);
+                        }
+                        controller.setDateTimeRange(startDateTime, endDateTime);
+                      },
                     ),
-
-                    // Show date/time picker if hasSpecificTime is true
-                    if (controller.hasSpecificTime) ...[
-                      const SizedBox(height: 12),
-                      EventDateTimePicker(
-                        title: MyStrings.eventDateTime,
-                        showTitle: false,
-                        onDateTimeRangeChanged: (startDateTime, endDateTime) {
-                          controller.setDateTimeRange(
-                              startDateTime, endDateTime);
-                        },
-                        initialStartDateTime: controller.dateTimeStart,
-                        initialEndDateTime: controller.dateTimeEnd,
-                      ),
-                    ],
 
                     // Show timezone selector if hasSpecificTime is true
                     if (controller.hasSpecificTime) ...[
@@ -320,6 +247,29 @@ class _CreateEventFormState extends State<CreateEventForm> {
                         ],
                       ),
                     ],
+                    const SizedBox(height: 12),
+
+                    // Max Persons Selector
+                    MaxPersonsSelector(
+                      initialValue: controller.maxPersons,
+                      onChanged: (maxPersons) {
+                        controller.setMaxPersons(maxPersons);
+                      },
+                      label: 'Maximum Participants',
+                      hint: 'No limit',
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Age Range Selector
+                    AgeRangeSelector(
+                      initialMinAge: controller.minAge,
+                      initialMaxAge: controller.maxAge,
+                      onChanged: (minAge, maxAge) {
+                        controller.setAgeRange(minAge, maxAge);
+                      },
+                      label: 'Age Range',
+                      hint: 'No age limit',
+                    ),
                     const SizedBox(height: 12),
 
                     // Event Details

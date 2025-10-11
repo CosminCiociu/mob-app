@@ -22,11 +22,17 @@ abstract class EventsService {
   DateTime? get dateTimeEnd;
   LatLng? get eventLocation;
   String? get eventLocationName;
+  int? get maxPersons;
+  int? get minAge;
+  int? get maxAge;
 
   // Form controllers
   TextEditingController get eventNameController;
   TextEditingController get detailsController;
   TextEditingController get dateTimeController;
+  TextEditingController get maxPersonsController;
+  TextEditingController get minAgeController;
+  TextEditingController get maxAgeController;
   FocusNode get eventNameFocusNode;
   FocusNode get detailsFocusNode;
   FocusNode get dateTimeFocusNode;
@@ -39,6 +45,8 @@ abstract class EventsService {
   void setHasSpecificLocation(bool hasLocation);
   void setDateTimeRange(DateTime? start, DateTime? end);
   void setEventLocation(LatLng? location, String? locationName);
+  void setMaxPersons(int? maxPersons);
+  void setAgeRange(int? minAge, int? maxAge);
 
   // Event operations
   Future<void> createEvent();

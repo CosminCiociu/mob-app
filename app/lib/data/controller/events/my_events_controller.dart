@@ -46,6 +46,13 @@ class MyEventsController extends GetxController {
   DateTime? get dateTimeEnd => _eventsService.dateTimeEnd;
   LatLng? get eventLocation => _eventsService.eventLocation;
   String? get eventLocationName => _eventsService.eventLocationName;
+  int? get maxPersons => _eventsService.maxPersons;
+  TextEditingController get maxPersonsController =>
+      _eventsService.maxPersonsController;
+  int? get minAge => _eventsService.minAge;
+  int? get maxAge => _eventsService.maxAge;
+  TextEditingController get minAgeController => _eventsService.minAgeController;
+  TextEditingController get maxAgeController => _eventsService.maxAgeController;
 
   // Form validation - delegate to service
   bool get isFormValid => _eventsService.isFormValid;
@@ -94,6 +101,12 @@ class MyEventsController extends GetxController {
 
   void setEventLocation(LatLng? location, String? locationName) =>
       _eventsService.setEventLocation(location, locationName);
+
+  void setMaxPersons(int? maxPersons) =>
+      _eventsService.setMaxPersons(maxPersons);
+
+  void setAgeRange(int? minAge, int? maxAge) =>
+      _eventsService.setAgeRange(minAge, maxAge);
 
   // Data access methods - delegate to service
   Future<void> fetchUserEvents() => _eventsService.fetchUserEvents();

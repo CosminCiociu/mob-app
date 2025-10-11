@@ -44,11 +44,17 @@ class EventsServiceImpl implements EventsService {
   DateTime? _dateTimeEnd;
   LatLng? _eventLocation;
   String? _eventLocationName;
+  int? _maxPersons;
+  int? _minAge;
+  int? _maxAge;
 
   // Form controllers
   final TextEditingController _eventNameController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _dateTimeController = TextEditingController();
+  final TextEditingController _maxPersonsController = TextEditingController();
+  final TextEditingController _minAgeController = TextEditingController();
+  final TextEditingController _maxAgeController = TextEditingController();
   final FocusNode _eventNameFocusNode = FocusNode();
   final FocusNode _detailsFocusNode = FocusNode();
   final FocusNode _dateTimeFocusNode = FocusNode();
@@ -116,6 +122,15 @@ class EventsServiceImpl implements EventsService {
   String? get eventLocationName => _eventLocationName;
 
   @override
+  int? get maxPersons => _maxPersons;
+
+  @override
+  int? get minAge => _minAge;
+
+  @override
+  int? get maxAge => _maxAge;
+
+  @override
   TextEditingController get eventNameController => _eventNameController;
 
   @override
@@ -123,6 +138,15 @@ class EventsServiceImpl implements EventsService {
 
   @override
   TextEditingController get dateTimeController => _dateTimeController;
+
+  @override
+  TextEditingController get maxPersonsController => _maxPersonsController;
+
+  @override
+  TextEditingController get minAgeController => _minAgeController;
+
+  @override
+  TextEditingController get maxAgeController => _maxAgeController;
 
   @override
   FocusNode get eventNameFocusNode => _eventNameFocusNode;
@@ -207,6 +231,34 @@ class EventsServiceImpl implements EventsService {
     _notifyStateChanged();
   }
 
+  @override
+  void setMaxPersons(int? maxPersons) {
+    _maxPersons = maxPersons;
+    if (maxPersons != null) {
+      _maxPersonsController.text = maxPersons.toString();
+    } else {
+      _maxPersonsController.clear();
+    }
+    _notifyStateChanged();
+  }
+
+  @override
+  void setAgeRange(int? minAge, int? maxAge) {
+    _minAge = minAge;
+    _maxAge = maxAge;
+    if (minAge != null) {
+      _minAgeController.text = minAge.toString();
+    } else {
+      _minAgeController.clear();
+    }
+    if (maxAge != null) {
+      _maxAgeController.text = maxAge.toString();
+    } else {
+      _maxAgeController.clear();
+    }
+    _notifyStateChanged();
+  }
+
   // =========================
   // EVENT OPERATIONS
   // =========================
@@ -250,7 +302,9 @@ class EventsServiceImpl implements EventsService {
         'imageUrl': _eventImagePath,
         'createdBy': currentUser.uid,
         'attendees': [currentUser.uid],
-        'maxAttendees': null,
+        'maxAttendees': _maxPersons,
+        'minAge': _minAge,
+        'maxAge': _maxAge,
         'location': await getEventLocation(),
       };
 
@@ -335,6 +389,9 @@ class EventsServiceImpl implements EventsService {
     _eventNameController.clear();
     _dateTimeController.clear();
     _detailsController.clear();
+    _maxPersonsController.clear();
+    _minAgeController.clear();
+    _maxAgeController.clear();
     _eventImagePath = '';
     _imageFile = null;
     _selectedCategoryId = null;
@@ -345,6 +402,9 @@ class EventsServiceImpl implements EventsService {
     _dateTimeEnd = null;
     _eventLocation = null;
     _eventLocationName = null;
+    _maxPersons = null;
+    _minAge = null;
+    _maxAge = null;
     _hasSpecificTime = false;
     _hasSpecificLocation = false;
     _notifyStateChanged();

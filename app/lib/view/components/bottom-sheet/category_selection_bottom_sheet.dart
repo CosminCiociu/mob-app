@@ -10,12 +10,14 @@ class CategorySelectionBottomSheet extends StatefulWidget {
   final String? selectedCategoryId;
   final String? selectedSubcategoryId;
   final Function(String categoryId, String? subcategoryId) onSelectionChanged;
+  final ScrollController? scrollController;
 
   const CategorySelectionBottomSheet({
     Key? key,
     this.selectedCategoryId,
     this.selectedSubcategoryId,
     required this.onSelectionChanged,
+    this.scrollController,
   }) : super(key: key);
 
   @override
@@ -206,12 +208,12 @@ class _CategorySelectionBottomSheetState
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity, // Ensure full width
+      height: MediaQuery.of(context).size.height * 0.8, // Set explicit height
       decoration: BoxDecoration(
         color: MyColor.getCardBgColor(),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         children: [
           // Handle bar
           Container(
@@ -255,9 +257,9 @@ class _CategorySelectionBottomSheetState
             _buildEmptyWidget()
           else
             // Categories list
-            Flexible(
+            Expanded(
               child: ListView.builder(
-                shrinkWrap: true,
+                controller: widget.scrollController,
                 padding:
                     const EdgeInsets.symmetric(horizontal: Dimensions.space20),
                 itemCount: _categories.length,
