@@ -46,8 +46,16 @@ class _CustomAmountTextFieldState extends State<CustomAmountTextField> {
         Container(
           height: 50,
           width: MediaQuery.of(context).size.width,
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.space5, vertical:  Dimensions.space5),
-          decoration: BoxDecoration(color: MyColor.getTransparentColor(), border: Border.all(color: isFocus ? MyColor.getTextFieldEnableBorder() : MyColor.getTextFieldDisableBorder(), width: 0.5), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.space5, vertical: Dimensions.space5),
+          decoration: BoxDecoration(
+              color: MyColor.getTransparentColor(),
+              border: Border.all(
+                  color: isFocus
+                      ? MyColor.getTextFieldEnableBorder()
+                      : MyColor.getTextFieldDisableBorder(),
+                  width: 0.5),
+              borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,12 +74,25 @@ class _CustomAmountTextFieldState extends State<CustomAmountTextField> {
                       readOnly: widget.readOnly,
                       controller: widget.controller,
                       autofocus: widget.autoFocus,
-                      style: regularLarge.copyWith(color: MyColor.getTextColor()),
+                      style:
+                          regularLarge.copyWith(color: MyColor.getTextColor()),
                       keyboardType: TextInputType.number,
                       textInputAction: widget.inputAction,
                       onChanged: widget.onChanged,
                       decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(bottom:Dimensions.space5), hintText: widget.hintText, hintStyle: regularLarge.copyWith(color: MyColor.getHintTextColor().withOpacity(0.7), height: 1.452), border: InputBorder.none, focusedBorder: InputBorder.none, enabledBorder: InputBorder.none, disabledBorder: InputBorder.none, focusedErrorBorder: InputBorder.none, errorBorder: InputBorder.none),
+                          contentPadding:
+                              const EdgeInsets.only(bottom: Dimensions.space5),
+                          hintText: widget.hintText,
+                          hintStyle: regularLarge.copyWith(
+                              color:
+                                  MyColor.getHintTextColor().withOpacity(0.7),
+                              height: 1.452),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                          errorBorder: InputBorder.none),
                     ),
                   ),
                 ),
@@ -79,9 +100,15 @@ class _CustomAmountTextFieldState extends State<CustomAmountTextField> {
               Container(
                 width: 55,
                 padding: const EdgeInsets.all(Dimensions.space5),
-                decoration: BoxDecoration(color: MyColor.getCurrencyBoxColor().withOpacity(0.22), borderRadius: BorderRadius.circular(5)),
+                decoration: BoxDecoration(
+                    color: MyColor.getCurrencyBoxColor().withOpacity(0.22),
+                    borderRadius: BorderRadius.circular(5)),
                 alignment: Alignment.center,
-                child: Text(widget.currency, textAlign: TextAlign.center, style: regularDefault.copyWith(color: MyColor.getPrimaryColor(), fontWeight: FontWeight.w500)),
+                child: Text(widget.currency,
+                    textAlign: TextAlign.center,
+                    style: regularDefault.copyWith(
+                        color: MyColor.getPrimaryColor(),
+                        fontWeight: FontWeight.w500)),
               ),
             ],
           ),

@@ -3,20 +3,22 @@ import '../user/user.dart';
 
 class AuthorizationResponseModel1 {
   AuthorizationResponseModel1({
-      String? remark, 
-      String? status, 
-      Message? message, 
-      Data? data,}){
+    String? remark,
+    String? status,
+    Message? message,
+    Data? data,
+  }) {
     _remark = remark;
     _status = status;
     _message = message;
     _data = data;
-}
+  }
 
   AuthorizationResponseModel1.fromJson(dynamic json) {
     _remark = json['remark'];
     _status = json['status'];
-    _message = json['message'] != null ? Message.fromJson(json['message']) : null;
+    _message =
+        json['message'] != null ? Message.fromJson(json['message']) : null;
     _data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 
@@ -42,14 +44,14 @@ class AuthorizationResponseModel1 {
     }
     return map;
   }
-
 }
 
 class Data {
   Data({
-      User? user,}){
+    User? user,
+  }) {
     _user = user;
-}
+  }
 
   Data.fromJson(dynamic json) {
     _user = json['user'] != null ? User.fromJson(json['user']) : null;
@@ -65,5 +67,4 @@ class Data {
     }
     return map;
   }
-
 }

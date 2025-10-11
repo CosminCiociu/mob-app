@@ -12,7 +12,12 @@ class LanguageCard extends StatelessWidget {
   final bool isShowTopRight;
   final String langeName;
 
-  const LanguageCard({super.key, required this.index, required this.selectedIndex, this.isShowTopRight = false, required this.langeName});
+  const LanguageCard(
+      {super.key,
+      required this.index,
+      required this.selectedIndex,
+      this.isShowTopRight = false,
+      required this.langeName});
 
   @override
   Widget build(BuildContext context) {
@@ -20,22 +25,29 @@ class LanguageCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
-          padding: const EdgeInsetsDirectional.symmetric(vertical: Dimensions.space25),
+          padding: const EdgeInsetsDirectional.symmetric(
+              vertical: Dimensions.space25),
           alignment: Alignment.center,
-          decoration: BoxDecoration(color: MyColor.getCardBgColor(), borderRadius: BorderRadius.circular(Dimensions.defaultRadius), boxShadow: MyUtils.getCardShadow()),
+          decoration: BoxDecoration(
+              color: MyColor.getCardBgColor(),
+              borderRadius: BorderRadius.circular(Dimensions.defaultRadius),
+              boxShadow: MyUtils.getCardShadow()),
           child: Column(
             children: [
               Container(
                 height: 55,
                 width: 55,
                 alignment: Alignment.center,
-                decoration: BoxDecoration(color: MyColor.getScreenBgColor(), shape: BoxShape.circle),
-                child:  Icon(Icons.g_translate, color: MyColor.getPrimaryColor(), size: 22.5),
+                decoration: BoxDecoration(
+                    color: MyColor.getScreenBgColor(), shape: BoxShape.circle),
+                child: Icon(Icons.g_translate,
+                    color: MyColor.getPrimaryColor(), size: 22.5),
               ),
               const SizedBox(height: Dimensions.space10),
               SmallText(
                 text: langeName.tr,
-                textStyle: semiBoldSmall.copyWith(color: MyColor.getTextColor()),
+                textStyle:
+                    semiBoldSmall.copyWith(color: MyColor.getTextColor()),
               )
             ],
           ),
@@ -53,7 +65,8 @@ class LanguageCard extends StatelessWidget {
                         color: MyColor.getPrimaryColor(),
                         shape: BoxShape.circle,
                       ),
-                      child:  Icon(Icons.check, color: MyColor.getWhiteColor(), size: 10),
+                      child: Icon(Icons.check,
+                          color: MyColor.getWhiteColor(), size: 10),
                     ),
                   )
                 : Positioned(
@@ -68,7 +81,8 @@ class LanguageCard extends StatelessWidget {
                         color: MyColor.getPrimaryColor().withOpacity(0.6),
                         shape: BoxShape.circle,
                       ),
-                      child:  Icon(Icons.check, color: MyColor.getWhiteColor(), size: 22.5),
+                      child: Icon(Icons.check,
+                          color: MyColor.getWhiteColor(), size: 22.5),
                     ),
                   )
             : const Positioned(

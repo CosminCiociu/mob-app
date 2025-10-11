@@ -14,7 +14,8 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90, width: 90,
+      height: 90,
+      width: 90,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(Dimensions.space5),
       decoration: BoxDecoration(
@@ -22,7 +23,8 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
         shape: BoxShape.circle,
       ),
       child: Container(
-        height: 75, width: 75,
+        height: 75,
+        width: 75,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(Dimensions.space5),
         decoration: const BoxDecoration(
@@ -31,27 +33,27 @@ class _ImageUploadSectionState extends State<ImageUploadSection> {
         child: Stack(
           children: [
             Container(
-              height: 55, width: 55,
+              height: 55,
+              width: 55,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage(MyImages.profile), fit: BoxFit.fill
-                )
-              ),
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: AssetImage(MyImages.profile), fit: BoxFit.fill)),
             ),
             Positioned(
               bottom: 0,
               right: 2,
               child: GestureDetector(
-                onTap: (){},
+                onTap: () {},
                 child: Container(
-                  height: 18, width: 18,
+                  height: 18,
+                  width: 18,
                   alignment: Alignment.center,
-                  decoration:  BoxDecoration(
-                    color: MyColor.getPrimaryColor(), shape: BoxShape.circle
-                  ),
-                  child:  Icon(Icons.add, color: MyColor.getWhiteColor(), size: 9),
+                  decoration: BoxDecoration(
+                      color: MyColor.getPrimaryColor(), shape: BoxShape.circle),
+                  child:
+                      Icon(Icons.add, color: MyColor.getWhiteColor(), size: 9),
                 ),
               ),
             )

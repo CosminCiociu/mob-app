@@ -1,26 +1,18 @@
 import 'dart:async';
 import 'package:get/get.dart';
 
-
 class SmsVerificationController extends GetxController {
-
-
-
   bool hasError = false;
   bool isLoading = true;
-  String currentText='';
-
-
+  String currentText = '';
 
   Future<void> intData() async {
-    isLoading=true;
+    isLoading = true;
     update();
-    isLoading=false;
+    isLoading = false;
     update();
     return;
   }
 
-
-  bool submitLoading=false;
-
+  bool submitLoading = false;
 }

@@ -17,11 +17,11 @@ import '../../../components/image/custom_svg_picture.dart';
 import '../../../components/otp_field_widget/otp_field_widget.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
-
   const EmailVerificationScreen({super.key});
 
   @override
-  State<EmailVerificationScreen> createState() => _EmailVerificationScreenState();
+  State<EmailVerificationScreen> createState() =>
+      _EmailVerificationScreenState();
 }
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
@@ -30,9 +30,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     final controller = Get.put(EmailVerificationController());
 
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
- 
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
@@ -46,10 +44,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       nextRoute: RouteHelper.loginScreen,
       child: Scaffold(
           backgroundColor: MyColor.getScreenBgColor(),
-          appBar: CustomAppBar(fromAuth: true, title: MyStrings.emailVerification.tr, isShowBackBtn: true, isShowActionBtn: false, bgColor: MyColor.getAppBarColor()),
+          appBar: CustomAppBar(
+              fromAuth: true,
+              title: MyStrings.emailVerification.tr,
+              isShowBackBtn: true,
+              isShowActionBtn: false,
+              bgColor: MyColor.getAppBarColor()),
           body: GetBuilder<EmailVerificationController>(
             builder: (controller) => controller.isLoading
-                ? Center(child: CircularProgressIndicator(color: MyColor.getPrimaryColor()))
+                ? Center(
+                    child: CircularProgressIndicator(
+                        color: MyColor.getPrimaryColor()))
                 : SingleChildScrollView(
                     padding: Dimensions.screenPadding,
                     child: Center(
@@ -62,13 +67,27 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             height: 100,
                             width: 100,
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(color: MyColor.getPrimaryColor().withOpacity(.075), shape: BoxShape.circle),
-                            child: CustomSvgPicture(image: MyImages.emailVerifyImage, height: 50, width: 50, color: MyColor.getPrimaryColor()),
+                            decoration: BoxDecoration(
+                                color:
+                                    MyColor.getPrimaryColor().withOpacity(.075),
+                                shape: BoxShape.circle),
+                            child: CustomSvgPicture(
+                                image: MyImages.emailVerifyImage,
+                                height: 50,
+                                width: 50,
+                                color: MyColor.getPrimaryColor()),
                           ),
                           const SizedBox(height: Dimensions.space50),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .07),
-                            child: SmallText(text: MyStrings.viaEmailVerify.tr, maxLine: 3, textAlign: TextAlign.center, textStyle: regularDefault.copyWith(color: MyColor.getLabelTextColor())),
+                            padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width * .07),
+                            child: SmallText(
+                                text: MyStrings.viaEmailVerify.tr,
+                                maxLine: 3,
+                                textAlign: TextAlign.center,
+                                textStyle: regularDefault.copyWith(
+                                    color: MyColor.getLabelTextColor())),
                           ),
                           const SizedBox(height: 30),
                           OTPFieldWidget(
@@ -80,23 +99,31 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           CustomElevatedBtn(
                             isLoading: controller.submitLoading,
                             text: MyStrings.verify.tr,
-                            press: () {
-                            
-                            },
+                            press: () {},
                           ),
                           const SizedBox(height: Dimensions.space30),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(MyStrings.didNotReceiveCode.tr, style: regularDefault.copyWith(color: MyColor.getLabelTextColor())),
+                              Text(MyStrings.didNotReceiveCode.tr,
+                                  style: regularDefault.copyWith(
+                                      color: MyColor.getLabelTextColor())),
                               const SizedBox(width: Dimensions.space10),
                               controller.resendLoading
-                                  ? Container(margin: const EdgeInsets.only(left: 5, top: 5), height: 20, width: 20, child: CircularProgressIndicator(color: MyColor.getPrimaryColor()))
+                                  ? Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 5, top: 5),
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                          color: MyColor.getPrimaryColor()))
                                   : GestureDetector(
-                                      onTap: () {
-                                       
-                                      },
-                                      child: Text(MyStrings.resendCode.tr, style: regularDefault.copyWith(color: MyColor.getPrimaryColor(), decoration: TextDecoration.underline)),
+                                      onTap: () {},
+                                      child: Text(MyStrings.resendCode.tr,
+                                          style: regularDefault.copyWith(
+                                              color: MyColor.getPrimaryColor(),
+                                              decoration:
+                                                  TextDecoration.underline)),
                                     )
                             ],
                           )

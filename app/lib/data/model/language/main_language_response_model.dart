@@ -1,12 +1,12 @@
-
 import 'dart:convert';
 
 import 'package:ovo_meet/data/model/global/meassage_model.dart';
 
+MainLanguageResponseModel mainLanguageResponseModelFromJson(String str) =>
+    MainLanguageResponseModel.fromJson(json.decode(str));
 
-MainLanguageResponseModel mainLanguageResponseModelFromJson(String str) => MainLanguageResponseModel.fromJson(json.decode(str));
-
-String mainLanguageResponseModelToJson(MainLanguageResponseModel data) => json.encode(data.toJson());
+String mainLanguageResponseModelToJson(MainLanguageResponseModel data) =>
+    json.encode(data.toJson());
 
 class MainLanguageResponseModel {
   String? remark;
@@ -21,10 +21,12 @@ class MainLanguageResponseModel {
     this.data,
   });
 
-  factory MainLanguageResponseModel.fromJson(Map<String, dynamic> json) => MainLanguageResponseModel(
+  factory MainLanguageResponseModel.fromJson(Map<String, dynamic> json) =>
+      MainLanguageResponseModel(
         remark: json["remark"],
         status: json["status"],
-        message: json["message"] == null ? null : Message.fromJson(json["message"]),
+        message:
+            json["message"] == null ? null : Message.fromJson(json["message"]),
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 
@@ -48,13 +50,18 @@ class Data {
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        languages: json["languages"] == null ? [] : List<Language>.from(json["languages"]!.map((x) => Language.fromJson(x))),
+        languages: json["languages"] == null
+            ? []
+            : List<Language>.from(
+                json["languages"]!.map((x) => Language.fromJson(x))),
         file: json["file"],
         imagePath: json["image_path"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {
-        "languages": languages == null ? [] : List<dynamic>.from(languages!.map((x) => x.toJson())),
+        "languages": languages == null
+            ? []
+            : List<dynamic>.from(languages!.map((x) => x.toJson())),
         "file": file,
         "image_path": imagePath,
       };

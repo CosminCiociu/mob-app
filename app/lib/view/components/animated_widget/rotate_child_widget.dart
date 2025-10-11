@@ -3,12 +3,11 @@ import 'dart:math' as math;
 
 class RotateChildWidget extends StatefulWidget {
   final Widget child;
-  const RotateChildWidget({super.key,required this.child});
+  const RotateChildWidget({super.key, required this.child});
 
   @override
   State<RotateChildWidget> createState() => _RotateChildWidgetState();
 }
-
 
 class _RotateChildWidgetState extends State<RotateChildWidget>
     with TickerProviderStateMixin {

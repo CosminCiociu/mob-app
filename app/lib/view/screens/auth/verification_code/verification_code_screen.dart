@@ -38,7 +38,8 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
       ),
       body: GetBuilder<VerificationCodeController>(
         builder: (controller) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -50,7 +51,8 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               const SizedBox(height: Dimensions.space10),
               Text(
                 MyStrings.pleaseEnterYourPhoneNumbertoContinue,
-                style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                style: regularDefault.copyWith(
+                    color: MyColor.getSecondaryTextColor()),
               ),
               const SizedBox(height: Dimensions.space20),
               OTPFieldWidget(
@@ -59,8 +61,9 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
               const SizedBox(height: Dimensions.space30),
               InkWell(
                   onTap: () {
-                    controller.fromloginScreen?Get.toNamed(RouteHelper.twoFactorScreen):
-                    Get.toNamed(RouteHelper.addProfileDetailsScreen);
+                    controller.fromloginScreen
+                        ? Get.toNamed(RouteHelper.twoFactorScreen)
+                        : Get.toNamed(RouteHelper.addProfileDetailsScreen);
                   },
                   child: const CustomGradiantButton(text: MyStrings.verify)),
               const SizedBox(height: Dimensions.space30),
@@ -69,7 +72,8 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                       alignment: Alignment.center,
                       child: Text(
                         MyStrings.resendCode,
-                        style: regularDefault.copyWith(color: MyColor.buttonColor),
+                        style:
+                            regularDefault.copyWith(color: MyColor.buttonColor),
                       ),
                     )
                   : Row(
@@ -77,12 +81,14 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                       children: [
                         Text(
                           MyStrings.resendIn,
-                          style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                          style: regularDefault.copyWith(
+                              color: MyColor.getSecondaryTextColor()),
                         ),
                         const SizedBox(width: Dimensions.space5),
                         Text(
                           "${controller.seconds}:00",
-                          style: regularDefault.copyWith(color: MyColor.buttonColor),
+                          style: regularDefault.copyWith(
+                              color: MyColor.buttonColor),
                         ),
                       ],
                     ),

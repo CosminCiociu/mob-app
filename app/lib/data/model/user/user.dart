@@ -1,5 +1,3 @@
-
-
 class User {
   User({
     int? id,
@@ -29,7 +27,8 @@ class User {
     String? banReason,
     String? provider,
     String? createdAt,
-    String? updatedAt,}){
+    String? updatedAt,
+  }) {
     _id = id;
     _firstname = firstname;
     _lastname = lastname;
@@ -61,34 +60,45 @@ class User {
   }
 
   User.fromJson(dynamic json) {
-    _id                 = json['id'];
-    _firstname          = json['firstname'] != null? json['firstname'].toString(): "";
-    _lastname           = json['lastname'] != null? json['lastname'].toString() : "";
-    _username           = json['username'] != null? json['username'].toString(): "";
-    _email              = json['email'] != null? json['email'].toString(): "";
-    _dialCode           = json['dial_code'] != null? json['dial_code'].toString(): "";
-    _mobile             = json['mobile'] != null? json['mobile'].toString(): "";
-    _refBy              = json['ref_by'] != null? json['ref_by'].toString(): "";
-    _city               = json['city'] != null? json['city'].toString(): "";
-    _state              = json['state'] != null? json['state'].toString(): "";
-    _zip                = json['zip'] != null? json['zip'].toString(): "";
-    _address            = json['address'] != null? json['address'].toString(): "";
-    _status             = json['status'] != null? json['status'].toString(): "";
-    _countryName        = json['country_name'] != null? json['country_name'].toString(): "";
-    _countryCode        = json['country_code'] != null? json['country_code'].toString(): "";
-    _kycRejectionReason = json['kyc_rejection_reason'] != null? json['kyc_rejection_reason'].toString(): "";
-    _profileComplete    = json['profile_complete']   != null? json['profile_complete'].toString(): "";
-    _verCodeSendAt      = json['ver_code_send_at']   != null? json['ver_code_send_at'].toString(): "";
-    _ts                 = json['ts']  != null? json['ts'].toString(): "";
-    _tv                 = json['tv']  != null? json['tv'].toString(): "";
-    _tsc                = json['tsc'] != null? json['tsc'].toString(): "";
-    _kv                 = json['kv']  != null? json['kv'].toString(): "";
-    _ev                 = json['ev']  != null? json['ev'].toString(): "";
-    _sv                 = json['sv']  != null? json['sv'].toString(): "";
-    _banReason          = json['ban_reason'] != null? json['ban_reason'].toString(): "";
-    _provider           = json['provider']   != null? json['provider'].toString(): "";
-    _createdAt          = json['created_at'] != null? json['created_at'].toString(): "";
-    _updatedAt          = json['updated_at'] != null? json['updated_at'].toString(): "";
+    _id = json['id'];
+    _firstname = json['firstname'] != null ? json['firstname'].toString() : "";
+    _lastname = json['lastname'] != null ? json['lastname'].toString() : "";
+    _username = json['username'] != null ? json['username'].toString() : "";
+    _email = json['email'] != null ? json['email'].toString() : "";
+    _dialCode = json['dial_code'] != null ? json['dial_code'].toString() : "";
+    _mobile = json['mobile'] != null ? json['mobile'].toString() : "";
+    _refBy = json['ref_by'] != null ? json['ref_by'].toString() : "";
+    _city = json['city'] != null ? json['city'].toString() : "";
+    _state = json['state'] != null ? json['state'].toString() : "";
+    _zip = json['zip'] != null ? json['zip'].toString() : "";
+    _address = json['address'] != null ? json['address'].toString() : "";
+    _status = json['status'] != null ? json['status'].toString() : "";
+    _countryName =
+        json['country_name'] != null ? json['country_name'].toString() : "";
+    _countryCode =
+        json['country_code'] != null ? json['country_code'].toString() : "";
+    _kycRejectionReason = json['kyc_rejection_reason'] != null
+        ? json['kyc_rejection_reason'].toString()
+        : "";
+    _profileComplete = json['profile_complete'] != null
+        ? json['profile_complete'].toString()
+        : "";
+    _verCodeSendAt = json['ver_code_send_at'] != null
+        ? json['ver_code_send_at'].toString()
+        : "";
+    _ts = json['ts'] != null ? json['ts'].toString() : "";
+    _tv = json['tv'] != null ? json['tv'].toString() : "";
+    _tsc = json['tsc'] != null ? json['tsc'].toString() : "";
+    _kv = json['kv'] != null ? json['kv'].toString() : "";
+    _ev = json['ev'] != null ? json['ev'].toString() : "";
+    _sv = json['sv'] != null ? json['sv'].toString() : "";
+    _banReason =
+        json['ban_reason'] != null ? json['ban_reason'].toString() : "";
+    _provider = json['provider'] != null ? json['provider'].toString() : "";
+    _createdAt =
+        json['created_at'] != null ? json['created_at'].toString() : "";
+    _updatedAt =
+        json['updated_at'] != null ? json['updated_at'].toString() : "";
   }
   int? _id;
   String? _firstname;
@@ -180,5 +190,4 @@ class User {
     map['updated_at'] = _updatedAt;
     return map;
   }
-
 }

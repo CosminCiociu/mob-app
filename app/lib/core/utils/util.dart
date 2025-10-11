@@ -8,13 +8,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'my_strings.dart';
 
 class MyUtils {
-
   static splashScreen() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: MyColor.getPrimaryColor(), statusBarIconBrightness: Brightness.light, systemNavigationBarColor: MyColor.getPrimaryColor(), systemNavigationBarIconBrightness: Brightness.light));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: MyColor.getPrimaryColor(),
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: MyColor.getPrimaryColor(),
+        systemNavigationBarIconBrightness: Brightness.light));
   }
 
   static allScreen() {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: MyColor.getPrimaryColor(), statusBarIconBrightness: Brightness.light, systemNavigationBarColor: MyColor.getWhiteColor(), systemNavigationBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: MyColor.getPrimaryColor(),
+        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: MyColor.getWhiteColor(),
+        systemNavigationBarIconBrightness: Brightness.dark));
   }
 
   static dynamic getShadow({
@@ -98,11 +105,14 @@ class MyUtils {
 
     final int maskLength = input.length ~/ 2; // Mask half of the characters.
     final String mask = '*' * maskLength;
-    final String maskedInput = maskLength > 4 ? input.replaceRange(5, maskLength, mask) : input.replaceRange(0, maskLength, mask);
+    final String maskedInput = maskLength > 4
+        ? input.replaceRange(5, maskLength, mask)
+        : input.replaceRange(0, maskLength, mask);
     return maskedInput;
   }
 
-  static List<GlobalFormModle> dynamicFormSelectValueFormatter(List<GlobalFormModle>? dynamicFormList) {
+  static List<GlobalFormModle> dynamicFormSelectValueFormatter(
+      List<GlobalFormModle>? dynamicFormList) {
     List<GlobalFormModle> mainFormList = [];
 
     if (dynamicFormList != null && dynamicFormList.isNotEmpty) {
@@ -132,12 +142,17 @@ class MyUtils {
     List<Row> pairs = [];
     for (int i = 0; i < widgets.length; i += 2) {
       Widget first = widgets[i];
-      Widget? second = (i + 1 < widgets.length) ? widgets[i + 1] : const SizedBox();
+      Widget? second =
+          (i + 1 < widgets.length) ? widgets[i + 1] : const SizedBox();
 
       pairs.add(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Expanded(child: first), const SizedBox(width: Dimensions.space15), Expanded(child: second)],
+          children: [
+            Expanded(child: first),
+            const SizedBox(width: Dimensions.space15),
+            Expanded(child: second)
+          ],
         ),
       );
     }
@@ -146,7 +161,8 @@ class MyUtils {
   }
 
   void stopLandscape() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   static Future<void> launchUrlToBrowser(String downloadUrl) async {
@@ -200,5 +216,4 @@ class MyUtils {
     Uri? uri = Uri.tryParse(urlString);
     return uri != null && uri.hasScheme && uri.hasAuthority;
   }
-
 }

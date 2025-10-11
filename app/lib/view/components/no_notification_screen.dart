@@ -44,14 +44,14 @@ class _NoNotificationScreenState extends State<NoNotificationScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * widget.imageHeight,
+                  height:
+                      MediaQuery.of(context).size.height * widget.imageHeight,
                   width: MediaQuery.of(context).size.width * .4,
                   child: CustomSvgPicture(
-                    image: widget.image,
-                    height: 100,
-                    width: 100,
-                    color: MyColor.getIconColor()
-                  ),
+                      image: widget.image,
+                      height: 100,
+                      width: 100,
+                      color: MyColor.getIconColor()),
                 ),
                 Center(
                     child: Padding(
@@ -61,10 +61,16 @@ class _NoNotificationScreenState extends State<NoNotificationScreen> {
                       Text(
                         widget.message.tr,
                         textAlign: TextAlign.center,
-                        style: semiBoldDefault.copyWith(color: MyColor.getTextColor(), fontSize: Dimensions.fontExtraLarge),
+                        style: semiBoldDefault.copyWith(
+                            color: MyColor.getTextColor(),
+                            fontSize: Dimensions.fontExtraLarge),
                       ),
                       const SizedBox(height: 5),
-                      Text(widget.message2, style: regularDefault.copyWith(color: MyColor.getContentTextColor(), fontSize: Dimensions.fontLarge), textAlign: TextAlign.center)
+                      Text(widget.message2,
+                          style: regularDefault.copyWith(
+                              color: MyColor.getContentTextColor(),
+                              fontSize: Dimensions.fontLarge),
+                          textAlign: TextAlign.center)
                     ],
                   ),
                 )),

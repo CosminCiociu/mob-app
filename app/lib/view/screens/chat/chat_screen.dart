@@ -30,14 +30,15 @@ class _ChatScreenState extends State<ChatScreen> {
     return GetBuilder<ChatController>(
       builder: (controller) => GestureDetector(
         onTap: () {
-           FocusScope.of(context).unfocus(); 
+          FocusScope.of(context).unfocus();
         },
         child: Scaffold(
           appBar: AppBar(
             title: Row(
               children: [
                 CircleAvatar(
-                  backgroundImage: AssetImage(controller.person['profilePicture']),
+                  backgroundImage:
+                      AssetImage(controller.person['profilePicture']),
                 ),
                 const SizedBox(width: 10),
                 Column(
@@ -51,7 +52,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       controller.person['isActive'] ? 'Active now' : 'Offline',
                       style: TextStyle(
                         fontSize: 12,
-                        color: controller.person['isActive'] ? Colors.green : Colors.grey,
+                        color: controller.person['isActive']
+                            ? Colors.green
+                            : Colors.grey,
                       ),
                     ),
                   ],
@@ -67,7 +70,9 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               IconButton(
                 icon: const Icon(Icons.videocam),
-                onPressed: () { Get.toNamed(RouteHelper.audioCallScreen);},
+                onPressed: () {
+                  Get.toNamed(RouteHelper.audioCallScreen);
+                },
               ),
             ],
           ),
@@ -81,23 +86,30 @@ class _ChatScreenState extends State<ChatScreen> {
                     return Padding(
                       padding: const EdgeInsets.all(Dimensions.space8),
                       child: Align(
-                        alignment: isSentByMe ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isSentByMe
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,
                             vertical: 10,
                           ),
                           decoration: BoxDecoration(
-                            color: isSentByMe ? MyColor.buttonColor : Colors.grey[200],
+                            color: isSentByMe
+                                ? MyColor.buttonColor
+                                : Colors.grey[200],
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Column(
-                            crossAxisAlignment: isSentByMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                            crossAxisAlignment: isSentByMe
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                             children: [
                               Text(
                                 controller.messages[index]['message'],
                                 style: TextStyle(
-                                  color: isSentByMe ? Colors.white : Colors.black,
+                                  color:
+                                      isSentByMe ? Colors.white : Colors.black,
                                 ),
                               ),
                               const SizedBox(height: 5),
@@ -105,7 +117,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 controller.messages[index]['time'],
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: isSentByMe ? Colors.white70 : Colors.black54,
+                                  color: isSentByMe
+                                      ? Colors.white70
+                                      : Colors.black54,
                                 ),
                               ),
                             ],

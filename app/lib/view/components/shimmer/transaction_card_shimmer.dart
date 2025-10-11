@@ -18,8 +18,11 @@ class TransactionCardShimmer extends StatelessWidget {
               baseColor: MyColor.getGreyColor().withOpacity(0.2),
               highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(50)),
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                decoration: BoxDecoration(
+                    color: MyColor.getGreyColor().withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(50)),
                 height: 40,
                 width: 40,
               ),
@@ -34,7 +37,9 @@ class TransactionCardShimmer extends StatelessWidget {
                   baseColor: MyColor.getGreyColor().withOpacity(0.2),
                   highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                   child: Container(
-                    decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                    decoration: BoxDecoration(
+                        color: MyColor.getGreyColor().withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(1)),
                     height: 10,
                     width: width * 1.5,
                   ),
@@ -46,7 +51,9 @@ class TransactionCardShimmer extends StatelessWidget {
                   baseColor: MyColor.getGreyColor().withOpacity(0.2),
                   highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                   child: Container(
-                    decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                    decoration: BoxDecoration(
+                        color: MyColor.getGreyColor().withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(1)),
                     height: 7,
                     width: width * 1.5,
                   ),
@@ -62,7 +69,9 @@ class TransactionCardShimmer extends StatelessWidget {
               baseColor: MyColor.getGreyColor().withOpacity(0.2),
               highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
               child: Container(
-                decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                decoration: BoxDecoration(
+                    color: MyColor.getGreyColor().withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(1)),
                 height: 7,
                 width: width * 1.5,
               ),
@@ -74,7 +83,9 @@ class TransactionCardShimmer extends StatelessWidget {
               baseColor: MyColor.getGreyColor().withOpacity(0.2),
               highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
               child: Container(
-                decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                decoration: BoxDecoration(
+                    color: MyColor.getGreyColor().withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(1)),
                 height: 7,
                 width: width * 1.5,
               ),

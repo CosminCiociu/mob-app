@@ -12,7 +12,6 @@ class LoaderBoardCardShimmer extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-      
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -23,7 +22,9 @@ class LoaderBoardCardShimmer extends StatelessWidget {
                 highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                 child: Container(
                   margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(4)),
+                  decoration: BoxDecoration(
+                      color: MyColor.getGreyColor().withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(4)),
                   height: Dimensions.space10,
                   width: context.width / 3,
                 ),
@@ -32,7 +33,9 @@ class LoaderBoardCardShimmer extends StatelessWidget {
                 baseColor: MyColor.getGreyColor().withOpacity(0.2),
                 highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                 child: Container(
-                  decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(5)),
+                  decoration: BoxDecoration(
+                      color: MyColor.getGreyColor().withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(5)),
                   height: Dimensions.space10,
                   width: context.width / 2,
                 ),
@@ -45,7 +48,9 @@ class LoaderBoardCardShimmer extends StatelessWidget {
           highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(100)),
+            decoration: BoxDecoration(
+                color: MyColor.getGreyColor().withOpacity(0.2),
+                borderRadius: BorderRadius.circular(100)),
             height: Dimensions.space40,
             width: Dimensions.space40,
           ),

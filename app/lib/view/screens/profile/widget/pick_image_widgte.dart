@@ -61,7 +61,10 @@ class _PickImageWidgetState extends State<PickImageWidget> {
                             child: BuildCircleWidget(
                                 padding: 8,
                                 color: MyColor.getPrimaryColor(),
-                                child:const CustomSvgPicture(image:  MyImages.edit,color: MyColor.colorWhite,height: Dimensions.space10)))),
+                                child: const CustomSvgPicture(
+                                    image: MyImages.edit,
+                                    color: MyColor.colorWhite,
+                                    height: Dimensions.space10)))),
                   )
                 : const SizedBox(),
           ],

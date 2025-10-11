@@ -19,7 +19,8 @@ class NoDataWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      margin: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height / margin),
+      margin: EdgeInsets.symmetric(
+          vertical: MediaQuery.of(context).size.height / margin),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,

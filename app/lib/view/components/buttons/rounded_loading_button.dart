@@ -29,13 +29,18 @@ class RoundedLoadingBtn extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           shadowColor: MyColor.getTransparentColor(),
-          padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding - 3),
-          textStyle: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500),
+          padding: EdgeInsets.symmetric(
+              horizontal: horizontalPadding, vertical: verticalPadding - 3),
+          textStyle: TextStyle(
+              color: textColor, fontSize: 14, fontWeight: FontWeight.w500),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(cornerRadius),
           ),
         ),
-        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: textColor, strokeWidth: 2)),
+        child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(color: textColor, strokeWidth: 2)),
       ),
     );
   }

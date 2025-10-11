@@ -33,7 +33,18 @@ class TextFieldSearch extends StatefulWidget {
   final int itemsInView;
 
   /// Creates a TextFieldSearch for displaying selected elements and retrieving a selected element
-  const TextFieldSearch({super.key, this.initialList, required this.label, required this.controller, this.textStyle, this.future, this.getSelectedValue, this.decoration, this.scrollbarDecoration, this.itemsInView = 3, this.minStringLength = 2});
+  const TextFieldSearch(
+      {super.key,
+      this.initialList,
+      required this.label,
+      required this.controller,
+      this.textStyle,
+      this.future,
+      this.getSelectedValue,
+      this.decoration,
+      this.scrollbarDecoration,
+      this.itemsInView = 3,
+      this.minStringLength = 2});
 
   @override
   _TextFieldSearchState createState() => _TextFieldSearchState();
@@ -76,7 +87,8 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
       filteredList = tempList;
       loading = false;
       // if no items are found, add message none found
-      itemsFound = tempList.isEmpty && widget.controller.text.isNotEmpty ? false : true;
+      itemsFound =
+          tempList.isEmpty && widget.controller.text.isNotEmpty ? false : true;
     });
     // mark that the overlay widget needs to be rebuilt so results can show
     _overlayEntry.markNeedsBuild();
@@ -96,12 +108,16 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
         for (int i = 0; i < filteredList!.length; i++) {
           // lowercase the item and see if the item contains the string of text from the lowercase search
           if (widget.getSelectedValue != null) {
-            if (filteredList![i].toLowerCase().contains(widget.controller.text.toLowerCase())) {
+            if (filteredList![i]
+                .toLowerCase()
+                .contains(widget.controller.text.toLowerCase())) {
               // if there is a match, add to the temp list
               tempList.add(filteredList![i]);
             }
           } else {
-            if (filteredList![i].toLowerCase().contains(widget.controller.text.toLowerCase())) {
+            if (filteredList![i]
+                .toLowerCase()
+                .contains(widget.controller.text.toLowerCase())) {
               // if there is a match, add to the temp list
               tempList.add(filteredList![i]);
             }
@@ -126,7 +142,9 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
     // loop through each item in filtered items
     for (int i = 0; i < filteredList!.length; i++) {
       // lowercase the item and see if the item contains the string of text from the lowercase search
-      if (filteredList![i].toLowerCase().contains(widget.controller.text.toLowerCase())) {
+      if (filteredList![i]
+          .toLowerCase()
+          .contains(widget.controller.text.toLowerCase())) {
         // if there is a match, add to the temp list
         tempList.add(filteredList![i]);
       }
@@ -173,7 +191,8 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
           bool textMatchesItem = false;
           if (widget.getSelectedValue != null) {
             // try to match the label against what is set on controller
-            textMatchesItem = filteredList!.any((item) => item.label == widget.controller.text);
+            textMatchesItem = filteredList!
+                .any((item) => item.label == widget.controller.text);
           } else {
             textMatchesItem = filteredList!.contains(widget.controller.text);
           }
@@ -261,7 +280,8 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
       height: 50,
       child: Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.secondary),
+          valueColor: AlwaysStoppedAnimation<Color>(
+              Theme.of(context).colorScheme.secondary),
         ),
       ),
     );
@@ -270,7 +290,8 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
   Widget decoratedScrollbar(child) {
     if (widget.scrollbarDecoration is ScrollbarDecoration) {
       return Theme(
-        data: Theme.of(context).copyWith(scrollbarTheme: widget.scrollbarDecoration!.theme),
+        data: Theme.of(context)
+            .copyWith(scrollbarTheme: widget.scrollbarDecoration!.theme),
         child: Scrollbar(child: child, controller: _scrollController),
       );
     }
@@ -279,8 +300,11 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
   }
 
   Widget? _listViewContainer(context) {
-    if (itemsFound == true && filteredList!.isNotEmpty || itemsFound == false && widget.controller.text.isNotEmpty) {
-      return SizedBox(height: calculateHeight().toDouble(), child: decoratedScrollbar(_listViewBuilder(context)));
+    if (itemsFound == true && filteredList!.isNotEmpty ||
+        itemsFound == false && widget.controller.text.isNotEmpty) {
+      return SizedBox(
+          height: calculateHeight().toDouble(),
+          child: decoratedScrollbar(_listViewBuilder(context)));
     }
     return null;
   }
@@ -322,7 +346,9 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
                         minHeight: 0,
                         maxHeight: calculateHeight().toDouble(),
                       ),
-                      child: loading ? _loadingIndicator() : _listViewContainer(context)),
+                      child: loading
+                          ? _loadingIndicator()
+                          : _listViewContainer(context)),
                 ),
               ),
             ));
@@ -335,7 +361,8 @@ class _TextFieldSearchState extends State<TextFieldSearch> {
       child: TextField(
         controller: widget.controller,
         focusNode: _focusNode,
-        decoration: widget.decoration ?? InputDecoration(labelText: widget.label),
+        decoration:
+            widget.decoration ?? InputDecoration(labelText: widget.label),
         style: widget.textStyle,
         onChanged: (String value) {
           // every time we make a change to the input, update the list

@@ -74,7 +74,8 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
             ),
             const SizedBox(height: Dimensions.space20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.space20),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: Dimensions.space20),
               child: Row(
                 children: [
                   SizedBox(
@@ -88,7 +89,8 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
                         ),
                         Text(
                           MyStrings.demoOccupation,
-                          style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                          style: regularDefault.copyWith(
+                              color: MyColor.getSecondaryTextColor()),
                         ),
                       ],
                     ),
@@ -126,7 +128,8 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: Dimensions.defaultScreenPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -137,7 +140,8 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
                   ),
                   Text(
                     MyStrings.aboutIntro,
-                    style: regularDefault.copyWith(color: MyColor.getGreyText()),
+                    style:
+                        regularDefault.copyWith(color: MyColor.getGreyText()),
                   ),
                   const SizedBox(height: Dimensions.space10),
                   Text(
@@ -151,13 +155,19 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
                         return Container(
                           padding: const EdgeInsets.all(Dimensions.space8),
                           margin: const EdgeInsets.all(Dimensions.space5),
-                          decoration: BoxDecoration(border: Border.all(width: .2), borderRadius: BorderRadius.circular(Dimensions.space10)),
+                          decoration: BoxDecoration(
+                              border: Border.all(width: .2),
+                              borderRadius:
+                                  BorderRadius.circular(Dimensions.space10)),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              CustomSvgPicture(image: controller.interests[i]['image']),
+                              CustomSvgPicture(
+                                  image: controller.interests[i]['image']),
                               const SizedBox(width: Dimensions.space5),
-                              Text(controller.interests[i]['name'], style: regularLarge.copyWith(color: MyColor.colorBlack)),
+                              Text(controller.interests[i]['name'],
+                                  style: regularLarge.copyWith(
+                                      color: MyColor.colorBlack)),
                             ],
                           ),
                         );
@@ -175,16 +185,22 @@ class _PartnersProfileScreenState extends State<PartnersProfileScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: 6,
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                       ),
                       itemBuilder: (context, i) => Padding(
                           padding: const EdgeInsets.all(Dimensions.space5),
                           child: GestureDetector(
                               onTap: () {
-                                Get.toNamed(RouteHelper.previewImageScreen, arguments: MyImages.girl1);
+                                Get.toNamed(RouteHelper.previewImageScreen,
+                                    arguments: MyImages.girl1);
                               },
-                              child: ClipRRect(borderRadius: BorderRadius.circular(Dimensions.space10), child: Image.asset(MyImages.girl1, fit: BoxFit.cover))))),
+                              child: ClipRRect(
+                                  borderRadius:
+                                      BorderRadius.circular(Dimensions.space10),
+                                  child: Image.asset(MyImages.girl1,
+                                      fit: BoxFit.cover))))),
                   const SizedBox(height: Dimensions.space50)
                 ],
               ),

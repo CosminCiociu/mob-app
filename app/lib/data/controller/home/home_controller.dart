@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ovo_meet/view/screens/homescreen/widgets/swipe_image.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/services/home_service.dart';
 import '../../../domain/services/matching_service.dart';
+import '../../../core/services/location_service.dart';
 import '../../../core/utils/my_strings.dart';
 import '../../../view/components/snack_bar/show_custom_snackbar.dart';
 
@@ -101,8 +103,141 @@ class HomeController extends GetxController {
   }
 
   void _loadInitialData() {
-    // Load initial events based on user location silently (no snackbars on init)
-    _refreshEventsQuietly();
+    // Set initial address to show current location
+    _setInitialAddress();
+
+    // Load events first, then optionally update location in background
+    _loadEventsAndUpdateLocationSafely();
+  }
+
+  /// Set initial address display
+  void _setInitialAddress() {
+    if (addressController.text.isEmpty) {
+      // Try to get current user location from Firebase or fallback
+      _getUserLocationFromFirebase();
+    }
+  }
+
+  /// Get user's current location from Firebase
+  Future<void> _getUserLocationFromFirebase() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        print('📍 Fetching user location from Firebase...');
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          final userData = userDoc.data();
+          final location = userData?['location'] as Map<String, dynamic>?;
+
+          if (location != null) {
+            final address = location['address'] as Map<String, dynamic>?;
+            if (address != null) {
+              final locality = address['locality'] as String?;
+              final administrativeArea =
+                  address['administrativeArea'] as String?;
+
+              print(
+                  '📍 Found location data - Locality: $locality, Area: $administrativeArea');
+
+              if (locality != null &&
+                  administrativeArea != null &&
+                  locality.isNotEmpty &&
+                  administrativeArea.isNotEmpty) {
+                final locationText = '$locality, $administrativeArea';
+                print('📍 Setting location display to: $locationText');
+                addressController.text = locationText;
+                update();
+                return;
+              }
+            }
+          } else {
+            print('📍 No location data found in user document');
+          }
+        } else {
+          print('📍 User document does not exist');
+        }
+      } else {
+        print('📍 No authenticated user found');
+      }
+    } catch (e) {
+      print('❌ Error getting user location from Firebase: $e');
+    }
+
+    // Fallback if no location found
+    print('📍 Falling back to "Finding your location..."');
+    addressController.text = 'Finding your location...';
+    update();
+  }
+
+  /// Load events first, then safely attempt location update in background
+  Future<void> _loadEventsAndUpdateLocationSafely() async {
+    // First, immediately try to load events with existing location data
+    await _refreshEventsQuietly();
+
+    // Then, safely attempt to update location in the background with delay
+    Future.delayed(const Duration(seconds: 2), () {
+      _safeLocationUpdate();
+    });
+  }
+
+  /// Safely attempt to update user location with comprehensive error handling
+  Future<void> _safeLocationUpdate() async {
+    try {
+      print('🔄 Starting location update...');
+      // Add timeout to prevent hanging
+      await LocationService.updateUserLocationInFirebase()
+          .timeout(const Duration(seconds: 10));
+      print('✅ User location updated successfully in background');
+
+      // Update address display after successful location update
+      _updateAddressDisplay();
+    } catch (e) {
+      // Comprehensive error handling for different failure types
+      if (e.toString().contains('Google Play') ||
+          e.toString().contains('SecurityException') ||
+          e.toString().contains('DeadSystemException')) {
+        print(
+            '🔧 Google Play Services issue detected, skipping location update: $e');
+      } else if (e.toString().contains('Permission')) {
+        print('🔐 Location permission issue, skipping update: $e');
+        _setLocationUnavailable();
+      } else if (e.toString().contains('TimeoutException')) {
+        print('⏱️ Location update timed out, will retry later: $e');
+        _scheduleLocationRetry();
+      } else {
+        print('⚠️ Location update failed (non-critical): $e');
+      }
+      // Don't throw - this is a background operation that shouldn't crash the app
+    }
+  }
+
+  /// Update address display after successful location update
+  void _updateAddressDisplay() {
+    if (addressController.text == 'Finding your location...' ||
+        addressController.text.isEmpty) {
+      // Get fresh location data from Firebase after update
+      _getUserLocationFromFirebase();
+    }
+  }
+
+  /// Set location unavailable message
+  void _setLocationUnavailable() {
+    if (addressController.text == 'Finding your location...') {
+      addressController.text = 'Location unavailable';
+      update();
+    }
+  }
+
+  /// Schedule a retry for location update after a longer delay
+  void _scheduleLocationRetry() {
+    Future.delayed(const Duration(seconds: 30), () {
+      print('🔄 Retrying location update...');
+      _safeLocationUpdate();
+    });
   }
 
   /// Initialize card controller if not already initialized
@@ -410,9 +545,41 @@ class HomeController extends GetxController {
     return 'Category not available';
   }
 
-  /// Update user location (delegate to matching service)
+  /// Update user location (delegate to matching service) - For user-initiated actions
   Future<void> updateUserLocation() async {
     await updateLocationAndRefresh();
+  }
+
+  /// Manually trigger safe location update - For debugging or manual refresh
+  Future<void> updateLocationSafely() async {
+    await _safeLocationUpdate();
+  }
+
+  /// Refresh location display manually
+  Future<void> refreshLocationDisplay() async {
+    await _getUserLocationFromFirebase();
+  }
+
+  /// Force update location when user taps location header
+  Future<void> forceLocationUpdate() async {
+    addressController.text = 'Updating location...';
+    update();
+
+    try {
+      print('🔄 Force updating location...');
+      await LocationService.updateUserLocationInFirebase();
+      print('✅ Location force updated successfully');
+      await _getUserLocationFromFirebase();
+    } catch (e) {
+      print('❌ Force location update failed: $e');
+      addressController.text = 'Location update failed';
+      update();
+
+      // Revert to previous state after 3 seconds
+      Future.delayed(const Duration(seconds: 3), () {
+        _getUserLocationFromFirebase();
+      });
+    }
   }
 
   /// Fetch nearby events manually (delegate to refresh events with feedback)

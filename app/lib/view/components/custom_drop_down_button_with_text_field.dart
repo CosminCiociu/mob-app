@@ -18,13 +18,16 @@ class CustomDropDownWithTextField extends StatefulWidget {
     this.onChanged,
     this.itemTextStyle,
     this.selectedTextStyle,
-  }) : assert(list != null && list.contains(selectedValue), "Selected value must be from the list & list can't be empty");
+  }) : assert(list != null && list.contains(selectedValue),
+            "Selected value must be from the list & list can't be empty");
 
   @override
-  State<CustomDropDownWithTextField> createState() => _CustomDropDownWithTextFieldState();
+  State<CustomDropDownWithTextField> createState() =>
+      _CustomDropDownWithTextFieldState();
 }
 
-class _CustomDropDownWithTextFieldState extends State<CustomDropDownWithTextField> {
+class _CustomDropDownWithTextFieldState
+    extends State<CustomDropDownWithTextField> {
   @override
   void initState() {
     super.initState();
@@ -38,15 +41,20 @@ class _CustomDropDownWithTextFieldState extends State<CustomDropDownWithTextFiel
       children: [
         Container(
           height: 45,
-          decoration: BoxDecoration(color: MyColor.getTransparentColor(), borderRadius: const BorderRadius.all(Radius.circular(5)), border: Border.all(color: MyColor.getTextFieldDisableBorder())),
+          decoration: BoxDecoration(
+              color: MyColor.getTransparentColor(),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              border: Border.all(color: MyColor.getTextFieldDisableBorder())),
           child: Padding(
-            padding: const EdgeInsets.only(left: 10, right: 5, top: 5, bottom: 5),
+            padding:
+                const EdgeInsets.only(left: 10, right: 5, top: 5, bottom: 5),
             child: DropdownButton(
               isExpanded: true,
               underline: Container(),
               hint: Text(
                 widget.selectedValue?.tr ?? '',
-                style: widget.selectedTextStyle ?? regularDefault.copyWith(color: MyColor.getBlackColor()),
+                style: widget.selectedTextStyle ??
+                    regularDefault.copyWith(color: MyColor.getBlackColor()),
               ), // Not necessary for Option 1
               value: widget.selectedValue,
               dropdownColor: MyColor.getWhiteColor(),
@@ -59,7 +67,9 @@ class _CustomDropDownWithTextFieldState extends State<CustomDropDownWithTextFiel
                       children: [
                         Text(
                           value.tr,
-                          style: widget.itemTextStyle ?? regularDefault.copyWith(color: MyColor.getBlackColor()),
+                          style: widget.itemTextStyle ??
+                              regularDefault.copyWith(
+                                  color: MyColor.getBlackColor()),
                         ),
                       ],
                     ),

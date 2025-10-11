@@ -14,7 +14,14 @@ class GlobalKYCForm {
       var map = Map.from(json).map((key, value) => MapEntry(key, value));
       List<GlobalFormModle>? list = map.entries
           .map(
-            (e) => GlobalFormModle(e.value['name'], e.value['label'], e.value['is_required'], e.value['extensions'], (e.value['options'] as List).map((e) => e as String).toList(), e.value['type'], ''),
+            (e) => GlobalFormModle(
+                e.value['name'],
+                e.value['label'],
+                e.value['is_required'],
+                e.value['extensions'],
+                (e.value['options'] as List).map((e) => e as String).toList(),
+                e.value['type'],
+                ''),
           )
           .toList();
 
@@ -42,5 +49,7 @@ class GlobalFormModle {
   File? imageFile;
   List<String>? cbSelected;
 
-  GlobalFormModle(this.name, this.label, this.isRequired, this.extensions, this.options, this.type, this.selectedValue, {this.cbSelected, this.imageFile});
+  GlobalFormModle(this.name, this.label, this.isRequired, this.extensions,
+      this.options, this.type, this.selectedValue,
+      {this.cbSelected, this.imageFile});
 }

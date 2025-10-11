@@ -1,11 +1,12 @@
-
 import 'dart:convert';
 
 import '../../global/meassage_model.dart';
 
-TwoFactorCodeModel twoFactorCodeModelFromJson(String str) => TwoFactorCodeModel.fromJson(json.decode(str));
+TwoFactorCodeModel twoFactorCodeModelFromJson(String str) =>
+    TwoFactorCodeModel.fromJson(json.decode(str));
 
-String twoFactorCodeModelToJson(TwoFactorCodeModel data) => json.encode(data.toJson());
+String twoFactorCodeModelToJson(TwoFactorCodeModel data) =>
+    json.encode(data.toJson());
 
 class TwoFactorCodeModel {
   String? the0;
@@ -22,11 +23,13 @@ class TwoFactorCodeModel {
     this.data,
   });
 
-  factory TwoFactorCodeModel.fromJson(Map<String, dynamic> json) => TwoFactorCodeModel(
+  factory TwoFactorCodeModel.fromJson(Map<String, dynamic> json) =>
+      TwoFactorCodeModel(
         the0: json["0"],
         remark: json["remark"],
         status: json["status"],
-        message: json["message"] == null ? null : Message.fromJson(json["message"]),
+        message:
+            json["message"] == null ? null : Message.fromJson(json["message"]),
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
       );
 

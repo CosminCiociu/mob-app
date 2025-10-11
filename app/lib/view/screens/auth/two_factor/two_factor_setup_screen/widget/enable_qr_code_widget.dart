@@ -1,4 +1,3 @@
-
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +12,10 @@ import '../../../../../../core/utils/style.dart';
 import '../../../../../components/snack_bar/show_custom_snackbar.dart';
 
 class EnableQRCodeWidget extends StatelessWidget {
-
   final String qrImage;
   final String secret;
-  const EnableQRCodeWidget({
-    super.key,
-    required this.qrImage,
-    required this.secret
-  });
+  const EnableQRCodeWidget(
+      {super.key, required this.qrImage, required this.secret});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +29,8 @@ class EnableQRCodeWidget extends StatelessWidget {
               color: MyColor.getTransparentColor(),
               borderRadius: BorderRadius.circular(Dimensions.defaultRadius),
             ),
-            child: Image.network(qrImage, width: 220, height: 220, errorBuilder: (ctx, object, trx) {
+            child: Image.network(qrImage, width: 220, height: 220,
+                errorBuilder: (ctx, object, trx) {
               return Image.asset(
                 MyImages.placeHolderImage,
                 fit: BoxFit.cover,
@@ -44,8 +40,6 @@ class EnableQRCodeWidget extends StatelessWidget {
             }),
           ),
         ),
-
-
         const SizedBox(height: Dimensions.space12),
         Text(
           MyStrings.setupKey.tr,
@@ -60,7 +54,10 @@ class EnableQRCodeWidget extends StatelessWidget {
               color: MyColor.getGreyColor().withOpacity(0.5),
               radius: const Radius.circular(Dimensions.defaultRadius),
               child: Container(
-                decoration: BoxDecoration(color: MyColor.getWhiteColor(), borderRadius: BorderRadius.circular(Dimensions.defaultRadius - 1)),
+                decoration: BoxDecoration(
+                    color: MyColor.getWhiteColor(),
+                    borderRadius:
+                        BorderRadius.circular(Dimensions.defaultRadius - 1)),
                 width: double.infinity,
                 padding: const EdgeInsets.all(Dimensions.space15),
                 child: Row(
@@ -83,7 +80,9 @@ class EnableQRCodeWidget extends StatelessWidget {
                           Clipboard.setData(ClipboardData(
                             text: secret,
                           )).then((_) {
-                            CustomSnackBar.success(successList: [MyStrings.copiedToClipBoard.tr], duration: 2);
+                            CustomSnackBar.success(
+                                successList: [MyStrings.copiedToClipBoard.tr],
+                                duration: 2);
                           });
                         },
                         child: FittedBox(
@@ -107,23 +106,28 @@ class EnableQRCodeWidget extends StatelessWidget {
         const SizedBox(
           height: Dimensions.space12,
         ),
-
         Center(
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: MyStrings.useQRCODETips2.tr, style: regularDefault.copyWith(color: MyColor.getHeadingTextColor())),
+                TextSpan(
+                    text: MyStrings.useQRCODETips2.tr,
+                    style: regularDefault.copyWith(
+                        color: MyColor.getHeadingTextColor())),
                 TextSpan(
                     text: ' ${MyStrings.download}',
                     recognizer: TapGestureRecognizer()
                       ..onTap = () async {
-                        final Uri url = Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en");
+                        final Uri url = Uri.parse(
+                            "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en");
 
-                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                        if (!await launchUrl(url,
+                            mode: LaunchMode.externalApplication)) {
                           throw Exception('Could not launch $url');
                         }
                       },
-                    style: boldExtraLarge.copyWith(color: MyColor.getRedColor())),
+                    style:
+                        boldExtraLarge.copyWith(color: MyColor.getRedColor())),
               ],
             ),
           ),

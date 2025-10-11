@@ -14,7 +14,9 @@ class MatchCardShimmer extends StatelessWidget {
       highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(Dimensions.mediumRadius)),
+        decoration: BoxDecoration(
+            color: MyColor.getGreyColor().withOpacity(0.2),
+            borderRadius: BorderRadius.circular(Dimensions.mediumRadius)),
         height: 150,
         width: context.width,
       ),

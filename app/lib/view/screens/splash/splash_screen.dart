@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-     controller.gotoNextPage();
+      controller.gotoNextPage();
     });
   }
 
@@ -39,7 +39,9 @@ class _SplashScreenState extends State<SplashScreen> {
     return SafeArea(
       child: GetBuilder<SplashController>(
         builder: (controller) => Scaffold(
-          backgroundColor: controller.noInternet ? MyColor.getWhiteColor() : MyColor.getPrimaryColor(),
+          backgroundColor: controller.noInternet
+              ? MyColor.getWhiteColor()
+              : MyColor.getPrimaryColor(),
           body: Stack(
             children: [
               Align(

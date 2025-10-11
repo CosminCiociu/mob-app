@@ -12,8 +12,8 @@ class AddProfileDetailsController extends GetxController {
   int seconds = 5; // Countdown starts from 30 seconds
   Timer? timer;
   bool resendCode = false;
-    String imageUrl = '';
- File? imageFile;
+  String imageUrl = '';
+  File? imageFile;
   TextEditingController dateController = TextEditingController();
 
   @override
@@ -31,7 +31,8 @@ class AddProfileDetailsController extends GetxController {
     );
 
     if (pickedDate != null) {
-      dateController.text = DateFormat('yyyy-MM-dd').format(pickedDate); // Format the date as needed
+      dateController.text = DateFormat('yyyy-MM-dd')
+          .format(pickedDate); // Format the date as needed
       update();
     }
   }

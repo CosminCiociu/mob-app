@@ -9,7 +9,8 @@ class ShimmerBorderContainer extends StatelessWidget {
   final Color baseColor;
   final Color highlightColor;
 
-  const ShimmerBorderContainer({super.key,
+  const ShimmerBorderContainer({
+    super.key,
     required this.child,
     this.borderWidth = 2.0,
     this.borderRadius = const BorderRadius.all(Radius.circular(10.0)),
@@ -27,7 +28,8 @@ class ShimmerBorderContainer extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: borderRadius,
-                border: Border.all(width: borderWidth, color: MyColor.getPrimaryColor()),
+                border: Border.all(
+                    width: borderWidth, color: MyColor.getPrimaryColor()),
               ),
             ),
           ),
@@ -35,7 +37,8 @@ class ShimmerBorderContainer extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             borderRadius: borderRadius,
-            border: Border.all(width: borderWidth, color: MyColor.getTransparentColor()),
+            border: Border.all(
+                width: borderWidth, color: MyColor.getTransparentColor()),
           ),
           child: ClipRRect(
             borderRadius: borderRadius,

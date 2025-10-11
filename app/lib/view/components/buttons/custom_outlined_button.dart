@@ -43,24 +43,28 @@ class CustomOutlinedBtn extends StatelessWidget {
               }
             },
             style: OutlinedButton.styleFrom(
-              elevation: 0, 
+              elevation: 0,
               backgroundColor: bgColor,
               surfaceTintColor: MyColor.getPrimaryColor().withOpacity(0.1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius)),
               maximumSize: Size.fromHeight(height),
               minimumSize: Size(width, height),
               side: BorderSide(color: borderColor, width: borderWidth),
               splashFactory: InkRipple.splashFactory,
             ),
-            icon: isLoading ? const SizedBox.shrink() : icon ?? const SizedBox.shrink(),
+            icon: isLoading
+                ? const SizedBox.shrink()
+                : icon ?? const SizedBox.shrink(),
             label: isLoading
-                ?  SizedBox(
+                ? SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(color: MyColor.getPrimaryColor()),
+                    child: CircularProgressIndicator(
+                        color: MyColor.getPrimaryColor()),
                   )
                 : Text(
-                    btnText, 
+                    btnText,
                     style: textStyle ?? boldDefault.copyWith(color: textColor),
                   ),
           )
@@ -72,22 +76,24 @@ class CustomOutlinedBtn extends StatelessWidget {
             },
             style: OutlinedButton.styleFrom(
               backgroundColor: bgColor,
-              elevation: 0, 
+              elevation: 0,
               surfaceTintColor: MyColor.getPrimaryColor().withOpacity(0.1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius)),
               maximumSize: Size.fromHeight(height),
               minimumSize: Size(width, height),
               side: BorderSide(color: borderColor, width: borderWidth),
               splashFactory: InkRipple.splashFactory,
             ),
             child: isLoading
-                ?  SizedBox(
+                ? SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(color: MyColor.getPrimaryColor()),
+                    child: CircularProgressIndicator(
+                        color: MyColor.getPrimaryColor()),
                   )
                 : Text(
-                    btnText, 
+                    btnText,
                     style: textStyle ??
                         boldDefault.copyWith(
                           color: textColor,

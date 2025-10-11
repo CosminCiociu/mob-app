@@ -1,6 +1,6 @@
 import 'dart:io';
 
-class ProfileCompletePostModel{
+class ProfileCompletePostModel {
   final String username;
   final String countryName;
   final String countryCode;
@@ -12,20 +12,19 @@ class ProfileCompletePostModel{
   final String? zip;
   final String? city;
 
-  ProfileCompletePostModel({
-    required this.username,
-    required this.countryName,
-    required this.countryCode,
-    required this.mobileNumber,
-    required this.mobileCode,
-    required this.image,
-    required this.address,
-    required this.state,
-    required this.zip,
-    required this.city
-  });
+  ProfileCompletePostModel(
+      {required this.username,
+      required this.countryName,
+      required this.countryCode,
+      required this.mobileNumber,
+      required this.mobileCode,
+      required this.image,
+      required this.address,
+      required this.state,
+      required this.zip,
+      required this.city});
 
-  Map<String,dynamic>toMap() {
+  Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     map['username'] = username;
     map['country'] = countryName;
@@ -36,9 +35,8 @@ class ProfileCompletePostModel{
     map['state'] = state;
     map['zip'] = zip;
     map['city'] = city;
-   // map['image'] = image;
+    // map['image'] = image;
 
     return map;
-}
-
+  }
 }

@@ -3,15 +3,10 @@ import 'package:get/get.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class BottomSheetHeaderText extends StatelessWidget {
-
   final String text;
   final TextAlign? textAlign;
 
-  const BottomSheetHeaderText({
-    super.key,
-    required this.text,
-    this.textAlign
-  });
+  const BottomSheetHeaderText({super.key, required this.text, this.textAlign});
 
   @override
   Widget build(BuildContext context) {

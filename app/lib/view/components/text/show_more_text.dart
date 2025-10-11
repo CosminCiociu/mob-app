@@ -6,15 +6,11 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class ShowMoreText extends StatelessWidget {
-
   final String text;
   final Callback onTap;
 
-  const ShowMoreText({
-    super.key,
-    required this.onTap,
-    this.text= MyStrings.showMore
-  });
+  const ShowMoreText(
+      {super.key, required this.onTap, this.text = MyStrings.showMore});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +18,9 @@ class ShowMoreText extends StatelessWidget {
       onTap: onTap,
       child: Text(
         text.tr,
-        style: semiBoldDefault.copyWith(color: MyColor.getPrimaryColor(), decoration:TextDecoration.underline),
+        style: semiBoldDefault.copyWith(
+            color: MyColor.getPrimaryColor(),
+            decoration: TextDecoration.underline),
       ),
     );
   }

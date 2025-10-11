@@ -5,7 +5,6 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/data/controller/localization/localization_controller.dart';
 import 'package:ovo_meet/data/controller/my_language_controller/my_language_controller.dart';
 
-
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/view/components/buttons/custom_elevated_button.dart';
 import 'package:ovo_meet/view/components/custom_loader/custom_loader.dart';
@@ -25,8 +24,6 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
   @override
   void initState() {
-    
-    
     Get.put(LocalizationController(sharedPreferences: Get.find()));
     final controller = Get.put(MyLanguageController());
 
@@ -34,9 +31,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    
-    });
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
   @override
@@ -61,7 +56,13 @@ class _LanguageScreenState extends State<LanguageScreen> {
                       scrollDirection: Axis.vertical,
                       itemCount: controller.langList.length,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: MediaQuery.of(context).size.width > 200 ? 2 : 1, crossAxisSpacing: 12, mainAxisSpacing: 12, mainAxisExtent: 150),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio:
+                              MediaQuery.of(context).size.width > 200 ? 2 : 1,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          mainAxisExtent: 150),
                       itemBuilder: (context, index) => GestureDetector(
                         onTap: () {
                           controller.changeSelectedIndex(index);
@@ -71,19 +72,19 @@ class _LanguageScreenState extends State<LanguageScreen> {
                           selectedIndex: controller.selectedIndex,
                           langeName: controller.langList[index].languageName,
                           isShowTopRight: true,
-                          imagePath: "${controller.languageImagePath}/${controller.langList[index].imageUrl}",
+                          imagePath:
+                              "${controller.languageImagePath}/${controller.langList[index].imageUrl}",
                         ),
                       ),
                     ),
                   ),
         bottomNavigationBar: Padding(
-          padding: const EdgeInsetsDirectional.symmetric(vertical: Dimensions.space15, horizontal: Dimensions.space15),
+          padding: const EdgeInsetsDirectional.symmetric(
+              vertical: Dimensions.space15, horizontal: Dimensions.space15),
           child: CustomElevatedBtn(
             text: MyStrings.confirm.tr,
             isLoading: controller.isChangeLangLoading,
-            press: () {
-             
-            },
+            press: () {},
           ),
         ),
       ),

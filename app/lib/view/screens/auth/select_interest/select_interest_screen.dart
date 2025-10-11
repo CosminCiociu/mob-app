@@ -33,7 +33,8 @@ class _SelectInterstScreenState extends State<SelectInterstScreen> {
       body: GetBuilder<SelectInterestController>(
         builder: (controller) => SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.defaultScreenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -43,15 +44,19 @@ class _SelectInterstScreenState extends State<SelectInterstScreen> {
                 ),
                 const SizedBox(height: Dimensions.space10),
                 Text(
-                  MyStrings.selectaFewofYourIntersttoMatchWithUsersWhoHaveSimilarThingsinCommon,
-                  style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                  MyStrings
+                      .selectaFewofYourIntersttoMatchWithUsersWhoHaveSimilarThingsinCommon,
+                  style: regularDefault.copyWith(
+                      color: MyColor.getSecondaryTextColor()),
                 ),
                 const SizedBox(height: Dimensions.space50),
                 GridView.builder(
-                  physics:const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 4),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2, childAspectRatio: 4),
                     itemCount: controller.interests.length,
                     itemBuilder: (context, i) {
                       return Center(
@@ -60,8 +65,12 @@ class _SelectInterstScreenState extends State<SelectInterstScreen> {
                             controller.tappedStatus(i);
                           },
                           child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: Dimensions.space5, vertical: Dimensions.space2),
-                            padding: const EdgeInsets.symmetric(horizontal: Dimensions.space8, vertical: Dimensions.space2),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: Dimensions.space5,
+                                vertical: Dimensions.space2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: Dimensions.space8,
+                                vertical: Dimensions.space2),
                             decoration: BoxDecoration(
                                 gradient: controller.interests[i]['status']
                                     ? const LinearGradient(
@@ -75,26 +84,39 @@ class _SelectInterstScreenState extends State<SelectInterstScreen> {
                                         end: Alignment.bottomRight,
                                       )
                                     : null,
-                                border: Border.all(width: .5, color: controller.interests[i]['status'] ? MyColor.buttonColor : MyColor.greyColorWithShadeFourHundred),
-                                borderRadius: BorderRadius.circular(Dimensions.space5)),
+                                border: Border.all(
+                                    width: .5,
+                                    color: controller.interests[i]['status']
+                                        ? MyColor.buttonColor
+                                        : MyColor
+                                            .greyColorWithShadeFourHundred),
+                                borderRadius:
+                                    BorderRadius.circular(Dimensions.space5)),
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.all(Dimensions.space5),
+                                    padding:
+                                        const EdgeInsets.all(Dimensions.space5),
                                     child: CustomSvgPicture(
                                       image: controller.interests[i]['image'],
                                       height: Dimensions.space15,
-                                      color: controller.interests[i]['status'] ? MyColor.colorWhite : MyColor.colorBlack,
+                                      color: controller.interests[i]['status']
+                                          ? MyColor.colorWhite
+                                          : MyColor.colorBlack,
                                     ),
                                   ),
                                   SizedBox(
                                       width: Dimensions.space100,
                                       child: Text(
                                         controller.interests[i]['name'],
-                                        style: regularDefault.copyWith(color: controller.interests[i]['status'] ? MyColor.colorWhite : MyColor.colorBlack),
+                                        style: regularDefault.copyWith(
+                                            color: controller.interests[i]
+                                                    ['status']
+                                                ? MyColor.colorWhite
+                                                : MyColor.colorBlack),
                                       )),
                                 ],
                               ),
@@ -108,8 +130,9 @@ class _SelectInterstScreenState extends State<SelectInterstScreen> {
                     onTap: () {
                       Get.toNamed(RouteHelper.idealMatchScreen);
                     },
-                    child: const CustomGradiantButton(text: MyStrings.continues)),
-                    const SizedBox(height: Dimensions.space80),
+                    child:
+                        const CustomGradiantButton(text: MyStrings.continues)),
+                const SizedBox(height: Dimensions.space80),
               ],
             ),
           ),

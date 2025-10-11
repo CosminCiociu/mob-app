@@ -16,7 +16,8 @@ class AppConverter {
     }
   }
 
-  static String twoDecimalPlaceFixedWithoutRounding(String value, {int precision = 2}) {
+  static String twoDecimalPlaceFixedWithoutRounding(String value,
+      {int precision = 2}) {
     try {
       double number = double.parse(value);
       String b = number.toStringAsFixed(precision);
@@ -28,7 +29,8 @@ class AppConverter {
 
   static String removeQuotationAndSpecialCharacterFromString(String value) {
     try {
-      String formatedString = value.replaceAll('"', '').replaceAll('[', '').replaceAll(']', '');
+      String formatedString =
+          value.replaceAll('"', '').replaceAll('[', '').replaceAll(']', '');
       return formatedString;
     } catch (e) {
       return value;
@@ -38,7 +40,8 @@ class AppConverter {
   static String replaceUnderscoreWithSpace(String value) {
     try {
       String formatedString = value.replaceAll('_', ' ');
-      String v = formatedString.split(" ").map((str) => str.capitalize).join(" ");
+      String v =
+          formatedString.split(" ").map((str) => str.capitalize).join(" ");
       return v;
     } catch (e) {
       return value;
@@ -96,7 +99,18 @@ class AppConverter {
   }
 
   static String getTrailingExtension(int number) {
-    List<String> list = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
+    List<String> list = [
+      'th',
+      'st',
+      'nd',
+      'rd',
+      'th',
+      'th',
+      'th',
+      'th',
+      'th',
+      'th'
+    ];
     if (((number % 100) >= 11) && ((number % 100) <= 13)) {
       return '${number}th';
     } else {
@@ -113,7 +127,8 @@ class AppConverter {
     double firstNum = double.tryParse(first) ?? 0;
     double secondNum = double.tryParse(last) ?? 0;
     double result = firstNum + secondNum;
-    String formatedResult = formatNumber(result.toString(), precision: precision);
+    String formatedResult =
+        formatNumber(result.toString(), precision: precision);
     return formatedResult;
   }
 
@@ -128,17 +143,23 @@ class AppConverter {
   }
 
   static mul(String first, String second) {
-    double result = (double.tryParse(first) ?? 0) * (double.tryParse(second) ?? 0);
+    double result =
+        (double.tryParse(first) ?? 0) * (double.tryParse(second) ?? 0);
     return AppConverter.formatNumber(result.toString());
   }
 
   static calculateRate(String amount, String rate, {int precision = 2}) {
-    double result = (double.tryParse(amount) ?? 0) / (double.tryParse(rate) ?? 0);
+    double result =
+        (double.tryParse(amount) ?? 0) / (double.tryParse(rate) ?? 0);
     return AppConverter.formatNumber(result.toString(), precision: precision);
   }
 }
 
 extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }

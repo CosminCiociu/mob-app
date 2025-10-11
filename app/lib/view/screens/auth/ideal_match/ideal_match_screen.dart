@@ -37,7 +37,8 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
       body: GetBuilder<IdealMatchController>(
         builder: (controller) => SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.defaultScreenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -48,14 +49,15 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
                 const SizedBox(height: Dimensions.space10),
                 Text(
                   MyStrings.whatareYouHopingtoFindHereonSprout,
-                  style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                  style: regularDefault.copyWith(
+                      color: MyColor.getSecondaryTextColor()),
                 ),
                 const SizedBox(height: Dimensions.space50),
                 ListView.separated(
-                  physics:const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (context, index) {
-                  return  const SizedBox(
-                      height:Dimensions.space10,
+                    return const SizedBox(
+                      height: Dimensions.space10,
                     );
                   },
                   shrinkWrap: true,
@@ -68,13 +70,17 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
                       child: Ink(
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: controller.idealMatch[i]['status'] ? MyColor.buttonColor : MyColor.colorWhite,
+                            color: controller.idealMatch[i]['status']
+                                ? MyColor.buttonColor
+                                : MyColor.colorWhite,
                           ),
                           color: MyColor.colorWhite,
-                          borderRadius: BorderRadius.circular(Dimensions.space10),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.space10),
                         ),
                         child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: Dimensions.space5),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: Dimensions.space5),
                           padding: const EdgeInsets.symmetric(
                             vertical: Dimensions.space15,
                             horizontal: Dimensions.space10,
@@ -83,7 +89,8 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(Dimensions.space8),
+                                  borderRadius:
+                                      BorderRadius.circular(Dimensions.space8),
                                   gradient: const LinearGradient(
                                     colors: [
                                       Color(0xFFF76F96),
@@ -96,9 +103,11 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
                                   ),
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(Dimensions.space8),
+                                  padding:
+                                      const EdgeInsets.all(Dimensions.space8),
                                   child: CustomSvgPicture(
-                                    image: controller.idealMatch[i]['image'].toString(),
+                                    image: controller.idealMatch[i]['image']
+                                        .toString(),
                                     color: MyColor.colorWhite,
                                   ),
                                 ),
@@ -134,7 +143,8 @@ class _IdealMatchScreenState extends State<IdealMatchScreen> {
                     onTap: () {
                       Get.toNamed(RouteHelper.bottomNavBar);
                     },
-                    child: const CustomGradiantButton(text: MyStrings.continues))
+                    child:
+                        const CustomGradiantButton(text: MyStrings.continues))
               ],
             ),
           ),

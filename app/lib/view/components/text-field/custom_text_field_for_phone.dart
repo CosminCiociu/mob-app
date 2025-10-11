@@ -7,7 +7,6 @@ import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/view/components/text/small_text.dart';
 
 class CustomTextFieldForPhone extends StatefulWidget {
-
   final String hintText, labelText;
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -33,34 +32,36 @@ class CustomTextFieldForPhone extends StatefulWidget {
   final TextCapitalization capitalization;
 
   const CustomTextFieldForPhone({
-        super.key,
-        this.hintText = '',
-        required this.labelText,
-        this.controller,
-        this.focusNode,
-        this.nextFocus,
-        this.isEnabled = true,
-        this.inputType = TextInputType.text,
-        this.inputAction = TextInputAction.next,
-        this.maxLines = 1,
-        this.onSuffixTap,
-        this.fillColor = MyColor.colorWhite,
-        this.onSubmit,
-        required this.onChanged,
-        this.capitalization = TextCapitalization.none,
-        this.isCountryPicker = false,
-        this.isShowBorder = false,
-        this.isShowSuffixIcon = false,
-        this.isShowPrefixIcon = false,
-        this.onTap,
-        this.isIcon = false,
-        this.isPassword = false,
-        this.suffixIconUrl,
-        this.prefixIconUrl,
-        this.isSearch = false,});
+    super.key,
+    this.hintText = '',
+    required this.labelText,
+    this.controller,
+    this.focusNode,
+    this.nextFocus,
+    this.isEnabled = true,
+    this.inputType = TextInputType.text,
+    this.inputAction = TextInputAction.next,
+    this.maxLines = 1,
+    this.onSuffixTap,
+    this.fillColor = MyColor.colorWhite,
+    this.onSubmit,
+    required this.onChanged,
+    this.capitalization = TextCapitalization.none,
+    this.isCountryPicker = false,
+    this.isShowBorder = false,
+    this.isShowSuffixIcon = false,
+    this.isShowPrefixIcon = false,
+    this.onTap,
+    this.isIcon = false,
+    this.isPassword = false,
+    this.suffixIconUrl,
+    this.prefixIconUrl,
+    this.isSearch = false,
+  });
 
   @override
-  State<CustomTextFieldForPhone> createState() => _CustomTextFieldForPhoneState();
+  State<CustomTextFieldForPhone> createState() =>
+      _CustomTextFieldForPhoneState();
 }
 
 class _CustomTextFieldForPhoneState extends State<CustomTextFieldForPhone> {
@@ -69,13 +70,10 @@ class _CustomTextFieldForPhoneState extends State<CustomTextFieldForPhone> {
   @override
   Widget build(BuildContext context) {
     return Column(
-
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         SmallText(text: widget.labelText.tr),
         const SizedBox(height: Dimensions.space10),
-
         TextFormField(
           maxLines: widget.maxLines,
           controller: widget.controller,
@@ -88,69 +86,87 @@ class _CustomTextFieldForPhoneState extends State<CustomTextFieldForPhone> {
           enabled: widget.isEnabled,
           autofocus: false,
           obscureText: widget.isPassword ? _obscureText : false,
-          inputFormatters: widget.inputType == TextInputType.phone ? <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp('[0-9+]'))] : null,
+          inputFormatters: widget.inputType == TextInputType.phone
+              ? <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp('[0-9+]'))
+                ]
+              : null,
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3),
-              borderSide:  BorderSide(color:  MyColor.getTextFieldDisableBorder(), width: 1),
+              borderSide: BorderSide(
+                  color: MyColor.getTextFieldDisableBorder(), width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3),
-              borderSide:  BorderSide(color:  MyColor.getTextFieldDisableBorder(), width: 1),
+              borderSide: BorderSide(
+                  color: MyColor.getTextFieldDisableBorder(), width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3),
-              borderSide:  BorderSide(color: MyColor.getPrimaryColor(), width: 1),
+              borderSide:
+                  BorderSide(color: MyColor.getPrimaryColor(), width: 1),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3),
-              borderSide:  BorderSide(color: MyColor.getRedColor(), width: 1),
+              borderSide: BorderSide(color: MyColor.getRedColor(), width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(3),
-              borderSide:  BorderSide(color:  MyColor.getTextFieldDisableBorder(), width: 1),
+              borderSide: BorderSide(
+                  color: MyColor.getTextFieldDisableBorder(), width: 1),
             ),
             isDense: true,
             hintText: widget.hintText.tr,
             fillColor: widget.fillColor,
-            hintStyle: regularSmall.copyWith(color: MyColor.getContentTextColor()),
+            hintStyle:
+                regularSmall.copyWith(color: MyColor.getContentTextColor()),
             filled: true,
-            prefixIcon: widget.isShowPrefixIcon ? Padding(
-              padding: const EdgeInsets.only(left: 20, right: 5),
-              child: Image.asset(""),
-            ) : const SizedBox.shrink(),
-            prefixIconConstraints:const  BoxConstraints(minWidth: 23, maxHeight: 20),
+            prefixIcon: widget.isShowPrefixIcon
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 5),
+                    child: Image.asset(""),
+                  )
+                : const SizedBox.shrink(),
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 23, maxHeight: 20),
             suffixIcon: widget.isShowSuffixIcon
                 ? widget.isPassword
-                ? IconButton(
-                icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: MyColor.getContentTextColor()),
-                onPressed: _toggle)
-                : widget.isIcon
-                ? IconButton(
-              onPressed: widget.onSuffixTap,
-              icon: const Icon(
-                Icons.expand_more_outlined,
-                size: 25,
-              ),
-            )
-                : null
+                    ? IconButton(
+                        icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: MyColor.getContentTextColor()),
+                        onPressed: _toggle)
+                    : widget.isIcon
+                        ? IconButton(
+                            onPressed: widget.onSuffixTap,
+                            icon: const Icon(
+                              Icons.expand_more_outlined,
+                              size: 25,
+                            ),
+                          )
+                        : null
                 : null,
           ),
           onTap: widget.onTap,
-          onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus)
-              : widget.onSubmit != null ? widget.onSubmit!() : null,
-          onChanged: (text)=> widget.onChanged(text),
+          onFieldSubmitted: (text) => widget.nextFocus != null
+              ? FocusScope.of(context).requestFocus(widget.nextFocus)
+              : widget.onSubmit != null
+                  ? widget.onSubmit!()
+                  : null,
+          onChanged: (text) => widget.onChanged(text),
         ),
       ],
     );
   }
 
   void _toggle() {
-
     setState(() {
       _obscureText = !_obscureText;
     });
-
   }
 }

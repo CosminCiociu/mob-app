@@ -66,7 +66,10 @@ class DrawerUserCard extends StatelessWidget {
                           style: titleStyle ??
                               boldDefault.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.color,
                                 fontSize: Dimensions.fontLarge + 3,
                               ),
                           maxLines: 1,
@@ -79,7 +82,9 @@ class DrawerUserCard extends StatelessWidget {
                       Text(
                         "$username".tr,
                         style: titleStyle ??
-                            regularDefault.copyWith(  color: Theme.of(context).textTheme.bodyLarge?.color,
+                            regularDefault.copyWith(
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
                               fontSize: Dimensions.fontSmall,
                             ),
                         maxLines: 1,
@@ -90,7 +95,12 @@ class DrawerUserCard extends StatelessWidget {
                       ),
                       Text(
                         subtitle?.tr ?? "",
-                        style: subtitleStyle ?? regularDefault.copyWith(fontSize: Dimensions.fontSmall,   color: Theme.of(context).textTheme.bodyLarge?.color,),
+                        style: subtitleStyle ??
+                            regularDefault.copyWith(
+                              fontSize: Dimensions.fontSmall,
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -11,7 +11,13 @@ class DrawerItem extends StatelessWidget {
   Color? iconColor;
   TextStyle? titleStyle;
   VoidCallback onTap;
-  DrawerItem({super.key, required this.svgIcon, required this.name, required this.onTap, this.iconColor, this.titleStyle});
+  DrawerItem(
+      {super.key,
+      required this.svgIcon,
+      required this.name,
+      required this.onTap,
+      this.iconColor,
+      this.titleStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,6 @@ class DrawerItem extends StatelessWidget {
               ),
             ],
           ),
-          
         ],
       ),
     );

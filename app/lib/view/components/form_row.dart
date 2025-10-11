@@ -4,22 +4,20 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class FormRow extends StatelessWidget {
-
   final String label;
   final bool isRequired;
 
-  const FormRow({super.key,
-    required this.label,
-    required this.isRequired
-  });
+  const FormRow({super.key, required this.label, required this.isRequired});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(label.tr, style: regularDefault.copyWith(color: MyColor.getBlackColor())),
-        Text(isRequired?' *':'',style: boldDefault.copyWith(color: MyColor.getRedColor()))
+        Text(label.tr,
+            style: regularDefault.copyWith(color: MyColor.getBlackColor())),
+        Text(isRequired ? ' *' : '',
+            style: boldDefault.copyWith(color: MyColor.getRedColor()))
       ],
     );
   }

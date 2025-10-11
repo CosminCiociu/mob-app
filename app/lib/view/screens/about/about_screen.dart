@@ -11,18 +11,24 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(title: MyStrings.about,isTitleCenter: true,),
-      body: SingleChildScrollView(child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-          const SizedBox(height: Dimensions.space15),
-          Text(MyStrings.aboutUs,style: boldExtraLarge.copyWith(color: MyColor.buttonColor)),
-          const SizedBox(height: Dimensions.space15),
-         const Text(MyStrings.aboutus),
-        ]),
-      ),),
+      appBar: const CustomAppBar(
+        title: MyStrings.about,
+        isTitleCenter: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const SizedBox(height: Dimensions.space15),
+            Text(MyStrings.aboutUs,
+                style: boldExtraLarge.copyWith(color: MyColor.buttonColor)),
+            const SizedBox(height: Dimensions.space15),
+            const Text(MyStrings.aboutus),
+          ]),
+        ),
+      ),
     );
   }
 }

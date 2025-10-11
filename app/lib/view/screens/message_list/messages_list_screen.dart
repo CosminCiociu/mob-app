@@ -31,13 +31,14 @@ class _MessageListScreenState extends State<MessageListScreen> {
   Widget build(BuildContext context) {
     return GetBuilder<MessageListController>(
       builder: (controller) => Scaffold(
-        appBar:const CustomAppBar(title: MyStrings.message,isTitleCenter: true),
+        appBar:
+            const CustomAppBar(title: MyStrings.message, isTitleCenter: true),
         backgroundColor: MyColor.getScreenBgColor(),
         body: SingleChildScrollView(
             padding: Dimensions.screenPadding,
             child: Column(
               children: [
-                 LabelTextField(
+                LabelTextField(
                   labelText: "",
                   hideLabel: true,
                   hintText: MyStrings.search.tr,
@@ -49,12 +50,13 @@ class _MessageListScreenState extends State<MessageListScreen> {
                   },
                   prefixIcon: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 15),
-                    child: CustomSvgPicture(image: MyImages.search, color: MyColor.buttonColor),
+                    child: CustomSvgPicture(
+                        image: MyImages.search, color: MyColor.buttonColor),
                   ),
                 ),
                 const SizedBox(height: Dimensions.space20),
                 ListView.separated(
-                  physics:const NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     separatorBuilder: (context, index) {
                       return const CustomDivider(space: Dimensions.space8);
                     },
@@ -67,7 +69,9 @@ class _MessageListScreenState extends State<MessageListScreen> {
                           leading: Stack(
                             children: [
                               CircleAvatar(
-                                backgroundImage: AssetImage(controller.chatList[i]['profilePicture'].toString()),
+                                backgroundImage: AssetImage(controller
+                                    .chatList[i]['profilePicture']
+                                    .toString()),
                                 radius: 24,
                               ),
                               controller.chatList[i]['isActive']
@@ -94,23 +98,46 @@ class _MessageListScreenState extends State<MessageListScreen> {
                           title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(controller.chatList[i]['name'].toString(), style: regularLarge),
+                              Text(controller.chatList[i]['name'].toString(),
+                                  style: regularLarge),
                               const SizedBox(height: Dimensions.space5),
-                              Text(controller.chatList[i]['lastMessage'].toString(), style: regularSmall.copyWith(color: controller.chatList[i]['pendingMessages'].toString() != "0" ? MyColor.buttonColor : MyColor.getGreyText1().withOpacity(.4))),
+                              Text(
+                                  controller.chatList[i]['lastMessage']
+                                      .toString(),
+                                  style: regularSmall.copyWith(
+                                      color: controller.chatList[i]
+                                                      ['pendingMessages']
+                                                  .toString() !=
+                                              "0"
+                                          ? MyColor.buttonColor
+                                          : MyColor.getGreyText1()
+                                              .withOpacity(.4))),
                             ],
                           ),
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              controller.chatList[i]['pendingMessages'].toString() != "0" ? const SizedBox() : Text("2 min ago", style: regularDefault.copyWith(color: MyColor.getGreyText1().withOpacity(.2))),
-                              controller.chatList[i]['pendingMessages'].toString() != "0"
+                              controller.chatList[i]['pendingMessages']
+                                          .toString() !=
+                                      "0"
+                                  ? const SizedBox()
+                                  : Text("2 min ago",
+                                      style: regularDefault.copyWith(
+                                          color: MyColor.getGreyText1()
+                                              .withOpacity(.2))),
+                              controller.chatList[i]['pendingMessages']
+                                          .toString() !=
+                                      "0"
                                   ? CircleAvatar(
                                       backgroundColor: MyColor.buttonColor,
                                       radius: Dimensions.space12,
                                       child: Text(
-                                        controller.chatList[i]['pendingMessages'].toString(),
-                                        style: regularDefault.copyWith(color: MyColor.colorWhite),
+                                        controller.chatList[i]
+                                                ['pendingMessages']
+                                            .toString(),
+                                        style: regularDefault.copyWith(
+                                            color: MyColor.colorWhite),
                                       ),
                                     )
                                   : const SizedBox(),

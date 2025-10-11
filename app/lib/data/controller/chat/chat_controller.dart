@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 class ChatController extends GetxController {
   final TextEditingController chatController = TextEditingController();
- final Map<String, dynamic> person = {
+  final Map<String, dynamic> person = {
     'name': 'Alice Johnson',
     'isActive': true,
     'profilePicture': 'assets/images/girl1.jpg', // Profile image path
@@ -36,5 +36,4 @@ class ChatController extends GetxController {
       'time': '10:35 AM',
     },
   ];
-
 }

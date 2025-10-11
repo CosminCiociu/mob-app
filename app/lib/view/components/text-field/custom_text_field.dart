@@ -40,7 +40,7 @@ class CustomTextField extends StatefulWidget {
     this.instructions,
     this.labelText,
     this.readOnly = false,
-    this.fillColor ,
+    this.fillColor,
     required this.onChanged,
     this.hintText,
     this.controller,
@@ -81,7 +81,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ? TextFormField(
                 maxLines: widget.maxLines ?? 1,
                 readOnly: widget.readOnly,
-                style: regularDefault.copyWith(color: Theme.of(context).textTheme.titleLarge?.color),
+                style: regularDefault.copyWith(
+                    color: Theme.of(context).textTheme.titleLarge?.color),
                 cursorColor: Theme.of(context).textTheme.titleLarge?.color,
                 controller: widget.controller,
                 autofocus: false,
@@ -92,17 +93,45 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 keyboardType: widget.textInputType,
                 obscureText: widget.isPassword ? obscureText : false,
                 decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
+                  contentPadding: const EdgeInsets.only(
+                      top: 5, left: 15, right: 15, bottom: 5),
                   labelText: widget.labelText?.tr ?? '',
-                  labelStyle: regularDefault.copyWith(color: Theme.of(context).textTheme.titleLarge?.color?.withOpacity(0.8)),
-                  fillColor: widget.fillColor??MyColor.getTransparentColor(),
+                  labelStyle: regularDefault.copyWith(
+                      color: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.color
+                          ?.withOpacity(0.8)),
+                  fillColor: widget.fillColor ?? MyColor.getTransparentColor(),
                   filled: true,
-                  border: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldEnableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          width: 0.5,
+                          color: MyColor.getTextFieldDisableBorder()),
+                      borderRadius:
+                          BorderRadius.circular(Dimensions.defaultRadius)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          width: 0.5,
+                          color: MyColor.getTextFieldEnableBorder()),
+                      borderRadius:
+                          BorderRadius.circular(Dimensions.defaultRadius)),
+                  enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          width: 0.5,
+                          color: MyColor.getTextFieldDisableBorder()),
+                      borderRadius:
+                          BorderRadius.circular(Dimensions.defaultRadius)),
                   suffixIcon: widget.isShowSuffixIcon
                       ? widget.isPassword
-                          ? IconButton(icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: MyColor.getHintTextColor(), size: 20), onPressed: _toggle)
+                          ? IconButton(
+                              icon: Icon(
+                                  obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: MyColor.getHintTextColor(),
+                                  size: 20),
+                              onPressed: _toggle)
                           : widget.isIcon
                               ? IconButton(
                                   onPressed: widget.onSuffixTap,
@@ -119,7 +148,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
                               : null
                       : null,
                 ),
-                onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus) : null,
+                onFieldSubmitted: (text) => widget.nextFocus != null
+                    ? FocusScope.of(context).requestFocus(widget.nextFocus)
+                    : null,
                 onChanged: (text) => widget.onChanged!(text),
                 onTap: widget.onTap,
               )
@@ -135,7 +166,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   TextFormField(
                     maxLines: widget.maxLines ?? 1,
                     readOnly: widget.readOnly,
-                    style: regularDefault.copyWith(color: MyColor.getTextColor()),
+                    style:
+                        regularDefault.copyWith(color: MyColor.getTextColor()),
                     cursorColor: MyColor.getTextColor(),
                     controller: widget.controller,
                     autofocus: false,
@@ -147,17 +179,42 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     obscureText: widget.isPassword ? obscureText : false,
                     initialValue: widget.initialValue,
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
-                      hintText: widget.hintText != null ? widget.hintText!.tr : '',
-                      hintStyle: regularSmall.copyWith(color: MyColor.getHintTextColor().withOpacity(0.7)),
+                      contentPadding: const EdgeInsets.only(
+                          top: 5, left: 15, right: 15, bottom: 5),
+                      hintText:
+                          widget.hintText != null ? widget.hintText!.tr : '',
+                      hintStyle: regularSmall.copyWith(
+                          color: MyColor.getHintTextColor().withOpacity(0.7)),
                       fillColor: MyColor.getTransparentColor(),
                       filled: true,
-                      border: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
-                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldEnableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
-                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()), borderRadius: BorderRadius.circular(Dimensions.defaultRadius)),
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 0.5,
+                              color: MyColor.getTextFieldDisableBorder()),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.defaultRadius)),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 0.5,
+                              color: MyColor.getTextFieldEnableBorder()),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.defaultRadius)),
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              width: 0.5,
+                              color: MyColor.getTextFieldDisableBorder()),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.defaultRadius)),
                       suffixIcon: widget.isShowSuffixIcon
                           ? widget.isPassword
-                              ? IconButton(icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: MyColor.getHintTextColor(), size: 20), onPressed: _toggle)
+                              ? IconButton(
+                                  icon: Icon(
+                                      obscureText
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: MyColor.getHintTextColor(),
+                                      size: 20),
+                                  onPressed: _toggle)
                               : widget.isIcon
                                   ? IconButton(
                                       onPressed: widget.onSuffixTap,
@@ -174,8 +231,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
                                   : null
                           : null,
                     ),
-                    onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus) : null,
-                    onChanged: (text) => widget.onChanged!(text), onTap: widget.onTap,
+                    onFieldSubmitted: (text) => widget.nextFocus != null
+                        ? FocusScope.of(context).requestFocus(widget.nextFocus)
+                        : null,
+                    onChanged: (text) => widget.onChanged!(text),
+                    onTap: widget.onTap,
                   )
                 ],
               )
@@ -193,17 +253,32 @@ class _CustomTextFieldState extends State<CustomTextField> {
             keyboardType: widget.textInputType,
             obscureText: widget.isPassword ? obscureText : false,
             decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(top: 5, left: 0, right: 0, bottom: 5),
+              contentPadding:
+                  const EdgeInsets.only(top: 5, left: 0, right: 0, bottom: 5),
               labelText: widget.labelText?.tr,
-              labelStyle: regularDefault.copyWith(color: MyColor.getLabelTextColor()),
+              labelStyle:
+                  regularDefault.copyWith(color: MyColor.getLabelTextColor()),
               fillColor: MyColor.transparentColor,
               filled: true,
-              border: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder())),
-              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldEnableBorder())),
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder())),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldDisableBorder())),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldEnableBorder())),
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldDisableBorder())),
               suffixIcon: widget.isShowSuffixIcon
                   ? widget.isPassword
-                      ? IconButton(icon: Icon(obscureText ? Icons.visibility_off : Icons.visibility, color: MyColor.getHintTextColor(), size: 20), onPressed: _toggle)
+                      ? IconButton(
+                          icon: Icon(
+                              obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: MyColor.getHintTextColor(),
+                              size: 20),
+                          onPressed: _toggle)
                       : widget.isIcon
                           ? IconButton(
                               onPressed: widget.onSuffixTap,
@@ -220,8 +295,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           : null
                   : null,
             ),
-            onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus) : null,
-            onChanged: (text) => widget.onChanged!(text), onTap: widget.onTap,
+            onFieldSubmitted: (text) => widget.nextFocus != null
+                ? FocusScope.of(context).requestFocus(widget.nextFocus)
+                : null,
+            onChanged: (text) => widget.onChanged!(text),
+            onTap: widget.onTap,
           );
   }
 

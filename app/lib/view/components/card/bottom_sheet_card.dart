@@ -26,7 +26,8 @@ class BottomSheetCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Dimensions.defaultRadius),
         color: bgColor ?? MyColor.getWhiteColor(),
-        border: Border.all(width: .5, color: MyColor.getPrimaryColor().withOpacity(.1)),
+        border: Border.all(
+            width: .5, color: MyColor.getPrimaryColor().withOpacity(.1)),
         boxShadow: boxShadow ?? MyUtils.getBottomSheetShadow(),
       ),
       child: child,

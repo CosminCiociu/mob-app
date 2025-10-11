@@ -16,7 +16,8 @@ class AddProfileDetailsScreen extends StatefulWidget {
   const AddProfileDetailsScreen({super.key});
 
   @override
-  State<AddProfileDetailsScreen> createState() => _AddProfileDetailsScreenState();
+  State<AddProfileDetailsScreen> createState() =>
+      _AddProfileDetailsScreenState();
 }
 
 class _AddProfileDetailsScreenState extends State<AddProfileDetailsScreen> {
@@ -38,11 +39,11 @@ class _AddProfileDetailsScreenState extends State<AddProfileDetailsScreen> {
       body: GetBuilder<AddProfileDetailsController>(
         builder: (controller) => SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.defaultScreenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              
                 Text(
                   MyStrings.addProfileDetails,
                   style: boldOverLarge.copyWith(fontSize: Dimensions.space20),
@@ -50,10 +51,14 @@ class _AddProfileDetailsScreenState extends State<AddProfileDetailsScreen> {
                 const SizedBox(height: Dimensions.space10),
                 Text(
                   MyStrings.pleaseAddYourProfileDetrailsHere,
-                  style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                  style: regularDefault.copyWith(
+                      color: MyColor.getSecondaryTextColor()),
                 ),
                 const SizedBox(height: Dimensions.space20),
-                PickImageWidget(isEdit: true, imagePath: controller.imageUrl, onClicked: () async {}),
+                PickImageWidget(
+                    isEdit: true,
+                    imagePath: controller.imageUrl,
+                    onClicked: () async {}),
                 const SizedBox(height: Dimensions.space20),
                 LabelTextField(
                   onChanged: (v) {},
@@ -117,8 +122,9 @@ class _AddProfileDetailsScreenState extends State<AddProfileDetailsScreen> {
                     onTap: () {
                       Get.toNamed(RouteHelper.selectGenderScreen);
                     },
-                    child: const CustomGradiantButton(text: MyStrings.continues)),
-                      const SizedBox(height: Dimensions.space30),
+                    child:
+                        const CustomGradiantButton(text: MyStrings.continues)),
+                const SizedBox(height: Dimensions.space30),
               ],
             ),
           ),

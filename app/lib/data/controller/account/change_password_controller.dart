@@ -1,25 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-
-class ChangePasswordController extends GetxController  {
-
-
-
+class ChangePasswordController extends GetxController {
   String? currentPass, password, confirmPass;
 
-  bool isLoading      = false;
+  bool isLoading = false;
   List<String> errors = [];
 
-  TextEditingController passController        = TextEditingController();
+  TextEditingController passController = TextEditingController();
   TextEditingController currentPassController = TextEditingController();
   TextEditingController confirmPassController = TextEditingController();
 
   FocusNode currentPassFocusNode = FocusNode();
-  FocusNode passwordFocusNode    = FocusNode();
+  FocusNode passwordFocusNode = FocusNode();
   FocusNode confirmPassFocusNode = FocusNode();
-
-
 
   addError({required String error}) {
     if (!errors.contains(error)) {
@@ -35,14 +29,13 @@ class ChangePasswordController extends GetxController  {
     }
   }
 
-  bool submitLoading=false;
-
+  bool submitLoading = false;
 
   void clearData() {
-    isLoading=false;
+    isLoading = false;
     errors.clear();
-    currentPassController.text='';
-    passController.text='';
-    confirmPassController.text='';
+    currentPassController.text = '';
+    passController.text = '';
+    confirmPassController.text = '';
   }
 }

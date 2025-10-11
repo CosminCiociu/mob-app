@@ -4,8 +4,6 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/data/controller/account/profile_complete_controller.dart';
 
-
-
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/view/components/buttons/custom_elevated_button.dart';
 import 'package:ovo_meet/view/components/text-field/label_text_field.dart';
@@ -25,10 +23,8 @@ class ProfileCompleteScreen extends StatefulWidget {
 class _ProfileCompleteScreenState extends State<ProfileCompleteScreen> {
   @override
   void initState() {
-    
-   
     final controller = Get.put(ProfileCompleteController());
-    
+
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -99,10 +95,14 @@ class _ProfileCompleteScreenState extends State<ProfileCompleteScreen> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  CountryBottomSheet.profileCompleteCountryBottomSheet(context, controller);
+                                  CountryBottomSheet
+                                      .profileCompleteCountryBottomSheet(
+                                          context, controller);
                                 },
                                 child: Container(
-                                  padding: const EdgeInsetsDirectional.symmetric(horizontal: Dimensions.space12),
+                                  padding:
+                                      const EdgeInsetsDirectional.symmetric(
+                                          horizontal: Dimensions.space12),
                                   decoration: BoxDecoration(
                                     color: MyColor.getTransparentColor(),
                                     borderRadius: BorderRadius.circular(5),
@@ -111,14 +111,20 @@ class _ProfileCompleteScreenState extends State<ProfileCompleteScreen> {
                                   child: Row(
                                     children: [
                                       MyImageWidget(
-                                        imageUrl: UrlContainer.countryFlagImageLink.replaceAll('{countryCode}', controller.countryCode.toString().toLowerCase()),
+                                        imageUrl: UrlContainer
+                                            .countryFlagImageLink
+                                            .replaceAll(
+                                                '{countryCode}',
+                                                controller.countryCode
+                                                    .toString()
+                                                    .toLowerCase()),
                                         height: Dimensions.space25,
                                         width: Dimensions.space40 + 2,
                                       ),
                                       const SizedBox(width: Dimensions.space5),
                                       Text(controller.mobileCode ?? ''),
                                       const SizedBox(width: Dimensions.space3),
-                                       Icon(
+                                      Icon(
                                         Icons.arrow_drop_down_rounded,
                                         color: MyColor.getIconColor(),
                                       ),
@@ -192,9 +198,7 @@ class _ProfileCompleteScreenState extends State<ProfileCompleteScreen> {
                     CustomElevatedBtn(
                       isLoading: controller.submitLoading,
                       text: MyStrings.updateProfile.tr,
-                      press: () {
-                      
-                      },
+                      press: () {},
                     )
                   ],
                 ),

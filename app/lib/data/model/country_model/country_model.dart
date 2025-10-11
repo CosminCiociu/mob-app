@@ -1,4 +1,3 @@
-
 import '../global/meassage_model.dart';
 
 class CountryModel {
@@ -6,7 +5,8 @@ class CountryModel {
     String? remark,
     String? status,
     Message? message,
-    Data? data,}){
+    Data? data,
+  }) {
     _remark = remark;
     _status = status;
     _message = message;
@@ -14,20 +14,21 @@ class CountryModel {
   }
 
   CountryModel.fromJson(dynamic json) {
-    _remark  = json['remark'];
-    _status  = json['status'];
-    _message = json['message'] != null ? Message.fromJson(json['message']) : null;
-    _data    = json['data']    != null ? Data.fromJson(json['data']) : null;
+    _remark = json['remark'];
+    _status = json['status'];
+    _message =
+        json['message'] != null ? Message.fromJson(json['message']) : null;
+    _data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
   String? _remark;
   String? _status;
   Message? _message;
   Data? _data;
 
-  String?  get remark => _remark;
-  String?  get status => _status;
+  String? get remark => _remark;
+  String? get status => _status;
   Message? get message => _message;
-  Data?    get data => _data;
+  Data? get data => _data;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -41,12 +42,12 @@ class CountryModel {
     }
     return map;
   }
-
 }
 
 class Data {
   Data({
-    List<Countries>? countries,}){
+    List<Countries>? countries,
+  }) {
     _countries = countries;
   }
 
@@ -69,15 +70,14 @@ class Data {
     }
     return map;
   }
-
 }
 
 class Countries {
-
   Countries({
     String? country,
     String? dialCode,
-    String? countryCode,}){
+    String? countryCode,
+  }) {
     _country = country;
     _dialCode = dialCode;
     _countryCode = countryCode;
@@ -104,5 +104,4 @@ class Countries {
     map['country_code'] = _countryCode;
     return map;
   }
-
 }

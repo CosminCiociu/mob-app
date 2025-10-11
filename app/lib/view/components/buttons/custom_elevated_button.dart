@@ -33,18 +33,21 @@ class CustomElevatedBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return icon != null
         ? ElevatedButton.icon(
-            icon: isLoading ? const SizedBox.shrink() : icon ?? const SizedBox.shrink(),
+            icon: isLoading
+                ? const SizedBox.shrink()
+                : icon ?? const SizedBox.shrink(),
             onPressed: () {
               if (isLoading == false) {
                 press();
               }
-            }, 
+            },
             style: ElevatedButton.styleFrom(
-              backgroundColor: bgColor, 
-              elevation: elevation, 
+              backgroundColor: bgColor,
+              elevation: elevation,
               surfaceTintColor: bgColor.withOpacity(0.5),
               shadowColor: shadowColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius)),
               maximumSize: Size.fromHeight(height),
               minimumSize: Size(width, height),
               splashFactory: InkRipple.splashFactory,
@@ -56,7 +59,7 @@ class CustomElevatedBtn extends StatelessWidget {
                     child: CircularProgressIndicator(color: Colors.white),
                   )
                 : Text(
-                    text, 
+                    text,
                     style: boldDefault.copyWith(
                       color: MyColor.getWhiteColor(),
                     ),
@@ -67,12 +70,13 @@ class CustomElevatedBtn extends StatelessWidget {
               if (isLoading == false) {
                 press();
               }
-            }, 
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: bgColor,
-              elevation: elevation, 
+              elevation: elevation,
               splashFactory: InkRipple.splashFactory,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(radius)),
               maximumSize: Size.fromHeight(height),
               minimumSize: Size(width, height),
             ),
@@ -82,12 +86,9 @@ class CustomElevatedBtn extends StatelessWidget {
                     width: 20,
                     child: CircularProgressIndicator(color: Colors.white),
                   )
-                : Text(
-                    text, 
-                    style: boldDefault.copyWith(
-                      color: MyColor.getWhiteColor()
-                    )
-                  ),
+                : Text(text,
+                    style:
+                        boldDefault.copyWith(color: MyColor.getWhiteColor())),
           );
   }
 }

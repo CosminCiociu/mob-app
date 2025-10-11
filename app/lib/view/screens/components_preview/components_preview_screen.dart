@@ -39,7 +39,9 @@ class _ComponentPreviewScreenState extends State<ComponentPreviewScreen> {
                 Get.find<ThemeController>().changeTheme();
               },
               child: Icon(
-                Get.find<ThemeController>().darkTheme ? CupertinoIcons.moon : CupertinoIcons.sun_min,
+                Get.find<ThemeController>().darkTheme
+                    ? CupertinoIcons.moon
+                    : CupertinoIcons.sun_min,
                 color: MyColor.getWhiteColor(),
               ),
             ),
@@ -66,18 +68,21 @@ class _ComponentPreviewScreenState extends State<ComponentPreviewScreen> {
                   children: [
                     Text(
                       "TypoGraphy primary",
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: MyColor.getPrimaryTextColor()),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium
+                          ?.copyWith(color: MyColor.getPrimaryTextColor()),
                     ),
                     const SizedBox(height: Dimensions.space10),
                     Text(
                       "TypoGraphy secondary",
-                      style: title.copyWith(color: MyColor.getPrimaryTextColor()),
+                      style:
+                          title.copyWith(color: MyColor.getPrimaryTextColor()),
                     ),
                     const TweenAnimation()
                   ],
                 ),
               ),
-             
               const SizedBox(height: Dimensions.space20),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -88,9 +93,7 @@ class _ComponentPreviewScreenState extends State<ComponentPreviewScreen> {
                 ),
               ),
               const SizedBox(height: Dimensions.space20),
-           
             ],
-           
           ),
         ),
       ),

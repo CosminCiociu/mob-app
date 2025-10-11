@@ -22,7 +22,9 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
       body: SingleChildScrollView(
           child: Stack(
         children: [
-          SizedBox(height: MediaQuery.of(context).size.height, child: Image.asset(MyImages.girl2, fit: BoxFit.cover)),
+          SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: Image.asset(MyImages.girl2, fit: BoxFit.cover)),
           Center(
             child: Padding(
               padding: EdgeInsets.only(
@@ -45,7 +47,10 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .85, right: 70, left: 70),
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).size.height * .85,
+                right: 70,
+                left: 70),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -53,7 +58,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
                   onTap: () {},
                   child: Container(
                     padding: EdgeInsets.all(Dimensions.space15),
-                    decoration: BoxDecoration(color: MyColor.greyColor, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                        color: MyColor.greyColor, shape: BoxShape.circle),
                     child: CustomSvgPicture(
                       image: MyImages.micreophone,
                       color: MyColor.colorWhite,
@@ -67,7 +73,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
                   },
                   child: Container(
                     padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(color: MyColor.colorRed, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                        color: MyColor.colorRed, shape: BoxShape.circle),
                     child: CustomSvgPicture(
                       image: MyImages.phoneHangUp,
                       color: MyColor.colorWhite,
@@ -79,7 +86,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
                   onTap: () {},
                   child: Container(
                     padding: EdgeInsets.all(Dimensions.space15),
-                    decoration: BoxDecoration(color: MyColor.greyColor, shape: BoxShape.circle),
+                    decoration: BoxDecoration(
+                        color: MyColor.greyColor, shape: BoxShape.circle),
                     child: CustomSvgPicture(
                       image: MyImages.speaker,
                       color: MyColor.colorWhite,
@@ -91,7 +99,8 @@ class _AudioCallScreenState extends State<AudioCallScreen> {
             ),
           ),
           Container(
-              margin: EdgeInsets.only(top: Dimensions.space50, left: Dimensions.space20),
+              margin: EdgeInsets.only(
+                  top: Dimensions.space50, left: Dimensions.space20),
               width: 120,
               height: 150,
               child: ClipRRect(

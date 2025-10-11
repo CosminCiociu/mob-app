@@ -12,7 +12,7 @@
 // import 'package:ovo_meet/data/controller/localization/localization_controller.dart';
 // import 'package:ovo_meet/data/model/global/response_model/response_model.dart';
 // import 'package:ovo_meet/data/model/language/language_model.dart';
-// 
+//
 // import 'package:ovo_meet/view/components/snack_bar/show_custom_snackbar.dart';
 
 // class LanguageDialogBody extends StatefulWidget {
@@ -49,7 +49,7 @@
 //                     pressIndex = index;
 //                   });
 //                   String languageCode = widget.langList[index].languageCode;
-//                   final repo = 
+//                   final repo =
 //                   final localizationController = Get.put(LocalizationController(sharedPreferences: Get.find()));
 //                   ResponseModel response = await repo.getLanguage(languageCode);
 //                   if(response.statusCode == 200){

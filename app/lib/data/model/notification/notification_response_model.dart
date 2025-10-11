@@ -2,20 +2,22 @@ import '../global/meassage_model.dart';
 
 class NotificationResponseModel {
   NotificationResponseModel({
-      String? remark, 
-      String? status, 
-      Message? message, 
-      MainData? mainData,}){
+    String? remark,
+    String? status,
+    Message? message,
+    MainData? mainData,
+  }) {
     _remark = remark;
     _status = status;
     _message = message;
     _mainData = mainData;
-}
+  }
 
   NotificationResponseModel.fromJson(dynamic json) {
     _remark = json['remark'];
     _status = json['status'];
-    _message = json['message'] != null ? Message.fromJson(json['message']) : null;
+    _message =
+        json['message'] != null ? Message.fromJson(json['message']) : null;
     _mainData = json['data'] != null ? MainData.fromJson(json['data']) : null;
   }
   String? _remark;
@@ -40,17 +42,19 @@ class NotificationResponseModel {
     }
     return map;
   }
-
 }
 
 class MainData {
   MainData({
-      Notifications? notifications,}){
+    Notifications? notifications,
+  }) {
     _notifications = notifications;
-}
+  }
 
   MainData.fromJson(dynamic json) {
-    _notifications = json['notifications'] != null ? Notifications.fromJson(json['notifications']) : null;
+    _notifications = json['notifications'] != null
+        ? Notifications.fromJson(json['notifications'])
+        : null;
   }
   Notifications? _notifications;
 
@@ -63,38 +67,28 @@ class MainData {
     }
     return map;
   }
-
 }
 
 class Notifications {
   Notifications({
-       
-      List<Data>? data, 
-      
-       
-      List<Links>? links, 
-      dynamic nextPageUrl, 
-      }){
-   
+    List<Data>? data,
+    List<Links>? links,
+    dynamic nextPageUrl,
+  }) {
     _data = data;
-    
-    
+
     _links = links;
     _nextPageUrl = nextPageUrl;
-    
-    
-}
+  }
 
   Notifications.fromJson(dynamic json) {
-    
     if (json['data'] != null) {
       _data = [];
       json['data'].forEach((v) {
         _data?.add(Data.fromJson(v));
       });
     }
-    
-    
+
     if (json['links'] != null) {
       _links = [];
       json['links'].forEach((v) {
@@ -102,57 +96,44 @@ class Notifications {
       });
     }
     _nextPageUrl = json['next_page_url'];
-    
-    
   }
-  
+
   List<Data>? _data;
-  
-  
+
   List<Links>? _links;
   dynamic _nextPageUrl;
-  
-  
 
-  
   List<Data>? get data => _data;
-  
-  
+
   List<Links>? get links => _links;
   dynamic get nextPageUrl => _nextPageUrl;
-  
-  
-  
-  
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    
+
     if (_data != null) {
       map['data'] = _data?.map((v) => v.toJson()).toList();
     }
-    
-    
+
     if (_links != null) {
       map['links'] = _links?.map((v) => v.toJson()).toList();
     }
     map['next_page_url'] = _nextPageUrl;
-    
-    
+
     return map;
   }
-
 }
 
 class Links {
   Links({
-      dynamic url, 
-      String? label, 
-      bool? active,}){
+    dynamic url,
+    String? label,
+    bool? active,
+  }) {
     _url = url;
     _label = label;
     _active = active;
-}
+  }
 
   Links.fromJson(dynamic json) {
     _url = json['url'];
@@ -174,23 +155,22 @@ class Links {
     map['active'] = _active;
     return map;
   }
-
 }
 
 class Data {
-  Data({
-    this.id,
-    this.userId,
-    this.sender,
-    this.sentFrom,
-    this.sentTo,
-    this.subject,
-    this.message,
-    this.notificationType,
-    this.image,
-    this.userRead,
-    this.createdAt,
-    this.updatedAt});
+  Data(
+      {this.id,
+      this.userId,
+      this.sender,
+      this.sentFrom,
+      this.sentTo,
+      this.subject,
+      this.message,
+      this.notificationType,
+      this.image,
+      this.userRead,
+      this.createdAt,
+      this.updatedAt});
 
   Data.fromJson(dynamic json) {
     id = json['id'];
@@ -236,6 +216,4 @@ class Data {
     map['updated_at'] = updatedAt;
     return map;
   }
-
 }
-

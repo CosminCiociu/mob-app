@@ -33,7 +33,8 @@ class _SelectGenderScreenState extends State<SelectGenderScreen> {
       body: GetBuilder<SelectGenderController>(
         builder: (controller) => SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.defaultScreenPadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -44,7 +45,8 @@ class _SelectGenderScreenState extends State<SelectGenderScreen> {
                 const SizedBox(height: Dimensions.space10),
                 Text(
                   MyStrings.pleaseSelectYourGender,
-                  style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                  style: regularDefault.copyWith(
+                      color: MyColor.getSecondaryTextColor()),
                 ),
                 const SizedBox(height: Dimensions.space100),
                 Align(
@@ -56,10 +58,21 @@ class _SelectGenderScreenState extends State<SelectGenderScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(Dimensions.space35),
                       height: Dimensions.space150,
-                      decoration: BoxDecoration(border: Border.all(color: controller.isMen ? MyColor.buttonColor : MyColor.greyColor.withOpacity(.4)), borderRadius: BorderRadius.circular(Dimensions.space12), color: controller.isMen ? MyColor.primaryColor : MyColor.transparentColor ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: controller.isMen
+                                  ? MyColor.buttonColor
+                                  : MyColor.greyColor.withOpacity(.4)),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.space12),
+                          color: controller.isMen
+                              ? MyColor.primaryColor
+                              : MyColor.transparentColor),
                       child: Image.asset(
                         MyImages.men,
-                        color: controller.isMen ? MyColor.buttonColor : MyColor.colorBlack,
+                        color: controller.isMen
+                            ? MyColor.buttonColor
+                            : MyColor.colorBlack,
                       ),
                     ),
                   ),
@@ -75,10 +88,21 @@ class _SelectGenderScreenState extends State<SelectGenderScreen> {
                       padding: const EdgeInsets.all(Dimensions.space30),
                       height: Dimensions.space150,
                       decoration: BoxDecoration(
-                        border: Border.all(color: controller.isMen ? MyColor.greyColor.withOpacity(.4) : MyColor.buttonColor,), borderRadius: BorderRadius.circular(Dimensions.space12), color: controller.isMen ? MyColor.transparentColor : MyColor.primaryColor),
+                          border: Border.all(
+                            color: controller.isMen
+                                ? MyColor.greyColor.withOpacity(.4)
+                                : MyColor.buttonColor,
+                          ),
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.space12),
+                          color: controller.isMen
+                              ? MyColor.transparentColor
+                              : MyColor.primaryColor),
                       child: Image.asset(
                         MyImages.women,
-                        color: controller.isMen ? MyColor.colorBlack : MyColor.buttonColor,
+                        color: controller.isMen
+                            ? MyColor.colorBlack
+                            : MyColor.buttonColor,
                       ),
                     ),
                   ),
@@ -88,8 +112,9 @@ class _SelectGenderScreenState extends State<SelectGenderScreen> {
                     onTap: () {
                       Get.toNamed(RouteHelper.selectIntersetScreen);
                     },
-                    child: const CustomGradiantButton(text: MyStrings.continues)),
-                   const SizedBox(height: Dimensions.space50)
+                    child:
+                        const CustomGradiantButton(text: MyStrings.continues)),
+                const SizedBox(height: Dimensions.space50)
               ],
             ),
           ),

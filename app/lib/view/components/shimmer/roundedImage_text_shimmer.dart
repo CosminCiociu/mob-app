@@ -15,7 +15,9 @@ class RoundedWidgetTextShimmer extends StatelessWidget {
           highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(
+                color: MyColor.getGreyColor().withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10)),
             width: 65,
             height: 60,
           ),
@@ -26,7 +28,9 @@ class RoundedWidgetTextShimmer extends StatelessWidget {
           highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+            decoration: BoxDecoration(
+                color: MyColor.getGreyColor().withOpacity(0.2),
+                borderRadius: BorderRadius.circular(1)),
             width: 60,
             height: 10,
           ),

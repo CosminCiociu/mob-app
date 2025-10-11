@@ -8,19 +8,15 @@ class MyShimmerWidget extends StatelessWidget {
   final Color? baseColor;
   final Color? highlightColor;
 
-  const MyShimmerWidget({
-    super.key,
-    required this.child,
-    this.baseColor,
-    this.highlightColor
-  });
+  const MyShimmerWidget(
+      {super.key, required this.child, this.baseColor, this.highlightColor});
 
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: baseColor ?? MyColor.getGreyColor().withOpacity(0.1),
-      highlightColor: highlightColor ?? MyColor.getPrimaryColor().withOpacity(0.07),
-      child: child
-    );
+        baseColor: baseColor ?? MyColor.getGreyColor().withOpacity(0.1),
+        highlightColor:
+            highlightColor ?? MyColor.getPrimaryColor().withOpacity(0.07),
+        child: child);
   }
 }

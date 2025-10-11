@@ -6,36 +6,43 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class HistoryStatusSection extends StatelessWidget {
-
   final String status;
 
-  const HistoryStatusSection({
-    super.key,
-    required this.status
-  });
+  const HistoryStatusSection({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: Dimensions.space5, horizontal: Dimensions.space10),
+      padding: const EdgeInsets.symmetric(
+          vertical: Dimensions.space5, horizontal: Dimensions.space10),
       alignment: Alignment.center,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color:
-                status == "1" ? MyColor.getGreenColor()
-              : status == "2" ? MyColor.getPendingColor()
-              : status == "3" ? MyColor.getRedColor(): MyColor.getGreenColor())
-      ),
+          border: Border.all(
+              color: status == "1"
+                  ? MyColor.getGreenColor()
+                  : status == "2"
+                      ? MyColor.getPendingColor()
+                      : status == "3"
+                          ? MyColor.getRedColor()
+                          : MyColor.getGreenColor())),
       child: Text(
-        status == "1" ? MyStrings.approved.tr
-            : status == "2" ? MyStrings.pending.tr
-            : status == "3" ? MyStrings.rejected.tr
-            : "",
+        status == "1"
+            ? MyStrings.approved.tr
+            : status == "2"
+                ? MyStrings.pending.tr
+                : status == "3"
+                    ? MyStrings.rejected.tr
+                    : "",
         textAlign: TextAlign.center,
         style: regularExtraSmall.copyWith(
-            color: status == "1" ? MyColor.getGreenColor()
-                : status == "2" ? MyColor.getPendingColor()
-                : status == "3" ? MyColor.getRedColor() : MyColor.getGreenColor(),
+          color: status == "1"
+              ? MyColor.getGreenColor()
+              : status == "2"
+                  ? MyColor.getPendingColor()
+                  : status == "3"
+                      ? MyColor.getRedColor()
+                      : MyColor.getGreenColor(),
         ),
       ),
     );

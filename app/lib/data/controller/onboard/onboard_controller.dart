@@ -24,7 +24,8 @@ class OnBoardController extends GetxController {
     ),
     OnBoardModel(
       title: "Find your perfect match!",
-      subtitle: "You can follow me if you wantand comment on any to get some freebies",
+      subtitle:
+          "You can follow me if you wantand comment on any to get some freebies",
       image: MyImages.onBoardImageTwo,
       isSvg: true,
       bgcolor: const Color(0xff006bcc),
@@ -40,9 +41,11 @@ class OnBoardController extends GetxController {
     update();
   }
 
-  LinearGradient generateGradientVariation(Color baseColor, GradientIntensity intensity) {
+  LinearGradient generateGradientVariation(
+      Color baseColor, GradientIntensity intensity) {
     Color generateVariation() {
-      final int variation = intensity.index * 50; // Adjust the factor based on intensity levels
+      final int variation =
+          intensity.index * 50; // Adjust the factor based on intensity levels
       final int red = min(255, baseColor.red + variation);
       final int green = min(255, baseColor.green + variation);
       final int blue = min(255, baseColor.blue + variation);

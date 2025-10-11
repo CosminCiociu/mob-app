@@ -1,4 +1,4 @@
-class SignUpModel{
+class SignUpModel {
   final String firstName;
   final String lastName;
   final String email;
@@ -19,8 +19,8 @@ class SignUpModel{
       'lastname': lastName,
       'email': email,
       'password': password,
-      'password_confirmation':password,
-      'agree': agree.toString()=='true'?'true':'',
+      'password_confirmation': password,
+      'agree': agree.toString() == 'true' ? 'true' : '',
     };
   }
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 
 class ActionButtonIconWidget extends StatelessWidget {
-
   final Color backgroundColor;
   final Color iconColor;
   final VoidCallback pressed;
@@ -31,21 +30,23 @@ class ActionButtonIconWidget extends StatelessWidget {
     return GestureDetector(
       onTap: pressed,
       child: Container(
-        height: size, width: size,
+        height: size,
+        width: size,
         alignment: Alignment.center,
-        padding: EdgeInsets.all(isLoading?5:0),
+        padding: EdgeInsets.all(isLoading ? 5 : 0),
         margin: EdgeInsets.only(right: spacing),
-        decoration: BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
-        child: isLoading? SizedBox(height:size/2,width:size/2,child:  CircularProgressIndicator(color: MyColor.getPrimaryColor())) : isImage ? Image.asset(
-          imageSrc!,
-          color: iconColor,
-          height: size / 2,
-          width: size / 2
-        ) : Icon(
-          icon,
-          color: iconColor,
-          size: size / 2
-        ),
+        decoration:
+            BoxDecoration(color: backgroundColor, shape: BoxShape.circle),
+        child: isLoading
+            ? SizedBox(
+                height: size / 2,
+                width: size / 2,
+                child:
+                    CircularProgressIndicator(color: MyColor.getPrimaryColor()))
+            : isImage
+                ? Image.asset(imageSrc!,
+                    color: iconColor, height: size / 2, width: size / 2)
+                : Icon(icon, color: iconColor, size: size / 2),
       ),
     );
   }

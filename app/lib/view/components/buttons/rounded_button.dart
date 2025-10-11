@@ -41,10 +41,25 @@ class RoundedButton extends StatelessWidget {
             onTap: press,
             splashColor: MyColor.getScreenBgColor(),
             child: Container(
-                padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+                padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding, vertical: verticalPadding),
                 width: size.width * width,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(cornerRadius), color: isColorChange ? color : MyColor.getPrimaryButtonColor()),
-                child: Center(child: isLoading ? CustomLoader(loaderColor: textColor ?? MyColor.getCardColor()) : Text(text.tr, style: TextStyle(color: isColorChange ? textColor : MyColor.getTextColor(), fontSize: 14, fontWeight: FontWeight.w500)))),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(cornerRadius),
+                    color: isColorChange
+                        ? color
+                        : MyColor.getPrimaryButtonColor()),
+                child: Center(
+                    child: isLoading
+                        ? CustomLoader(
+                            loaderColor: textColor ?? MyColor.getCardColor())
+                        : Text(text.tr,
+                            style: TextStyle(
+                                color: isColorChange
+                                    ? textColor
+                                    : MyColor.getTextColor(),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500)))),
           )
         : isOutlined
             ? Material(
@@ -52,10 +67,27 @@ class RoundedButton extends StatelessWidget {
                   onTap: press,
                   splashColor: MyColor.getScreenBgColor(),
                   child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding,
+                          vertical: verticalPadding),
                       width: size.width * width,
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(cornerRadius), color: isColorChange ? color : MyColor.getPrimaryButtonColor()),
-                      child: Center(child: isLoading ? CustomLoader(loaderColor: textColor ?? MyColor.getCardColor()) : Text(text.tr, style: TextStyle(color: isColorChange ? textColor : MyColor.getPrimaryTextColor(), fontSize: 14, fontWeight: FontWeight.w500)))),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(cornerRadius),
+                          color: isColorChange
+                              ? color
+                              : MyColor.getPrimaryButtonColor()),
+                      child: Center(
+                          child: isLoading
+                              ? CustomLoader(
+                                  loaderColor:
+                                      textColor ?? MyColor.getCardColor())
+                              : Text(text.tr,
+                                  style: TextStyle(
+                                      color: isColorChange
+                                          ? textColor
+                                          : MyColor.getPrimaryTextColor(),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500)))),
                 ),
               )
             : SizedBox(
@@ -64,9 +96,19 @@ class RoundedButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(cornerRadius),
                   child: ElevatedButton(
                     onPressed: press,
-                    style: ElevatedButton.styleFrom(backgroundColor: color, shadowColor: MyColor.getTransparentColor(), padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding), textStyle: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500)),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: color,
+                        shadowColor: MyColor.getTransparentColor(),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: horizontalPadding,
+                            vertical: verticalPadding),
+                        textStyle: TextStyle(
+                            color: textColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
                     child: isLoading
-                        ? CustomLoader(loaderColor: textColor ?? MyColor.getCardColor())
+                        ? CustomLoader(
+                            loaderColor: textColor ?? MyColor.getCardColor())
                         : Text(
                             text.tr,
                             style: TextStyle(color: textColor),

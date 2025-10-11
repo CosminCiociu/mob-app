@@ -23,20 +23,24 @@ showExitDialog(BuildContext context) {
     headerAnimationLoop: false,
     animType: AnimType.bottomSlide,
     title: MyStrings.exitTitle.tr,
-    titleTextStyle: regularLarge.copyWith(color: MyColor.getBlackColor(), fontWeight: FontWeight.w600),
+    titleTextStyle: regularLarge.copyWith(
+        color: MyColor.getBlackColor(), fontWeight: FontWeight.w600),
     showCloseIcon: false,
-    btnCancel:  GestureDetector(
-      onTap: () {
-             SystemNavigator.pop();
-      },
-      child: CustomGradiantButton(text:MyStrings.no.tr ,hasBorder: true,textColor: MyColor.buttonColor,padding:12,)),
-    btnOk:
-    GestureDetector(
-      onTap: () {
-             SystemNavigator.pop();
-      },
-      child: CustomGradiantButton(text:MyStrings.yes.tr )),
-    
+    btnCancel: GestureDetector(
+        onTap: () {
+          SystemNavigator.pop();
+        },
+        child: CustomGradiantButton(
+          text: MyStrings.no.tr,
+          hasBorder: true,
+          textColor: MyColor.buttonColor,
+          padding: 12,
+        )),
+    btnOk: GestureDetector(
+        onTap: () {
+          SystemNavigator.pop();
+        },
+        child: CustomGradiantButton(text: MyStrings.yes.tr)),
     btnCancelOnPress: () {},
     btnOkOnPress: () {
       SystemNavigator.pop();

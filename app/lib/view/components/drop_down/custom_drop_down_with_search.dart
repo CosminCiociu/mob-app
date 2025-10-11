@@ -21,13 +21,16 @@ class CustomDropDownWithSearchField extends StatefulWidget {
     this.displayStringForOption,
     this.itemTextStyle,
     this.selectedTextStyle,
-  }) : assert(list != null && list.contains(selectedValue), "Selected value must be from the list & list can't be empty");
+  }) : assert(list != null && list.contains(selectedValue),
+            "Selected value must be from the list & list can't be empty");
 
   @override
-  State<CustomDropDownWithSearchField> createState() => _CustomDropDownWithSearchFieldState();
+  State<CustomDropDownWithSearchField> createState() =>
+      _CustomDropDownWithSearchFieldState();
 }
 
-class _CustomDropDownWithSearchFieldState extends State<CustomDropDownWithSearchField> {
+class _CustomDropDownWithSearchFieldState
+    extends State<CustomDropDownWithSearchField> {
   late String selectedOption;
   late TextEditingController searchController;
   late List<String> filteredOptions;
@@ -51,7 +54,9 @@ class _CustomDropDownWithSearchFieldState extends State<CustomDropDownWithSearch
           filteredOptions = widget.list ?? [];
         } else {
           filteredOptions.clear();
-          final newItems = (widget.list ?? []).where((text) => text.toLowerCase().contains(query.toLowerCase())).toList();
+          final newItems = (widget.list ?? [])
+              .where((text) => text.toLowerCase().contains(query.toLowerCase()))
+              .toList();
           if (newItems.isNotEmpty && newItems.contains(selectedOption)) {}
           setState(() {
             filteredOptions.addAll(newItems);
@@ -64,15 +69,20 @@ class _CustomDropDownWithSearchFieldState extends State<CustomDropDownWithSearch
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            decoration: BoxDecoration(color: MyColor.getTransparentColor(), borderRadius: const BorderRadius.all(Radius.circular(5)), border: Border.all(color: MyColor.getTextFieldDisableBorder())),
+            decoration: BoxDecoration(
+                color: MyColor.getTransparentColor(),
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
+                border: Border.all(color: MyColor.getTextFieldDisableBorder())),
             child: Padding(
-              padding: const EdgeInsets.only(left: 10, right: 5, top: 5, bottom: 5),
+              padding:
+                  const EdgeInsets.only(left: 10, right: 5, top: 5, bottom: 5),
               child: DropdownButton(
                 isExpanded: true,
                 underline: Container(),
                 hint: Text(
                   widget.selectedValue?.tr ?? '',
-                  style: widget.selectedTextStyle ?? regularDefault.copyWith(color: MyColor.getBlackColor()),
+                  style: widget.selectedTextStyle ??
+                      regularDefault.copyWith(color: MyColor.getBlackColor()),
                 ), // Not necessary for Option 1
                 value: widget.selectedValue,
                 dropdownColor: MyColor.getWhiteColor(),
@@ -92,7 +102,9 @@ class _CustomDropDownWithSearchFieldState extends State<CustomDropDownWithSearch
                               children: [
                                 Text(
                                   value.tr,
-                                  style: widget.itemTextStyle ?? regularDefault.copyWith(color: MyColor.getBlackColor()),
+                                  style: widget.itemTextStyle ??
+                                      regularDefault.copyWith(
+                                          color: MyColor.getBlackColor()),
                                 ),
                               ],
                             ),

@@ -19,7 +19,8 @@ class ThemeController extends GetxController implements GetxService {
   }
 
   void _loadCurrentTheme() {
-    _darkTheme = sharedPreferences.getBool(SharedPreferenceHelper.theme) ?? false;
+    _darkTheme =
+        sharedPreferences.getBool(SharedPreferenceHelper.theme) ?? false;
     update();
   }
 
@@ -42,6 +43,8 @@ class ThemeController extends GetxController implements GetxService {
 
   // function to switch between themes
   void switchTheme() {
-    currentTheme.value = currentTheme.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    currentTheme.value = currentTheme.value == ThemeMode.light
+        ? ThemeMode.dark
+        : ThemeMode.light;
   }
 }

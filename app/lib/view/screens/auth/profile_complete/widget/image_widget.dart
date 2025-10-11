@@ -4,18 +4,17 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import '../../../../../core/utils/my_images.dart';
 
 class CustomImageWidget extends StatefulWidget {
-
   final String imagePath;
   final VoidCallback onClicked;
   final bool isEdit;
   final int listIndex;
 
-  const CustomImageWidget({super.key,
-    required this.imagePath,
-    this.listIndex = 0,
-    required this.onClicked,
-    this.isEdit = false
-  });
+  const CustomImageWidget(
+      {super.key,
+      required this.imagePath,
+      this.listIndex = 0,
+      required this.onClicked,
+      this.isEdit = false});
 
   @override
   State<CustomImageWidget> createState() => _CustomImageWidgetState();
@@ -26,7 +25,6 @@ class _CustomImageWidgetState extends State<CustomImageWidget> {
 
   @override
   Widget build(BuildContext context) {
-
     return Center(
       child: Container(
         padding: EdgeInsets.zero,
@@ -34,8 +32,8 @@ class _CustomImageWidgetState extends State<CustomImageWidget> {
         height: 90,
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(width: .5,color: MyColor.getPrimaryColor().withOpacity(.1))
-        ),
+            border: Border.all(
+                width: .5, color: MyColor.getPrimaryColor().withOpacity(.1))),
         child: ClipOval(
           child: Image.asset(
             MyImages.profileImage,

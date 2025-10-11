@@ -21,9 +21,13 @@ class DynamicFormModel {
     return DynamicFormModel(
       id: json["id"],
       act: json["act"],
-      formData: json["form_data"] == null ? null : GlobalKYCForm.fromJson(json["form_data"]),
-      createdAt: json["created_at"] == null ? null : json["created_at"].toString(),
-      updatedAt: json["updated_at"] == null ? null : json["updated_at"].toString(),
+      formData: json["form_data"] == null
+          ? null
+          : GlobalKYCForm.fromJson(json["form_data"]),
+      createdAt:
+          json["created_at"] == null ? null : json["created_at"].toString(),
+      updatedAt:
+          json["updated_at"] == null ? null : json["updated_at"].toString(),
     );
   }
 

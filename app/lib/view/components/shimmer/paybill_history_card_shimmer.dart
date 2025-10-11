@@ -19,7 +19,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
               highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
               child: Container(
                 margin: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(5)),
+                decoration: BoxDecoration(
+                    color: MyColor.getGreyColor().withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(5)),
                 height: isPdfShow ? 30 : 50,
                 width: isPdfShow ? 30 : 50,
               ),
@@ -34,7 +36,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
                   baseColor: MyColor.getGreyColor().withOpacity(0.2),
                   highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                   child: Container(
-                    decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                    decoration: BoxDecoration(
+                        color: MyColor.getGreyColor().withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(1)),
                     height: 15,
                     width: context.width / 4,
                   ),
@@ -46,7 +50,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
                   baseColor: MyColor.getGreyColor().withOpacity(0.2),
                   highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                   child: Container(
-                    decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                    decoration: BoxDecoration(
+                        color: MyColor.getGreyColor().withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(1)),
                     height: 15,
                     width: context.width / 3,
                   ),
@@ -60,7 +66,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
                 baseColor: MyColor.getGreyColor().withOpacity(0.2),
                 highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                 child: Container(
-                  decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                  decoration: BoxDecoration(
+                      color: MyColor.getGreyColor().withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(1)),
                   height: 24,
                   width: 24,
                 ),
@@ -72,7 +80,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
                     baseColor: MyColor.getGreyColor().withOpacity(0.2),
                     highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                     child: Container(
-                      decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                      decoration: BoxDecoration(
+                          color: MyColor.getGreyColor().withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(1)),
                       height: 15,
                       width: context.width / 6,
                     ),
@@ -84,7 +94,9 @@ class PaybillHistoryCardShimmer extends StatelessWidget {
                     baseColor: MyColor.getGreyColor().withOpacity(0.2),
                     highlightColor: MyColor.getPrimaryColor().withOpacity(0.7),
                     child: Container(
-                      decoration: BoxDecoration(color: MyColor.getGreyColor().withOpacity(0.2), borderRadius: BorderRadius.circular(1)),
+                      decoration: BoxDecoration(
+                          color: MyColor.getGreyColor().withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(1)),
                       height: 15,
                       width: context.width / 5,
                     ),

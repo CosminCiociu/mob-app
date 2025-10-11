@@ -31,7 +31,11 @@ class CustomTextButton extends StatelessWidget {
         minimumSize: Size.zero,
       ),
       onPressed: press,
-      child: Text(text, maxLines: 2, overflow: TextOverflow.ellipsis, style: style ?? regularLarge.copyWith(color: MyColor.getPrimaryColor())),
+      child: Text(text,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style:
+              style ?? regularLarge.copyWith(color: MyColor.getPrimaryColor())),
     );
   }
 }

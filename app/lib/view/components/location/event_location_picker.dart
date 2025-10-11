@@ -1,538 +1,634 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart' as geocoding;
-// TODO: Add correct google_places_flutter imports once API is confirmed
-// import 'package:google_places_flutter/google_places_flutter.dart';
-// import 'package:google_places_flutter/model/prediction.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
-
+import 'package:geocoding/geocoding.dart';
+import 'package:http/http.dart' as http;
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
+import 'package:ovo_meet/core/utils/dimensions.dart';
+import 'package:ovo_meet/core/config/app_config.dart';
+import 'package:ovo_meet/core/services/location_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class EventLocationPicker {
-  // Google Places API Key - replace with your actual key
-  static const String kGoogleApiKey = 'YOUR_GOOGLE_PLACES_API_KEY';
-
-  static void showLocationPicker({
-    required BuildContext context,
-    required Function(LatLng? location, String? locationName)
-        onLocationSelected,
-    LatLng? initialLocation,
-    String? initialLocationName,
-  }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      isDismissible: true,
-      enableDrag: false,
-      builder: (context) => _MapBottomSheet(
-        initialLocation: initialLocation,
-        initialLocationName: initialLocationName,
-        onLocationSelected: onLocationSelected,
-      ),
-    );
-  }
-}
-
-class _MapBottomSheet extends StatefulWidget {
+/// A location picker widget that integrates with Google Maps and Firebase user locations.
+///
+/// Location initialization priority:
+/// 1. Uses provided initialLocation if specified
+/// 2. Retrieves authenticated user's stored location from Firebase
+/// 3. Falls back to current GPS location automatically
+/// 4. Uses default location as last resort
+class EventLocationPicker extends StatefulWidget {
+  final Function(LatLng location, String locationName) onLocationSelected;
   final LatLng? initialLocation;
   final String? initialLocationName;
-  final Function(LatLng? location, String? locationName) onLocationSelected;
 
-  const _MapBottomSheet({
+  const EventLocationPicker({
+    super.key,
     required this.onLocationSelected,
     this.initialLocation,
     this.initialLocationName,
   });
 
   @override
-  State<_MapBottomSheet> createState() => _MapBottomSheetState();
+  State<EventLocationPicker> createState() => _EventLocationPickerState();
+
+  static Future<void> showLocationPicker({
+    required BuildContext context,
+    required Function(LatLng location, String locationName) onLocationSelected,
+    LatLng? initialLocation,
+    String? initialLocationName,
+  }) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: BoxDecoration(
+          color: MyColor.getCardBgColor(),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: EventLocationPicker(
+          onLocationSelected: onLocationSelected,
+          initialLocation: initialLocation,
+          initialLocationName: initialLocationName,
+        ),
+      ),
+    );
+  }
 }
 
-class _MapBottomSheetState extends State<_MapBottomSheet> {
-  LatLng? selectedLocation;
-  String? locationName;
-  GoogleMapController? mapController;
-  bool isLoadingCurrentLocation = false;
-  TextEditingController searchController = TextEditingController();
-  bool isSearching = false;
-  List<Map<String, dynamic>> searchResults = [];
-  LatLng? userCurrentLocation;
-  Timer? _searchTimer;
-  LatLng? _tempMapLocation;
-  String? _tempLocationName;
-
-  // Enhanced persistent caching system
-  SharedPreferences? _prefs;
-  static const String _cachePrefix = 'places_cache_';
-  static const String _cacheTimestampPrefix = 'places_timestamp_';
-  static const int _cacheExpiryHours = 24; // Cache for 24 hours
-
-  // Default location (Bucharest)
-  static const LatLng defaultLocation = LatLng(44.4268, 26.1025);
+class _EventLocationPickerState extends State<EventLocationPicker> {
+  late GoogleMapController mapController;
+  LatLng _currentPosition = const LatLng(37.7749, -122.4194); // Default to SF
+  final Set<Marker> _markers = {};
+  String _selectedLocationName = '';
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>> _searchResults = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
-    selectedLocation = widget.initialLocation;
-    locationName = widget.initialLocationName;
-    _initializeCache();
-    _getUserLocationForSearch();
-  }
 
-  /// Initialize SharedPreferences for persistent caching
-  Future<void> _initializeCache() async {
-    try {
-      _prefs = await SharedPreferences.getInstance();
-      await _cleanExpiredCache();
-    } catch (e) {
-      // Handle SharedPreferences initialization error
-      // Fall back to in-memory caching
+    if (widget.initialLocation != null) {
+      _currentPosition = widget.initialLocation!;
+      _selectedLocationName = widget.initialLocationName ?? '';
+      _addMarker(_currentPosition, _selectedLocationName);
+    } else {
+      // Try to get user's authenticated location first, then fall back to current location
+      _initializeUserLocation();
     }
   }
 
-  /// Clean expired cache entries
-  Future<void> _cleanExpiredCache() async {
-    if (_prefs == null) return;
-
+  Future<void> _initializeUserLocation() async {
     try {
-      final keys = _prefs!.getKeys();
-      final now = DateTime.now();
+      // First try to get user's stored location from Firebase
+      final userLocationData =
+          await LocationService.getUserLocationFromFirebase();
 
-      for (String key in keys) {
-        if (key.startsWith(_cacheTimestampPrefix)) {
-          final timestampStr = _prefs!.getString(key);
-          if (timestampStr != null) {
-            final timestamp = DateTime.tryParse(timestampStr);
-            if (timestamp != null) {
-              final age = now.difference(timestamp).inHours;
-              if (age > _cacheExpiryHours) {
-                // Remove expired cache entry and its timestamp
-                final cacheKey =
-                    key.replaceFirst(_cacheTimestampPrefix, _cachePrefix);
-                await _prefs!.remove(key);
-                await _prefs!.remove(cacheKey);
-              }
-            }
+      if (userLocationData != null && mounted) {
+        // Extract location data
+        final geoPoint = userLocationData['geopoint'] as GeoPoint;
+        final userLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
+
+        // Get location name from address data
+        String locationName = MyStrings.currentLocation;
+        if (userLocationData['address'] != null) {
+          final address = userLocationData['address'] as Map<String, dynamic>;
+          final fullAddress = address['fullAddress'] as String? ?? '';
+          if (fullAddress.isNotEmpty &&
+              fullAddress != MyStrings.addressNotFound) {
+            locationName = fullAddress;
           }
         }
+
+        // Set as initial location
+        _currentPosition = userLocation;
+        _selectedLocationName = locationName;
+        _addMarker(_currentPosition, _selectedLocationName);
+
+        // Move camera to user location (will be handled by onMapCreated if map isn't ready)
+        // Store the location for later camera movement in onMapCreated
+
+        return; // Successfully initialized with user's stored location
       }
     } catch (e) {
-      // Handle cache cleanup error silently
+      print('Failed to get user location from Firebase: $e');
     }
+
+    // Fallback: Try to get current location automatically
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _getCurrentLocation();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _searchTimer?.cancel();
-    searchController.dispose();
-    mapController?.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
-  Future<void> _getUserLocationForSearch() async {
-    try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-
-      if (permission != LocationPermission.denied &&
-          permission != LocationPermission.deniedForever) {
-        Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
-          timeLimit: const Duration(seconds: 8),
-        );
-
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    // Move camera to the current position with marker (whether from initial location or user location)
+    if (_markers.isNotEmpty) {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
-          setState(() {
-            userCurrentLocation = LatLng(position.latitude, position.longitude);
-          });
+          mapController.animateCamera(
+            CameraUpdate.newLatLngZoom(_currentPosition, 15),
+          );
         }
-      }
-    } catch (e) {
-      // Silently handle location errors
+      });
     }
   }
 
   Future<void> _getCurrentLocation() async {
-    setState(() {
-      isLoadingCurrentLocation = true;
-    });
-
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
+      // Check if location services are enabled
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () => false,
+      );
+
+      if (!serviceEnabled) {
+        _showSnackBar(MyStrings.locationNotAvailable);
+        return;
       }
 
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      // Check and request permissions with timeout
+      LocationPermission permission =
+          await Geolocator.checkPermission().timeout(
+        const Duration(seconds: 5),
+      );
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission().timeout(
+          const Duration(seconds: 10),
+        );
+        if (permission == LocationPermission.denied) {
+          _showSnackBar(MyStrings.locationPermissionDenied);
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
         _showSnackBar(MyStrings.locationPermissionDenied);
         return;
       }
 
+      // Get current position with timeout and lower accuracy for emulator compatibility
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 15),
+      ).timeout(
+        const Duration(seconds: 15),
       );
 
-      if (mounted) {
-        LatLng newLocation = LatLng(position.latitude, position.longitude);
-        setState(() {
-          selectedLocation = newLocation;
-          locationName = MyStrings.currentLocation;
-          userCurrentLocation = selectedLocation;
-        });
+      _currentPosition = LatLng(position.latitude, position.longitude);
 
-        _getLocationDetails(newLocation);
-        widget.onLocationSelected(selectedLocation, locationName);
+      // Get address from coordinates with timeout
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        ).timeout(const Duration(seconds: 10));
 
-        if (mapController != null && mounted) {
-          try {
-            await mapController!.animateCamera(
-              CameraUpdate.newCameraPosition(
-                CameraPosition(target: selectedLocation!, zoom: 15.0),
-              ),
-            );
-          } catch (e) {
-            // Ignore camera animation errors
+        if (placemarks.isNotEmpty) {
+          Placemark place = placemarks[0];
+          _selectedLocationName = [
+            place.name,
+            place.locality,
+            place.country,
+          ]
+              .where((element) => element != null && element.isNotEmpty)
+              .join(', ');
+
+          if (_selectedLocationName.isEmpty) {
+            _selectedLocationName = MyStrings.currentLocation;
           }
+        } else {
+          _selectedLocationName = MyStrings.currentLocation;
         }
+      } catch (geocodingError) {
+        // Fallback to coordinates if geocoding fails
+        _selectedLocationName =
+            '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       }
-    } catch (e) {
-      _showSnackBar('Failed to get current location: $e');
-    } finally {
+
+      _addMarker(_currentPosition, _selectedLocationName);
       if (mounted) {
-        setState(() {
-          isLoadingCurrentLocation = false;
-        });
+        mapController.animateCamera(
+          CameraUpdate.newLatLngZoom(_currentPosition, 15),
+        );
       }
+    } on TimeoutException {
+      _showSnackBar('Location request timed out. Please try again.');
+    } catch (e) {
+      print('Location error: $e');
+      _showSnackBar(MyStrings.unableToGetLocation);
+    } finally {
+      // Location fetching completed
     }
   }
 
-  Future<void> _getLocationDetails(LatLng location) async {
+  void _addMarker(LatLng position, String title) {
+    setState(() {
+      _markers.clear();
+      _markers.add(
+        Marker(
+          markerId: const MarkerId("selectedLocation"),
+          position: position,
+          infoWindow: InfoWindow(title: title),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ),
+      );
+    });
+  }
+
+  void _onMapTap(LatLng position) async {
+    _currentPosition = position;
+
     try {
-      List<geocoding.Placemark> placemarks = await geocoding
-          .placemarkFromCoordinates(
-            location.latitude,
-            location.longitude,
-          )
-          .timeout(const Duration(seconds: 5));
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      ).timeout(const Duration(seconds: 5));
 
       if (placemarks.isNotEmpty && mounted) {
-        geocoding.Placemark placemark = placemarks.first;
-        List<String> nameParts = [];
+        Placemark place = placemarks[0];
+        _selectedLocationName = [
+          place.name,
+          place.locality,
+          place.country,
+        ].where((element) => element != null && element.isNotEmpty).join(', ');
 
-        if (placemark.name != null && placemark.name!.isNotEmpty) {
-          nameParts.add(placemark.name!);
+        if (_selectedLocationName.isEmpty) {
+          _selectedLocationName =
+              '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
         }
-        if (placemark.street != null &&
-            placemark.street!.isNotEmpty &&
-            placemark.street != placemark.name) {
-          nameParts.add(placemark.street!);
-        }
-        if (placemark.locality != null && placemark.locality!.isNotEmpty) {
-          nameParts.add(placemark.locality!);
-        }
-        if (placemark.country != null && placemark.country!.isNotEmpty) {
-          nameParts.add(placemark.country!);
-        }
-
-        setState(() {
-          if (nameParts.isNotEmpty) {
-            locationName = nameParts.join(', ');
-          } else {
-            locationName =
-                '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
-          }
-        });
+      } else {
+        _selectedLocationName =
+            '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          locationName =
-              '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
-        });
-      }
+      // Fallback to coordinates if geocoding fails
+      _selectedLocationName =
+          '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
     }
-  }
 
-  /// Show Google Places Autocomplete overlay
-  Future<void> _showPlacesAutocomplete() async {
-    try {
-      // IMPORTANT: Replace this with the actual working PlacesAutocomplete.show() call
-      //
-      // The exact implementation you requested should be:
-      //
-      // Prediction? prediction = await PlacesAutocomplete.show(
-      //   context: context,
-      //   apiKey: EventLocationPicker.kGoogleApiKey,
-      //   mode: Mode.overlay,
-      //   language: "ro",
-      //   components: [Component(Component.country, "ro")],
-      // );
-      //
-      // However, the google_places_flutter package may need additional setup
-      // or the API might be different. Check the package documentation.
-
-      // Temporary implementation - shows the button works
-      if (mounted) {
-        // Show dialog to demonstrate the functionality
-        await showDialog<String>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Places Search'),
-            content: Text(
-                'PlacesAutocomplete.show() will be implemented here.\n\nReplace EventLocationPicker.kGoogleApiKey with your actual API key and verify the correct API syntax.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      // Handle API errors gracefully
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Places search error: ${e.toString()}'),
-            backgroundColor: MyColor.getRedColor(),
-          ),
-        );
-      }
+    if (mounted) {
+      _addMarker(position, _selectedLocationName);
+      mapController.animateCamera(CameraUpdate.newLatLngZoom(position, 15));
     }
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: MyColor.getRedColor(),
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: MyColor.getPrimaryColor(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _searchPlaces(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+      });
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    try {
+      final String url =
+          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${Uri.encodeComponent(query)}&key=${AppConfig.googleMapsApiKey}';
+
+      final response = await http.get(Uri.parse(url)).timeout(
+            const Duration(seconds: 10),
+          );
+
+      if (response.statusCode == 200 && mounted) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          setState(() {
+            _searchResults = List<Map<String, dynamic>>.from(
+              data['predictions'].map((prediction) => {
+                    'description': prediction['description'],
+                    'place_id': prediction['place_id'],
+                  }),
+            );
+          });
+        } else {
+          setState(() {
+            _searchResults = [];
+          });
+        }
+      }
+    } catch (e) {
+      print('Search error: $e');
+      if (mounted) {
+        setState(() {
+          _searchResults = [];
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _selectPlace(String placeId, String description) async {
+    try {
+      setState(() {
+        _isSearching = true;
+        _searchResults = [];
+      });
+
+      final String url =
+          'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=${AppConfig.googleMapsApiKey}';
+
+      final response = await http.get(Uri.parse(url)).timeout(
+            const Duration(seconds: 10),
+          );
+
+      if (response.statusCode == 200 && mounted) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          final location = data['result']['geometry']['location'];
+          final lat = location['lat'];
+          final lng = location['lng'];
+
+          _currentPosition = LatLng(lat, lng);
+          _selectedLocationName = description;
+          _addMarker(_currentPosition, description);
+
+          _searchController.text = description;
+
+          mapController.animateCamera(
+            CameraUpdate.newLatLngZoom(_currentPosition, 15),
+          );
+        }
+      }
+    } catch (e) {
+      print('Place details error: $e');
+      _showSnackBar('Failed to get place details');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSearching = false;
+        });
+      }
+    }
+  }
+
+  void _confirmSelection() {
+    if (_markers.isNotEmpty) {
+      widget.onLocationSelected(_currentPosition, _selectedLocationName);
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: BoxDecoration(
-        color: MyColor.getCardBgColor(),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      child: Column(
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Column(
         children: [
-          // Handle bar
-          Container(
-            margin: const EdgeInsets.only(top: 10),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: MyColor.getBorderColor(),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
           // Header
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  MyStrings.selectFromMap,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: MyColor.getTextColor(),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: Icon(
-                    Icons.close,
-                    color: MyColor.getTextColor(),
-                  ),
-                ),
-              ],
+          Container(
+            padding: const EdgeInsets.all(Dimensions.space15),
+            decoration: BoxDecoration(
+              color: MyColor.getCardBgColor(),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
             ),
-          ),
-
-          // Search button for Places Autocomplete
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _showPlacesAutocomplete,
-                    icon: const Icon(Icons.search),
-                    label: Text(MyStrings.searchForLocation),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: MyColor.getPrimaryColor(),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: MyColor.getGreyColor(),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: Dimensions.space15),
+
+                // Title and close button
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        MyStrings.selectLocation,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: MyColor.getTextColor(),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(
+                        Icons.close,
+                        color: MyColor.getIconColor(),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Search bar with suggestions
+                Container(
+                  margin: const EdgeInsets.only(top: Dimensions.space10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: MyColor.getBorderColor()),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: MyStrings.searchForLocation,
+                          hintStyle: TextStyle(
+                            color: MyColor.getSecondaryTextColor(),
+                          ),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: MyColor.getIconColor(),
+                          ),
+                          suffixIcon: _isSearching
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                        onChanged: (value) {
+                          _searchPlaces(value);
+                        },
+                        onSubmitted: (value) {
+                          if (value.isNotEmpty && _searchResults.isEmpty) {
+                            // Fallback for direct text entry
+                            _selectedLocationName = value;
+                            _addMarker(_currentPosition, value);
+                          }
+                        },
+                      ),
+                      // Search results dropdown
+                      if (_searchResults.isNotEmpty) ...[
+                        Container(
+                          constraints: const BoxConstraints(maxHeight: 200),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final result = _searchResults[index];
+                              return ListTile(
+                                leading: Icon(
+                                  Icons.location_on,
+                                  color: MyColor.getPrimaryColor(),
+                                  size: 20,
+                                ),
+                                title: Text(
+                                  result['description'],
+                                  style: TextStyle(
+                                    color: MyColor.getTextColor(),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                onTap: () {
+                                  _selectPlace(
+                                    result['place_id'],
+                                    result['description'],
+                                  );
+                                  setState(() {
+                                    _searchResults = [];
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-
-          // Help text
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              _tempMapLocation != null
-                  ? MyStrings.tapUseLocationToConfirm
-                  : MyStrings.tapMapToAddPin,
-              style: TextStyle(
-                fontSize: 12,
-                color: MyColor.getSecondaryTextColor(),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 8),
 
           // Map
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: MyColor.getBorderColor()),
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: _currentPosition,
+                zoom: 11,
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: selectedLocation ?? defaultLocation,
-                    zoom: 12.0,
-                  ),
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
-                  },
-                  onTap: (LatLng location) {
-                    setState(() {
-                      _tempMapLocation = location;
-                      _tempLocationName =
-                          '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
-                    });
-                  },
-                  markers: {
-                    if (selectedLocation != null)
-                      Marker(
-                        markerId: const MarkerId('selected_location'),
-                        position: selectedLocation!,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueGreen,
-                        ),
-                      ),
-                    if (_tempMapLocation != null)
-                      Marker(
-                        markerId: const MarkerId('temp_location'),
-                        position: _tempMapLocation!,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(
-                          BitmapDescriptor.hueBlue,
-                        ),
-                      ),
-                  },
-                  myLocationEnabled: false,
-                  myLocationButtonEnabled: false,
-                  compassEnabled: true,
-                  scrollGesturesEnabled: true,
-                  zoomGesturesEnabled: true,
-                  tiltGesturesEnabled: true,
-                  rotateGesturesEnabled: true,
-                  mapToolbarEnabled: false,
-                ),
-              ),
+              markers: _markers,
+              onTap: _onMapTap,
+              myLocationEnabled: false, // Disable to prevent crashes
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              zoomControlsEnabled: false,
             ),
           ),
 
-          // Bottom buttons
-          Padding(
-            padding: const EdgeInsets.all(16),
+          // Bottom selection area
+          Container(
+            padding: const EdgeInsets.all(Dimensions.space15),
+            decoration: BoxDecoration(
+              color: MyColor.getCardBgColor(),
+              boxShadow: [
+                BoxShadow(
+                  color: MyColor.getShadowColor().withOpacity(0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Use this location button (appears when user taps map)
-                if (_tempMapLocation != null) ...[
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        if (_tempMapLocation != null) {
-                          setState(() {
-                            selectedLocation = _tempMapLocation;
-                            locationName = _tempLocationName;
-                          });
-
-                          await _getLocationDetails(_tempMapLocation!);
-
-                          setState(() {
-                            _tempMapLocation = null;
-                            _tempLocationName = null;
-                          });
-
-                          widget.onLocationSelected(
-                              selectedLocation, locationName);
-                        }
-                      },
-                      icon: const Icon(Icons.check_circle),
-                      label: Text(MyStrings.useThisLocation),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColor.getGreenColor(),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                if (_selectedLocationName.isNotEmpty) ...[
+                  Text(
+                    'Selected Location:',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: MyColor.getSecondaryTextColor(),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
+                  Text(
+                    _selectedLocationName,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: MyColor.getTextColor(),
+                    ),
+                  ),
+                  const SizedBox(height: Dimensions.space15),
+                ] else ...[
+                  Text(
+                    MyStrings.tapMapToAddPin,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: MyColor.getSecondaryTextColor(),
+                    ),
+                  ),
+                  const SizedBox(height: Dimensions.space15),
                 ],
 
-                // Use current location button
+                // Confirm button
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed:
-                        isLoadingCurrentLocation ? null : _getCurrentLocation,
-                    icon: isLoadingCurrentLocation
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.my_location),
-                    label: Text(MyStrings.useCurrentLocation),
+                  child: ElevatedButton(
+                    onPressed: _markers.isEmpty ? null : _confirmSelection,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: MyColor.getPrimaryColor(),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      MyStrings.useThisLocation,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

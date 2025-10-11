@@ -49,13 +49,15 @@ class CustomBottomSheetPlus {
                 )
               : EdgeInsets.zero,
           child: AnimatedPadding(
-            padding: EdgeInsetsDirectional.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsetsDirectional.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
             duration: const Duration(milliseconds: 500),
             curve: Curves.decelerate,
             child: IntrinsicHeight(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height, // Maximum height
+                  maxHeight:
+                      MediaQuery.of(context).size.height, // Maximum height
                 ),
                 child: child, // Your child widget goes here
               ),

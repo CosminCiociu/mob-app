@@ -58,7 +58,8 @@ class GlobalUser {
         countryCode: json["country_code"] ?? '',
         mobile: json["mobile"] ?? '',
         refBy: json["ref_by"] ?? '',
-        address: json["address"] == null ? null : Address.fromJson(json["address"]),
+        address:
+            json["address"] == null ? null : Address.fromJson(json["address"]),
         image: json["image"] ?? '',
         status: json["status"] ?? '',
         kv: json["kv"] ?? '',

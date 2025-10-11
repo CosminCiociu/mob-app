@@ -14,7 +14,6 @@
 //   cardColor: MyColor.getCardBgColor(),
 //   appBarTheme: MyAppbarTheme.lightAppbarTheme,
 
-
 //   segmentedButtonTheme: MyButtonTheme.lightSegmentButtonTheme,
 
 //   useMaterial3: true,

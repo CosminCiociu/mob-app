@@ -4,5 +4,4 @@ class MyIcons {
   static const String doc = "assets/icons/doc.svg";
   static const String xlsx = "assets/icons/xlsx.svg";
 }
-//attention: add your .svg icons here 
- 
+//attention: add your .svg icons here

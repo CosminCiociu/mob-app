@@ -5,7 +5,6 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 
 class CategoryButton extends StatelessWidget {
-
   final String text;
   final VoidCallback press;
   final Color color, textColor;
@@ -16,35 +15,35 @@ class CategoryButton extends StatelessWidget {
   const CategoryButton({
     super.key,
     required this.text,
-    this.horizontalPadding=3,
-    this.verticalPadding=3,
-    this.textSize= Dimensions.fontSmall,
+    this.horizontalPadding = 3,
+    this.verticalPadding = 3,
+    this.textSize = Dimensions.fontSmall,
     required this.press,
     this.color = MyColor.primaryColor,
     this.textColor = MyColor.colorWhite,
-  }) ;
+  });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: color,
-      borderRadius: BorderRadius.circular(4),
-      child: InkWell(
-        onTap: press,
+        color: color,
         borderRadius: BorderRadius.circular(4),
-        child:  Container(
-          padding:  EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
-          decoration: BoxDecoration(
-            color: MyColor.getTransparentColor(),
-            borderRadius: BorderRadius.circular(4),
+        child: InkWell(
+          onTap: press,
+          borderRadius: BorderRadius.circular(4),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding, vertical: verticalPadding),
+            decoration: BoxDecoration(
+              color: MyColor.getTransparentColor(),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              text.tr,
+              style:
+                  regularDefault.copyWith(color: textColor, fontSize: textSize),
+            ),
           ),
-          child: Text(
-            text.tr,
-            style: regularDefault.copyWith(color: textColor,fontSize: textSize),
-           ),
-          ),
-        )
-    );
+        ));
   }
-
 }

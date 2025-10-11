@@ -4,7 +4,6 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/view/components/indicator/indicator.dart';
 
 class CustomLoader extends StatelessWidget {
-
   final bool isFullScreen;
   final bool isPagination;
   final double strokeWidth;
@@ -20,23 +19,27 @@ class CustomLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isFullScreen ? SizedBox(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      child: Center(
-          child: SpinKitThreeBounce(
-            color: loaderColor,
-            size: 20.0,
+    return isFullScreen
+        ? SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: Center(
+                child: SpinKitThreeBounce(
+              color: loaderColor,
+              size: 20.0,
+            )),
           )
-      ),
-    ):
-    isPagination?Center(child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: LoadingIndicator(strokeWidth: strokeWidth,))): Center(
-        child: SpinKitThreeBounce(
-          color: loaderColor,
-          size: 20.0,
-        )
-    );
+        : isPagination
+            ? Center(
+                child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: LoadingIndicator(
+                      strokeWidth: strokeWidth,
+                    )))
+            : Center(
+                child: SpinKitThreeBounce(
+                color: loaderColor,
+                size: 20.0,
+              ));
   }
 }

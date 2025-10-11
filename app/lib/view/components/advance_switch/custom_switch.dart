@@ -20,14 +20,16 @@ class CustomSwitch extends StatefulWidget {
   _CustomSwitchState createState() => _CustomSwitchState();
 }
 
-class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderStateMixin {
+class _CustomSwitchState extends State<CustomSwitch>
+    with SingleTickerProviderStateMixin {
   AnimationController? _animationController;
 
   @override
   void initState() {
     log(widget.value.toString());
     super.initState();
-    _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
   }
 
   @override
@@ -42,20 +44,31 @@ class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderSt
             } else {
               _animationController!.forward();
             }
-            widget.value == false ? widget.onChanged(false) : widget.onChanged(true);
+            widget.value == false
+                ? widget.onChanged(false)
+                : widget.onChanged(true);
           },
           child: Container(
             width: 45.0,
             height: 28.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24.0),
-              color: widget.value ? MyColor.getPrimaryColor() : MyColor.getPrimaryColor().withOpacity(0.2),
+              color: widget.value
+                  ? MyColor.getPrimaryColor()
+                  : MyColor.getPrimaryColor().withOpacity(0.2),
             ),
             child: Padding(
-              padding: const EdgeInsetsDirectional.only(top: 2.0, bottom: 2.0, start: 2.0, end: 2.0),
+              padding: const EdgeInsetsDirectional.only(
+                  top: 2.0, bottom: 2.0, start: 2.0, end: 2.0),
               child: Container(
-                alignment: widget.value ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(width: 22.0, height: 22.0, decoration: BoxDecoration(shape: BoxShape.circle, color: widget.circleColor), child: widget.child),
+                alignment:
+                    widget.value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                    width: 22.0,
+                    height: 22.0,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle, color: widget.circleColor),
+                    child: widget.child),
               ),
             ),
           ),

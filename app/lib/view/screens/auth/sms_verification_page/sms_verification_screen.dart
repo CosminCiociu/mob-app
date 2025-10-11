@@ -10,7 +10,6 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/data/controller/auth/auth/sms_verification_controler.dart';
 
-
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/view/components/text/small_text.dart';
 import 'package:ovo_meet/view/components/will_pop_widget.dart';
@@ -27,8 +26,6 @@ class SmsVerificationScreen extends StatefulWidget {
 class _SmsVerificationScreenState extends State<SmsVerificationScreen> {
   @override
   void initState() {
-    
-    
     final controller = Get.put(SmsVerificationController());
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -56,7 +53,9 @@ class _SmsVerificationScreenState extends State<SmsVerificationScreen> {
         ),
         body: GetBuilder<SmsVerificationController>(
           builder: (controller) => controller.isLoading
-              ? Center(child: CircularProgressIndicator(color: MyColor.getPrimaryColor()))
+              ? Center(
+                  child: CircularProgressIndicator(
+                      color: MyColor.getPrimaryColor()))
               : SingleChildScrollView(
                   padding: Dimensions.screenPadding,
                   child: Center(
@@ -69,22 +68,39 @@ class _SmsVerificationScreenState extends State<SmsVerificationScreen> {
                           height: 100,
                           width: 100,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(color: MyColor.getPrimaryColor().withOpacity(.075), shape: BoxShape.circle),
-                          child: CustomSvgPicture(image: MyImages.emailVerifyImage, height: 50, width: 50, color: MyColor.getPrimaryColor()),
+                          decoration: BoxDecoration(
+                              color:
+                                  MyColor.getPrimaryColor().withOpacity(.075),
+                              shape: BoxShape.circle),
+                          child: CustomSvgPicture(
+                              image: MyImages.emailVerifyImage,
+                              height: 50,
+                              width: 50,
+                              color: MyColor.getPrimaryColor()),
                         ),
                         const SizedBox(height: Dimensions.space50),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * .07),
-                          child: SmallText(text: MyStrings.smsVerificationMsg.tr, maxLine: 3, textAlign: TextAlign.center, textStyle: regularDefault.copyWith(color: MyColor.getLabelTextColor())),
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * .07),
+                          child: SmallText(
+                              text: MyStrings.smsVerificationMsg.tr,
+                              maxLine: 3,
+                              textAlign: TextAlign.center,
+                              textStyle: regularDefault.copyWith(
+                                  color: MyColor.getLabelTextColor())),
                         ),
                         const SizedBox(height: 30),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: Dimensions.space30),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Dimensions.space30),
                           child: PinCodeTextField(
                             appContext: context,
-                            pastedTextStyle: regularDefault.copyWith(color: MyColor.getPrimaryColor()),
+                            pastedTextStyle: regularDefault.copyWith(
+                                color: MyColor.getPrimaryColor()),
                             length: 6,
-                            textStyle: regularDefault.copyWith(color: MyColor.getPrimaryColor()),
+                            textStyle: regularDefault.copyWith(
+                                color: MyColor.getPrimaryColor()),
                             obscureText: false,
                             obscuringCharacter: '*',
                             blinkWhenObscuring: false,
@@ -95,14 +111,16 @@ class _SmsVerificationScreenState extends State<SmsVerificationScreen> {
                                 borderRadius: BorderRadius.circular(5),
                                 fieldHeight: 40,
                                 fieldWidth: 40,
-                                inactiveColor: MyColor.getTextFieldDisableBorder(),
+                                inactiveColor:
+                                    MyColor.getTextFieldDisableBorder(),
                                 inactiveFillColor: MyColor.getScreenBgColor(),
                                 activeFillColor: MyColor.getScreenBgColor(),
                                 activeColor: MyColor.getPrimaryColor(),
                                 selectedFillColor: MyColor.getScreenBgColor(),
                                 selectedColor: MyColor.getPrimaryColor()),
                             cursorColor: MyColor.getTextColor(),
-                            animationDuration: const Duration(milliseconds: 100),
+                            animationDuration:
+                                const Duration(milliseconds: 100),
                             enableActiveFill: true,
                             keyboardType: TextInputType.number,
                             beforeTextPaste: (text) {
@@ -119,27 +137,29 @@ class _SmsVerificationScreenState extends State<SmsVerificationScreen> {
                         CustomElevatedBtn(
                           text: MyStrings.verify.tr,
                           isLoading: controller.submitLoading,
-                          press: () {
-                          
-                          },
+                          press: () {},
                         ),
                         const SizedBox(height: Dimensions.space30),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(MyStrings.didNotReceiveCode.tr, style: regularDefault.copyWith(color: MyColor.getLabelTextColor())),
+                            Text(MyStrings.didNotReceiveCode.tr,
+                                style: regularDefault.copyWith(
+                                    color: MyColor.getLabelTextColor())),
                             const SizedBox(width: Dimensions.space10),
-                        Container(
-                                    margin: const EdgeInsets.all(5),
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      color: MyColor.getPrimaryColor(),
-                                    )),
-                                GestureDetector(
-                                    onTap: () {
-                                    },
-                                    child: Text(MyStrings.resendCode.tr, style: regularDefault.copyWith(decoration: TextDecoration.underline, color: MyColor.getPrimaryColor()))),
+                            Container(
+                                margin: const EdgeInsets.all(5),
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: MyColor.getPrimaryColor(),
+                                )),
+                            GestureDetector(
+                                onTap: () {},
+                                child: Text(MyStrings.resendCode.tr,
+                                    style: regularDefault.copyWith(
+                                        decoration: TextDecoration.underline,
+                                        color: MyColor.getPrimaryColor()))),
                           ],
                         )
                       ],

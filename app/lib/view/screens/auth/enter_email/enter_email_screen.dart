@@ -32,12 +32,13 @@ class _EnterEmailScreenState extends State<EnterEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(
+      appBar: const CustomAppBar(
         title: "",
       ),
       body: GetBuilder<ProfileCompleteController>(
         builder: (controller) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,9 +50,10 @@ class _EnterEmailScreenState extends State<EnterEmailScreen> {
               const SizedBox(height: Dimensions.space10),
               Text(
                 MyStrings.pleaseEnterYourEmailtoContinue,
-                style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                style: regularDefault.copyWith(
+                    color: MyColor.getSecondaryTextColor()),
               ),
-             const SizedBox(height: Dimensions.space20),
+              const SizedBox(height: Dimensions.space20),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -62,7 +64,7 @@ class _EnterEmailScreenState extends State<EnterEmailScreen> {
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-             const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -74,45 +76,46 @@ class _EnterEmailScreenState extends State<EnterEmailScreen> {
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-             const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               Center(
                 child: InkWell(
                     onTap: () {
-                      Get.toNamed(RouteHelper.verificationCodeScreen,arguments: [true]);
+                      Get.toNamed(RouteHelper.verificationCodeScreen,
+                          arguments: [true]);
                     },
-                    child:const CustomGradiantButton(text: MyStrings.continues)),
+                    child:
+                        const CustomGradiantButton(text: MyStrings.continues)),
               ),
-                const SizedBox(height: Dimensions.space30),
-                    Center(
-                 
-                          child: Wrap(
-                            alignment: WrapAlignment.center, 
-                            spacing:Dimensions.space8, 
-                            children: [
-                              Text(
-                                MyStrings.doNotHaveAccount.tr,
-                                overflow: TextOverflow.ellipsis,
-                                style: regularDefault.copyWith(
-                                  color: MyColor.getSecondaryTextColor(),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Get.toNamed(RouteHelper.registrationwithEmailScreen);
-                                },
-                                child: Text(
-                                  MyStrings.signUp.tr,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: regularDefault.copyWith(
-                                    color: MyColor.buttonColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+              const SizedBox(height: Dimensions.space30),
+              Center(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: Dimensions.space8,
+                  children: [
+                    Text(
+                      MyStrings.doNotHaveAccount.tr,
+                      overflow: TextOverflow.ellipsis,
+                      style: regularDefault.copyWith(
+                        color: MyColor.getSecondaryTextColor(),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Get.toNamed(RouteHelper.registrationwithEmailScreen);
+                      },
+                      child: Text(
+                        MyStrings.signUp.tr,
+                        overflow: TextOverflow.ellipsis,
+                        style: regularDefault.copyWith(
+                          color: MyColor.buttonColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),

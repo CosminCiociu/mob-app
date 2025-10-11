@@ -18,15 +18,13 @@ class _SearchConnectionScreenState extends State<SearchConnectionScreen> {
   void initState() {
     super.initState();
 
-  
-     Get.put(SearchConnectionController());
+    Get.put(SearchConnectionController());
 
-
-      print("Activating route after 4 seconds...");
-      Future.delayed(Duration(seconds: 4), () {
-           print("Activating ...");
-        Get.toNamed(RouteHelper.matchScreen);
-      });
+    print("Activating route after 4 seconds...");
+    Future.delayed(Duration(seconds: 4), () {
+      print("Activating ...");
+      Get.toNamed(RouteHelper.matchScreen);
+    });
   }
 
   @override
@@ -46,12 +44,24 @@ class _SearchConnectionScreenState extends State<SearchConnectionScreen> {
     }
 
     List<double> radii = [
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.4 : 45,
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.3 : 120,
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.4 : 65,
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.35 : 125,
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.1 : 90,
-      orientation == Orientation.portrait ? min(size.width, size.height) * 0.3 : 150,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.4
+          : 45,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.3
+          : 120,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.4
+          : 65,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.35
+          : 125,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.1
+          : 90,
+      orientation == Orientation.portrait
+          ? min(size.width, size.height) * 0.3
+          : 150,
     ];
 
     return GetBuilder<SearchConnectionController>(
@@ -70,11 +80,14 @@ class _SearchConnectionScreenState extends State<SearchConnectionScreen> {
               child: CircleAvatar(
                 backgroundColor: MyColor.transparentColor,
                 backgroundImage: const AssetImage(MyImages.network),
-                radius: orientation == Orientation.portrait ? size.width * 0.5 : size.width * 0.2,
+                radius: orientation == Orientation.portrait
+                    ? size.width * 0.5
+                    : size.width * 0.2,
               ),
             ),
             Stack(
-              children: controller.buildCircleImages(size, radii, controller.imagePaths, context),
+              children: controller.buildCircleImages(
+                  size, radii, controller.imagePaths, context),
             ),
           ],
         ),

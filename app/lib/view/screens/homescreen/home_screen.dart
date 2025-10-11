@@ -59,68 +59,86 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             padding: Dimensions.screenPadding,
             child: Column(
               children: [
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: Dimensions.space5),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: Dimensions.space15,
-                      horizontal: Dimensions.space10),
-                  decoration: BoxDecoration(
-                      border: Border.all(color: MyColor.colorWhite),
-                      color: MyColor.colorWhite,
-                      borderRadius: BorderRadius.circular(Dimensions.space10)),
-                  child: Row(children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(Dimensions.space8),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xFFF76F96),
-                            Color(0xFFF66D95),
-                            Color(0xFFEB507E),
-                            Color(0xFFE64375),
+                InkWell(
+                  onTap: () {
+                    controller.forceLocationUpdate();
+                  },
+                  borderRadius: BorderRadius.circular(Dimensions.space10),
+                  child: Container(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: Dimensions.space5),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: Dimensions.space15,
+                        horizontal: Dimensions.space10),
+                    decoration: BoxDecoration(
+                        border: Border.all(color: MyColor.colorWhite),
+                        color: MyColor.colorWhite,
+                        borderRadius:
+                            BorderRadius.circular(Dimensions.space10)),
+                    child: Row(children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.space8),
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF76F96),
+                              Color(0xFFF66D95),
+                              Color(0xFFEB507E),
+                              Color(0xFFE64375),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(Dimensions.space8),
+                          child: CustomSvgPicture(
+                            image: MyImages.pinImage,
+                            color: MyColor.colorWhite,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: Dimensions.space10),
+                      SizedBox(
+                        width: Dimensions.space200 + Dimensions.space20,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              MyStrings.location,
+                              style: boldLarge.copyWith(
+                                color: MyColor.primaryColor,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              controller.addressController.text.isEmpty
+                                  ? controller.getCurrentEventLocation()
+                                  : controller.addressController.text,
+                              style: regularDefault.copyWith(
+                                color: const Color(
+                                    0xff262626), // Use dark gray for better visibility
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
                         ),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(Dimensions.space8),
-                        child: CustomSvgPicture(
-                          image: MyImages.pinImage,
-                          color: MyColor.colorWhite,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: Dimensions.space10),
-                    SizedBox(
-                      width: Dimensions.space200 + Dimensions.space20,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            MyStrings.location,
-                            style: boldLarge,
-                          ),
-                          Text(
-                            controller.addressController.text,
-                            style: regularDefault.copyWith(
-                                color: MyColor.getSecondaryTextColor()),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Spacer(),
-                    InkWell(
-                        onTap: () {
-                          controller.drawerController.toggle!();
-                        },
-                        child: Image.asset(
-                          MyImages.burgerMenu,
-                          color: MyColor.buttonColor,
-                          height: Dimensions.space20,
-                        )),
-                  ]),
+                      const Spacer(),
+                      InkWell(
+                          onTap: () {
+                            controller.drawerController.toggle!();
+                          },
+                          child: Image.asset(
+                            MyImages.burgerMenu,
+                            color: MyColor.buttonColor,
+                            height: Dimensions.space20,
+                          )),
+                    ]),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(

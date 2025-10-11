@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../../model/country_model/country_model.dart';
 
 class ProfileCompleteController extends GetxController {
-  TextEditingController countryController = TextEditingController(); // for filtering country in bottom sheet
+  TextEditingController countryController =
+      TextEditingController(); // for filtering country in bottom sheet
   TextEditingController usernameController = TextEditingController();
   TextEditingController mobileNoController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -58,7 +59,8 @@ class ProfileCompleteController extends GetxController {
   bool isLoading = false;
   bool submitLoading = false;
 
-  void setCountryNameAndCode(String cName, String countryCode, String mobileCode) {
+  void setCountryNameAndCode(
+      String cName, String countryCode, String mobileCode) {
     countryName = cName;
     this.countryCode = countryCode;
     this.mobileCode = mobileCode;

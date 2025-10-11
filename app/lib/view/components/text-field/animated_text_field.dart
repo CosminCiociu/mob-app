@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,7 +50,8 @@ class AnimatedTextField extends StatefulWidget {
     this.radius = Dimensions.defaultRadius,
     this.suffixIcon,
     this.prefixIcon,
-    this.contentPadding = const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
+    this.contentPadding =
+        const EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
     this.fillColor = MyColor.transparentColor,
     this.hintTextColor = MyColor.hintTextColor,
     this.labelTextColor = MyColor.labelTextColor,
@@ -88,10 +88,17 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
               hintStyle: regularDefault.copyWith(color: widget.hintTextColor),
               fillColor: widget.fillColor,
               filled: true,
-              border: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()), borderRadius: BorderRadius.circular(widget.radius)),
-              focusedBorder: OutlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldEnableBorder()), borderRadius: BorderRadius.circular(widget.radius)),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldDisableBorder()),
+                  borderRadius: BorderRadius.circular(widget.radius)),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldEnableBorder()),
+                  borderRadius: BorderRadius.circular(widget.radius)),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder()),
+                borderSide: BorderSide(
+                    width: 0.5, color: MyColor.getTextFieldDisableBorder()),
                 borderRadius: BorderRadius.circular(widget.radius),
               ),
               prefixIcon: widget.prefixIcon,
@@ -107,11 +114,14 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
                           onTap: _toggle,
                           child: Container(
                               padding: const EdgeInsets.all(Dimensions.space5),
-                              decoration: const BoxDecoration(shape: BoxShape.circle),
+                              decoration:
+                                  const BoxDecoration(shape: BoxShape.circle),
                               height: 25,
                               width: 25,
                               child: SvgPicture.asset(
-                                obscureText ? MyImages.eyeInvisibleIcon : MyImages.eyeVisibleIcon,
+                                obscureText
+                                    ? MyImages.eyeInvisibleIcon
+                                    : MyImages.eyeVisibleIcon,
                                 color: MyColor.getHintTextColor(),
                                 height: 18,
                                 width: 18,
@@ -121,7 +131,9 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
                     )
                   : widget.suffixIcon,
             ),
-            onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus) : null,
+            onFieldSubmitted: (text) => widget.nextFocus != null
+                ? FocusScope.of(context).requestFocus(widget.nextFocus)
+                : null,
             onChanged: (text) => widget.onChanged!(text),
           )
         : TextFormField(
@@ -145,9 +157,15 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
               hintStyle: regularDefault.copyWith(color: widget.hintTextColor),
               fillColor: widget.fillColor,
               filled: true,
-              border: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder())),
-              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldEnableBorder())),
-              enabledBorder: UnderlineInputBorder(borderSide: BorderSide(width: 0.5, color: MyColor.getTextFieldDisableBorder())),
+              border: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldDisableBorder())),
+              focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldEnableBorder())),
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      width: 0.5, color: MyColor.getTextFieldDisableBorder())),
               prefixIcon: widget.prefixIcon,
               suffixIcon: widget.isPassword
                   ? UnconstrainedBox(
@@ -155,15 +173,19 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
                         color: Colors.transparent,
                         shape: const CircleBorder(),
                         child: InkWell(
-                          splashColor: MyColor.getPrimaryColor().withOpacity(0.1),
+                          splashColor:
+                              MyColor.getPrimaryColor().withOpacity(0.1),
                           onTap: _toggle,
                           child: Container(
                               padding: const EdgeInsets.all(Dimensions.space5),
-                              decoration: const BoxDecoration(shape: BoxShape.circle),
+                              decoration:
+                                  const BoxDecoration(shape: BoxShape.circle),
                               height: 25,
                               width: 25,
                               child: SvgPicture.asset(
-                                obscureText ? MyImages.eyeInvisibleIcon : MyImages.eyeVisibleIcon,
+                                obscureText
+                                    ? MyImages.eyeInvisibleIcon
+                                    : MyImages.eyeVisibleIcon,
                                 color: MyColor.getHintTextColor(),
                                 height: 18,
                                 width: 18,
@@ -173,7 +195,9 @@ class _AnimatedTextFieldState extends State<AnimatedTextField> {
                     )
                   : widget.suffixIcon,
             ),
-            onFieldSubmitted: (text) => widget.nextFocus != null ? FocusScope.of(context).requestFocus(widget.nextFocus) : null,
+            onFieldSubmitted: (text) => widget.nextFocus != null
+                ? FocusScope.of(context).requestFocus(widget.nextFocus)
+                : null,
             onChanged: (text) => widget.onChanged!(text),
           );
   }

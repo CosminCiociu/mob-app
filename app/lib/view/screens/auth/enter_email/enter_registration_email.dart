@@ -14,10 +14,12 @@ class EnterRegistrationEmailScreen extends StatefulWidget {
   const EnterRegistrationEmailScreen({super.key});
 
   @override
-  State<EnterRegistrationEmailScreen> createState() => _EnterRegistrationEmailScreenState();
+  State<EnterRegistrationEmailScreen> createState() =>
+      _EnterRegistrationEmailScreenState();
 }
 
-class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScreen> {
+class _EnterRegistrationEmailScreenState
+    extends State<EnterRegistrationEmailScreen> {
   @override
   void initState() {
     final controller = Get.put(ProfileCompleteController());
@@ -32,12 +34,13 @@ class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:const CustomAppBar(
+      appBar: const CustomAppBar(
         title: "",
       ),
       body: GetBuilder<ProfileCompleteController>(
         builder: (controller) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Dimensions.defaultScreenPadding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: Dimensions.defaultScreenPadding),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -49,9 +52,10 @@ class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScr
               const SizedBox(height: Dimensions.space10),
               Text(
                 MyStrings.pleaseEnterYourEmailtoContinue,
-                style: regularDefault.copyWith(color: MyColor.getSecondaryTextColor()),
+                style: regularDefault.copyWith(
+                    color: MyColor.getSecondaryTextColor()),
               ),
-             const SizedBox(height: Dimensions.space20),
+              const SizedBox(height: Dimensions.space20),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -62,7 +66,7 @@ class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScr
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-             const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -74,7 +78,7 @@ class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScr
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-             const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               LabelTextField(
                 onChanged: (v) {},
                 labelText: "",
@@ -86,12 +90,12 @@ class _EnterRegistrationEmailScreenState extends State<EnterRegistrationEmailScr
                 textInputType: TextInputType.phone,
                 inputAction: TextInputAction.next,
               ),
-             const SizedBox(height: Dimensions.space30),
+              const SizedBox(height: Dimensions.space30),
               InkWell(
                   onTap: () {
                     Get.toNamed(RouteHelper.verificationCodeScreen);
                   },
-                  child:const CustomGradiantButton(text: MyStrings.continues))
+                  child: const CustomGradiantButton(text: MyStrings.continues))
             ],
           ),
         ),
