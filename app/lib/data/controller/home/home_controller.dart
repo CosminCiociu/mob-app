@@ -36,36 +36,6 @@ class HomeController extends GetxController {
   // =========================
 
   List<DocumentSnapshot> nearbyEvents = [];
-  String selectedAddress = "";
-
-  /// Address data for location picker
-  List<Map<String, String>> addresses = [
-    {'street': '123 Main Street'},
-    {'street': '456 Elm Road'},
-    {'street': '789 Maple Avenue'},
-    {'street': '101 Oak Drive'},
-    {'street': '202 Pine Street'},
-    {'street': '303 Cedar Lane'},
-    {'street': '404 Birch Boulevard'},
-    {'street': '505 Walnut Court'},
-    {'street': '606 Spruce Place'},
-    {'street': '707 Cherry Way'},
-  ];
-
-  /// Static demo data for UI fallback
-  List<String> names = [
-    "Alexa, 22",
-    "Bella, 32",
-    "Catherine, 21",
-    "Diana, 25",
-  ];
-
-  List<String> statuses = [
-    "Online",
-    "Away",
-    "Busy",
-    "Offline",
-  ];
 
   // =========================
   // LIFECYCLE METHODS
@@ -113,55 +83,40 @@ class HomeController extends GetxController {
   /// Set initial address display
   void _setInitialAddress() {
     if (addressController.text.isEmpty) {
+      // Set a default message immediately
+      if (!isClosed) {
+        try {
+          addressController.text = 'Finding your location...';
+          update();
+        } catch (e) {
+          print('⚠️ Controller already disposed, skipping address update');
+        }
+      }
       // Try to get current user location from Firebase or fallback
       _getUserLocationFromFirebase();
     }
   }
 
-  /// Get user's current location from Firebase
+  /// Get user's current location from Firebase using LocationService
   Future<void> _getUserLocationFromFirebase() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        print('📍 Fetching user location from Firebase...');
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+      print('📍 Fetching user location using LocationService...');
+      final location = await LocationService.getUserLocationFromFirebase();
 
-        if (userDoc.exists) {
-          final userData = userDoc.data();
-          final location = userData?['location'] as Map<String, dynamic>?;
-
-          if (location != null) {
-            final address = location['address'] as Map<String, dynamic>?;
-            if (address != null) {
-              final locality = address['locality'] as String?;
-              final administrativeArea =
-                  address['administrativeArea'] as String?;
-
-              print(
-                  '📍 Found location data - Locality: $locality, Area: $administrativeArea');
-
-              if (locality != null &&
-                  administrativeArea != null &&
-                  locality.isNotEmpty &&
-                  administrativeArea.isNotEmpty) {
-                final locationText = '$locality, $administrativeArea';
-                print('📍 Setting location display to: $locationText');
-                addressController.text = locationText;
-                update();
-                return;
-              }
-            }
-          } else {
-            print('📍 No location data found in user document');
+      if (location != null && location.isValid) {
+        final locationText = location.displayAddress;
+        print('📍 Setting location display to: $locationText');
+        if (!isClosed) {
+          try {
+            addressController.text = locationText;
+            update();
+          } catch (e) {
+            print('⚠️ Controller already disposed, skipping address update');
           }
-        } else {
-          print('📍 User document does not exist');
         }
+        return;
       } else {
-        print('📍 No authenticated user found');
+        print('📍 No valid location data found in Firebase');
       }
     } catch (e) {
       print('❌ Error getting user location from Firebase: $e');
@@ -169,8 +124,14 @@ class HomeController extends GetxController {
 
     // Fallback if no location found
     print('📍 Falling back to "Finding your location..."');
-    addressController.text = 'Finding your location...';
-    update();
+    if (!isClosed) {
+      try {
+        addressController.text = 'Finding your location...';
+        update();
+      } catch (e) {
+        print('⚠️ Controller already disposed, skipping address update');
+      }
+    }
   }
 
   /// Load events first, then safely attempt location update in background
@@ -187,29 +148,88 @@ class HomeController extends GetxController {
   /// Safely attempt to update user location with comprehensive error handling
   Future<void> _safeLocationUpdate() async {
     try {
-      print('🔄 Starting location update...');
-      // Add timeout to prevent hanging
-      await LocationService.updateUserLocationInFirebase()
-          .timeout(const Duration(seconds: 10));
-      print('✅ User location updated successfully in background');
+      print('🔄 Starting safe location update...');
 
-      // Update address display after successful location update
-      _updateAddressDisplay();
+      // Use the location update method with timeout
+      final success = await LocationService.updateUserLocationInFirebase()
+          .timeout(const Duration(seconds: 15));
+
+      if (success) {
+        print('✅ User location updated successfully in background');
+        // Update address display after successful location update
+        _updateAddressDisplay();
+      } else {
+        print(
+            '⚠️ Location update failed gracefully, keeping existing location');
+        if (!isClosed) {
+          try {
+            if (addressController.text == 'Finding your location...' ||
+                addressController.text == 'Updating location...') {
+              addressController.text = 'Unable to get location';
+              update();
+            }
+          } catch (e) {
+            print('⚠️ Controller already disposed, skipping address update');
+          }
+        }
+      }
     } catch (e) {
       // Comprehensive error handling for different failure types
-      if (e.toString().contains('Google Play') ||
-          e.toString().contains('SecurityException') ||
-          e.toString().contains('DeadSystemException')) {
+      final errorString = e.toString().toLowerCase();
+
+      if (errorString.contains('google play') ||
+          errorString.contains('securityexception') ||
+          errorString.contains('deadsystemexception')) {
         print(
             '🔧 Google Play Services issue detected, skipping location update: $e');
-      } else if (e.toString().contains('Permission')) {
-        print('🔐 Location permission issue, skipping update: $e');
-        _setLocationUnavailable();
-      } else if (e.toString().contains('TimeoutException')) {
+      } else if (errorString.contains('permission') ||
+          errorString.contains('denied')) {
+        print('🔐 Location permission issue, showing helpful message: $e');
+        if (!isClosed) {
+          try {
+            if (addressController.text == 'Finding your location...' ||
+                addressController.text == 'Updating location...') {
+              addressController.text = MyStrings.enableLocationToFindEvents;
+              update();
+            }
+          } catch (e) {
+            print('⚠️ Controller already disposed, skipping address update');
+          }
+        }
+      } else if (errorString.contains('timeoutexception') ||
+          errorString.contains('timeout')) {
         print('⏱️ Location update timed out, will retry later: $e');
-        _scheduleLocationRetry();
+        Future.delayed(const Duration(seconds: 30), () {
+          print('🔄 Retrying location update...');
+          _safeLocationUpdate();
+        });
+      } else if (errorString.contains('location service') ||
+          errorString.contains('disabled')) {
+        print('📍 Location services disabled: $e');
+        if (!isClosed) {
+          try {
+            if (addressController.text == 'Finding your location...' ||
+                addressController.text == 'Updating location...') {
+              addressController.text = MyStrings.locationServicesDisabled;
+              update();
+            }
+          } catch (e) {
+            print('⚠️ Controller already disposed, skipping address update');
+          }
+        }
       } else {
         print('⚠️ Location update failed (non-critical): $e');
+        if (!isClosed) {
+          try {
+            if (addressController.text == 'Finding your location...' ||
+                addressController.text == 'Updating location...') {
+              addressController.text = 'Unable to get location';
+              update();
+            }
+          } catch (e) {
+            print('⚠️ Controller already disposed, skipping address update');
+          }
+        }
       }
       // Don't throw - this is a background operation that shouldn't crash the app
     }
@@ -222,22 +242,6 @@ class HomeController extends GetxController {
       // Get fresh location data from Firebase after update
       _getUserLocationFromFirebase();
     }
-  }
-
-  /// Set location unavailable message
-  void _setLocationUnavailable() {
-    if (addressController.text == 'Finding your location...') {
-      addressController.text = 'Location unavailable';
-      update();
-    }
-  }
-
-  /// Schedule a retry for location update after a longer delay
-  void _scheduleLocationRetry() {
-    Future.delayed(const Duration(seconds: 30), () {
-      print('🔄 Retrying location update...');
-      _safeLocationUpdate();
-    });
   }
 
   /// Initialize card controller if not already initialized
@@ -281,7 +285,7 @@ class HomeController extends GetxController {
   /// Current card index
   int get currentIndex => _homeService.currentIndex;
 
-  /// Set current card index
+  /// Set current card index (used by bottom navigation)
   set currentIndex(int index) {
     // Reset to beginning when setting to 0
     if (index == 0) {
@@ -300,7 +304,7 @@ class HomeController extends GetxController {
   RangeValues get rangeValues => _homeService.rangeValues;
   List<Map<String, dynamic>> get interestedIn => _homeService.interestedIn;
 
-  /// Search parameter setters
+  /// Search parameter setters (used by filter UI)
   set distance(int value) {
     updateSearchDistance(value);
   }
@@ -380,41 +384,10 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Search for nearby users
-  Future<void> searchNearbyUsers() async {
-    try {
-      _homeService.setLoadingUsers(true);
-      update();
-
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        CustomSnackBar.errorDeferred(errorList: [MyStrings.userNotLoggedIn]);
-        return;
-      }
-
-      await _matchingService.searchNearbyUsers(
-        radiusInKm: distance.toDouble(),
-        currentUserId: user.uid,
-      );
-    } catch (e) {
-      CustomSnackBar.errorDeferred(errorList: [
-        'Failed to search users: ${_matchingService.getDetailedErrorMessage(e)}'
-      ]);
-    } finally {
-      _homeService.setLoadingUsers(false);
-      update();
-    }
-  }
-
   /// Update location and refresh events
   Future<void> updateLocationAndRefresh() async {
     await _matchingService.updateLocationAndRefresh();
     await refreshEvents();
-  }
-
-  /// Demonstrate geohash functionality
-  Future<void> demonstrateGeohashFeatures() async {
-    await _matchingService.demonstrateGeohashFeatures();
   }
 
   // =========================
@@ -429,21 +402,6 @@ class HomeController extends GetxController {
     return null;
   }
 
-  /// Get current demo image for fallback (placeholder removed)
-  String? getCurrentDemoImage() {
-    return null; // Demo images removed
-  }
-
-  /// Get current demo name
-  String getCurrentDemoName() {
-    return names[currentIndex % names.length];
-  }
-
-  /// Get current demo status
-  String getCurrentDemoStatus() {
-    return statuses[currentIndex % statuses.length];
-  }
-
   /// Check if we have real events to display
   bool get hasRealEvents => nearbyEvents.isNotEmpty;
 
@@ -454,31 +412,72 @@ class HomeController extends GetxController {
   }
 
   // =========================
-  // FILTER DIALOG METHODS
-  // =========================
-
-  /// Show filter dialog
-  void showFilterDialog() {
-    // Implementation would trigger filter dialog
-    // This would be handled by the UI layer
-    CustomSnackBar.successDeferred(successList: ['Opening filter dialog...']);
-  }
-
-  /// Apply filters and refresh
-  Future<void> applyFiltersAndRefresh() async {
-    CustomSnackBar.successDeferred(successList: [
-      'Applying filters: ${distance}km radius, age ${rangeValues.start.toInt()}-${rangeValues.end.toInt()}'
-    ]);
-    await refreshEvents();
-  }
-
-  // =========================
   // MISSING METHODS NEEDED BY UI
   // =========================
 
   /// Method called by swipe cards
   void onSwipeComplete(orientation, int index) {
+    // Handle specific swipe orientations
+    _handleSwipeOrientation(orientation, index);
     handleSwipeComplete(index);
+  }
+
+  /// Handle different swipe orientations
+  void _handleSwipeOrientation(dynamic orientation, int index) {
+    // Check if it's the right orientation type
+    if (orientation is CardSwipeOrientation) {
+      switch (orientation) {
+        case CardSwipeOrientation.right:
+          // User swiped right (like)
+          _handleLikeEvent(index);
+          break;
+        case CardSwipeOrientation.left:
+          // User swiped left (pass/reject)
+          _handlePassEvent(index);
+          break;
+
+        default:
+          break;
+      }
+    } else {
+      // Fallback to string comparison for backward compatibility
+      final orientationString = orientation.toString();
+      if (orientationString.contains('right')) {
+        _handleLikeEvent(index);
+      } else if (orientationString.contains('left')) {
+        _handlePassEvent(index);
+      }
+    }
+  }
+
+  /// Handle like event action (swipe right)
+  void _handleLikeEvent(int index) {
+    final currentEvent = getCurrentEvent();
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (currentEvent != null && user != null) {
+      _matchingService.handleEventLike(
+        eventId: currentEvent.id,
+        userId: user.uid,
+      );
+    }
+  }
+
+  /// Handle pass event action (swipe left)
+  void _handlePassEvent(int index) {
+    final currentEvent = getCurrentEvent();
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (currentEvent != null && user != null) {
+      // Add user to event's declined list so it won't appear again
+      _matchingService.handleEventDecline(
+        eventId: currentEvent.id,
+        userId: user.uid,
+      );
+      print('✅ Event declined and will not appear again for this user');
+    } else {
+      print('⚠️ Unable to decline event: missing event or user data');
+    }
   }
 
   /// Reset card controller
@@ -545,47 +544,72 @@ class HomeController extends GetxController {
     return 'Category not available';
   }
 
-  /// Update user location (delegate to matching service) - For user-initiated actions
-  Future<void> updateUserLocation() async {
-    await updateLocationAndRefresh();
-  }
-
-  /// Manually trigger safe location update - For debugging or manual refresh
-  Future<void> updateLocationSafely() async {
-    await _safeLocationUpdate();
-  }
-
-  /// Refresh location display manually
-  Future<void> refreshLocationDisplay() async {
-    await _getUserLocationFromFirebase();
-  }
-
   /// Force update location when user taps location header
   Future<void> forceLocationUpdate() async {
-    addressController.text = 'Updating location...';
-    update();
+    print('🔄 Force location update requested');
+
+    if (!isClosed) {
+      try {
+        addressController.text = 'Updating location...';
+        update();
+      } catch (e) {
+        print('⚠️ Controller already disposed, skipping address update');
+        return;
+      }
+    } else {
+      print('⚠️ Controller is closed, cannot update location');
+      return;
+    }
 
     try {
-      print('🔄 Force updating location...');
-      await LocationService.updateUserLocationInFirebase();
-      print('✅ Location force updated successfully');
-      await _getUserLocationFromFirebase();
-    } catch (e) {
-      print('❌ Force location update failed: $e');
-      addressController.text = 'Location update failed';
-      update();
+      print('🔄 Starting location service update...');
 
-      // Revert to previous state after 3 seconds
-      Future.delayed(const Duration(seconds: 3), () {
-        _getUserLocationFromFirebase();
-      });
+      // Use the location update method
+      final success = await LocationService.updateUserLocationInFirebase();
+
+      if (success) {
+        print('✅ Location force updated successfully');
+        // Get the updated location from Firebase
+        await _getUserLocationFromFirebase();
+      } else {
+        print('⚠️ Force location update failed gracefully');
+        _showLocationUpdateHelpMessage();
+      }
+    } catch (e) {
+      print('❌ Force location update failed with error: $e');
+      _showLocationUpdateHelpMessage();
     }
   }
 
-  /// Fetch nearby events manually (delegate to refresh events with feedback)
-  /// This should only be called by user-initiated actions, not during initialization
-  Future<void> fetchNearbyEventsManual() async {
-    await refreshEvents();
+  /// Show helpful message when location update fails
+  void _showLocationUpdateHelpMessage() {
+    if (!isClosed) {
+      try {
+        final errorString = addressController.text.toLowerCase();
+
+        if (errorString.contains('permission') ||
+            errorString.contains('denied')) {
+          addressController.text = MyStrings.tapToEnableLocation;
+        } else if (errorString.contains('service') ||
+            errorString.contains('disabled')) {
+          addressController.text = MyStrings.pleaseEnableLocationServices;
+        } else {
+          addressController.text = MyStrings.tapToRetryLocation;
+        }
+
+        update();
+      } catch (e) {
+        print('⚠️ Controller already disposed, skipping address update');
+        return;
+      }
+    } else {
+      return;
+    }
+
+    // Revert to fallback location after 5 seconds
+    Future.delayed(const Duration(seconds: 5), () {
+      _getUserLocationFromFirebase();
+    });
   }
 
   /// Refresh data when user manually requests it (e.g., pull to refresh)
@@ -594,9 +618,8 @@ class HomeController extends GetxController {
     await updateLocationAndRefresh();
   }
 
-  /// Change selected address
+  /// Change selected address (used by location selector)
   void changeSelectedAddress(String address) {
-    selectedAddress = address;
     addressController.text = address;
     CustomSnackBar.successDeferred(successList: ['Address selected: $address']);
     update();
@@ -605,14 +628,4 @@ class HomeController extends GetxController {
   // =========================
   // UTILITY METHODS
   // =========================
-
-  /// Check if search radius is valid
-  bool isValidSearchRadius(double radius) {
-    return _matchingService.isValidSearchRadius(radius);
-  }
-
-  /// Get detailed error message
-  String getDetailedErrorMessage(dynamic error) {
-    return _matchingService.getDetailedErrorMessage(error);
-  }
 }

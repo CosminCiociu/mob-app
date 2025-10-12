@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/utils/event_formatter.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 
 class CustomDateTimePicker extends StatefulWidget {
@@ -46,7 +47,8 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
   @override
   Widget build(BuildContext context) {
     final displayText = selectedDateTime != null
-        ? '${selectedDateTime!.toLocal()}'.split('.')[0]
+        ? EventFormatter.formatEventDateTime(
+            selectedDateTime!.toIso8601String())
         : 'No date selected';
 
     return Column(

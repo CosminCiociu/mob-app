@@ -22,4 +22,8 @@ class SharedPreferenceHelper {
   static const String languageCode = 'language_code';
   static const String languageKey = 'language-key';
   static const String languageListKey = 'language-list-key';
+
+  // Location keys
+  static const String userLocationKey = 'user_location';
+  static const String locationTimestampKey = 'location_timestamp';
 }

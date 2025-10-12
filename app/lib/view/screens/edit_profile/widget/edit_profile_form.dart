@@ -54,6 +54,19 @@ class _EditProfileFormState extends State<EditProfileForm> {
                 textInputType: TextInputType.text,
                 inputAction: TextInputAction.next,
                 controller: controller.displayNameController,
+                nextFocus: controller.ageFocusNode,
+                onChanged: (value) {
+                  return;
+                },
+              ),
+              const SizedBox(height: Dimensions.space20),
+              LabelTextField(
+                labelText: MyStrings.age.tr,
+                hintText: MyStrings.enterYourAge.tr,
+                textInputType: TextInputType.number,
+                inputAction: TextInputAction.next,
+                controller: controller.ageController,
+                focusNode: controller.ageFocusNode,
                 nextFocus: controller.zipCodeFocusNode,
                 onChanged: (value) {
                   return;

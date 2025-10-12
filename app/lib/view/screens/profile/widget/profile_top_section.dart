@@ -60,6 +60,13 @@ class _ProfileTopSectionState extends State<ProfileTopSection> {
                 child: Text(controller.emailController.text,
                     style: regularDefault.copyWith(
                         color: MyColor.getGreyText1()))),
+            if (controller.ageController.text.isNotEmpty)
+              Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                      '${MyStrings.age.tr}: ${controller.ageController.text}',
+                      style: regularDefault.copyWith(
+                          color: MyColor.getGreyText1()))),
             const SizedBox(height: Dimensions.space15),
             InkWell(
               onTap: () {

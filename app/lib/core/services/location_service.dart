@@ -1,133 +1,108 @@
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
-import 'package:ovo_meet/core/utils/my_strings.dart';
+import '../../domain/repositories/location_repository.dart';
+import '../../data/repositories/firebase_location_repository.dart';
+import '../../data/model/location/location_model.dart';
+import '../utils/my_strings.dart';
 
+/// Service for location operations using repository pattern
 class LocationService {
-  /// Get current user's location with permission handling
-  static Future<Position> getCurrentLocation() async {
-    // Step 1: Check and request permissions
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
-    }
+  static final LocationRepository _repository = FirebaseLocationRepository();
 
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw Exception('Location permission denied.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permission permanently denied.');
-    }
-
-    // Step 2: Get current position
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    return position;
-  }
-
-  /// Convert coordinates to address
-  static Future<Map<String, String>> getAddressFromLatLng(
-      double lat, double lng) async {
+  /// Get current user's location with caching
+  static Future<LocationModel?> getCurrentLocation() async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        return {
-          'fullAddress':
-              '${place.name}, ${place.locality}, ${place.administrativeArea}, ${place.country}',
-          'administrativeArea': '${place.administrativeArea ?? ''}',
-          'locality': '${place.locality ?? ''}',
-          'country': '${place.country ?? ''}',
-          'name': '${place.name ?? ''}',
-        };
+      // Try to get cached location first
+      final cachedLocation = await _repository.getCachedLocation();
+      if (cachedLocation != null) {
+        print('✅ Using cached location: ${cachedLocation.displayAddress}');
+        return cachedLocation;
       }
+
+      // Get fresh location from device
+      final location = await _repository.getCurrentLocation();
+      if (location != null) {
+        // Cache the fresh location
+        await _repository.cacheLocation(location);
+        print('✅ Got fresh location: ${location.displayAddress}');
+        return location;
+      }
+
+      print('❌ Unable to get current location');
+      return null;
     } catch (e) {
-      print("❌ Failed to get address from coordinates: $e");
+      print('❌ Error getting current location: $e');
+      return null;
     }
-
-    return {
-      'fullAddress': MyStrings.addressNotFound,
-      'administrativeArea': MyStrings.addressNotFound,
-      'locality': MyStrings.addressNotFound,
-      'country': MyStrings.addressNotFound,
-      'name': MyStrings.addressNotFound,
-    };
-  }
-
-  /// Get location data with geohash for Firebase storage
-  static Future<Map<String, dynamic>> getLocationDataForFirebase() async {
-    final position = await getCurrentLocation();
-    final addressMap =
-        await getAddressFromLatLng(position.latitude, position.longitude);
-
-    // Generate geohash using GeoFlutterFire
-    final geoPoint = GeoPoint(position.latitude, position.longitude);
-    final geoFirePoint = GeoFirePoint(geoPoint);
-    final geohash = geoFirePoint.geohash;
-
-    return {
-      'lat': position.latitude,
-      'lng': position.longitude,
-      'timestamp': FieldValue.serverTimestamp(),
-      'address': addressMap,
-      'geohash': geohash,
-      'geopoint': geoPoint,
-    };
   }
 
   /// Update user's location in Firebase
-  static Future<void> updateUserLocationInFirebase() async {
+  static Future<bool> updateUserLocationInFirebase() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception('User not logged in');
+      if (user == null) {
+        print('❌ Cannot update location: User not logged in');
+        return false;
+      }
 
-      final locationData = await getLocationDataForFirebase();
+      final location = await getCurrentLocation();
+      if (location == null) {
+        print('❌ Cannot update location: Unable to get current location');
+        return false;
+      }
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({
-        'location': locationData,
-      });
-
-      print("✅ User location updated successfully in Firebase");
+      final success =
+          await _repository.updateUserLocationInFirebase(user.uid, location);
+      if (success) {
+        print('✅ User location updated successfully in Firebase');
+      } else {
+        print('❌ Failed to update user location in Firebase');
+      }
+      return success;
     } catch (e) {
-      print("❌ Failed to update location in Firebase: $e");
-      rethrow;
+      print('❌ Error updating user location in Firebase: $e');
+      return false;
     }
   }
 
   /// Get user's saved location from Firebase
-  static Future<Map<String, dynamic>?> getUserLocationFromFirebase() async {
+  static Future<LocationModel?> getUserLocationFromFirebase() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception('User not logged in');
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists && userDoc.data()?['location'] != null) {
-        return userDoc.data()!['location'] as Map<String, dynamic>;
+      if (user == null) {
+        print('❌ Cannot get location: User not logged in');
+        return null;
       }
-      return null;
+
+      final location = await _repository.getUserLocationFromFirebase(user.uid);
+      if (location != null) {
+        print('✅ Got user location from Firebase: ${location.displayAddress}');
+      } else {
+        print('❌ No saved location found in Firebase');
+      }
+      return location;
     } catch (e) {
-      print("❌ Failed to get user location from Firebase: $e");
+      print('❌ Error getting user location from Firebase: $e');
       return null;
     }
   }
 
-  /// Get formatted address string for display
+  /// Get location data for Firebase storage (legacy support)
+  @Deprecated('Use getCurrentLocation() instead')
+  static Future<Map<String, dynamic>?> getLocationDataForFirebase() async {
+    final location = await getCurrentLocation();
+    return location?.toFirebaseData();
+  }
+
+  /// Get location data for Firebase storage safely (legacy support)
+  @Deprecated('Use getCurrentLocation() instead')
+  static Future<Map<String, dynamic>?>
+      getLocationDataForFirebaseSafely() async {
+    final location = await getCurrentLocation();
+    return location?.toFirebaseData();
+  }
+
+  /// Get formatted address string for display (legacy support)
+  @Deprecated('Use LocationModel.displayAddress instead')
   static String getDisplayAddress(Map<String, String> addressMap) {
     final locality = addressMap['locality'] ?? '';
     final name = addressMap['name'] ?? '';
@@ -141,5 +116,40 @@ class LocationService {
     } else {
       return addressMap['fullAddress'] ?? MyStrings.addressNotFound;
     }
+  }
+
+  /// Convert coordinates to address (legacy support)
+  @Deprecated('Use LocationModel and AddressModel instead')
+  static Future<Map<String, String>> getAddressFromLatLng(
+      double lat, double lng) async {
+    // This is kept for backward compatibility, but new code should use LocationModel
+    try {
+      final location = await _repository.getCurrentLocation();
+      if (location != null && location.lat == lat && location.lng == lng) {
+        return {
+          'fullAddress': location.address.fullAddress,
+          'administrativeArea': location.address.administrativeArea,
+          'locality': location.address.locality,
+          'country': location.address.country,
+          'name': location.address.name,
+        };
+      }
+    } catch (e) {
+      print('❌ Error getting address from coordinates: $e');
+    }
+
+    return {
+      'fullAddress': MyStrings.addressNotFound,
+      'administrativeArea': MyStrings.addressNotFound,
+      'locality': MyStrings.addressNotFound,
+      'country': MyStrings.addressNotFound,
+      'name': MyStrings.addressNotFound,
+    };
+  }
+
+  /// Clear cached location data
+  static Future<void> clearCachedLocation() async {
+    await _repository.clearCachedLocation();
+    print('✅ Cached location data cleared');
   }
 }

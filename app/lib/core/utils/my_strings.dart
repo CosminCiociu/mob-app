@@ -41,6 +41,9 @@ class MyStrings {
   static const String resendIn = "Resend in";
   static const String search = "Search";
   static const String age = "Age";
+  static const String age_between = "Age Between";
+  static const String enterYourAge = "Enter your age";
+  static const String ageHint = "e.g., 25";
   static const String settings = "Settings";
   static const String other = "Other";
   static const String conditionsofUses = "Conditions of Uses";
@@ -512,6 +515,18 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String errorDemonstratingGeohash =
       "Error demonstrating geohash features";
 
+  // Location help messages
+  static const String enableLocationToFindEvents =
+      "Enable location to find nearby events";
+  static const String locationServicesDisabled = "Location services disabled";
+  static const String tapToEnableLocation =
+      "Tap here to enable location access";
+  static const String tapToRetryLocation = "Tap to retry location update";
+  static const String locationPermissionRequired =
+      "Location permission required to show nearby events";
+  static const String pleaseEnableLocationServices =
+      "Please enable location services";
+
   // Success messages
   static const String locationUpdatedSuccessfully =
       "Location updated successfully";
@@ -543,6 +558,17 @@ We pride ourselves on building an inclusive community where everyone is welcome,
       "Failed to refresh categories";
   static const String noCategoriesFound = "No categories found";
   static const String searchCategories = "Search categories";
+
+  // Home screen event states
+  static const String loadingNearbyEvents = "Loading nearby events...";
+  static const String allCaughtUp = "All caught up!";
+  static const String noNearbyEvents = "No nearby events";
+  static const String noNearbyEventsMessage =
+      "No events found nearby. Try expanding your search radius or create your own event!";
+  static const String allCaughtUpMessage =
+      "You've seen all events in your area. Check back later for new ones!";
+  static const String noEventsFoundTapToCreate =
+      "No nearby events found.\nTap to create your own!";
   static const String selectCategory = "Select Category";
   static const String allCategories = "All Categories";
   static const String activeCategoriesOnly = "Active categories only";
@@ -587,4 +613,5 @@ We pride ourselves on building an inclusive community where everyone is welcome,
       "Tap a search result to view on map, then tap the map to add a pin";
   static const String tapMapToAddPin =
       "Tap on the map to add a pin, then confirm your selection";
+  static const String deleteEvent = "Delete Event";
 }

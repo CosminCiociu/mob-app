@@ -187,9 +187,22 @@ class _ProfileCompleteScreenState extends State<ProfileCompleteScreen> {
                       labelText: MyStrings.zipCode.tr,
                       hintText: "",
                       textInputType: TextInputType.text,
-                      inputAction: TextInputAction.done,
+                      inputAction: TextInputAction.next,
                       focusNode: controller.zipCodeFocusNode,
                       controller: controller.zipCodeController,
+                      nextFocus: controller.ageFocusNode,
+                      onChanged: (value) {
+                        return;
+                      },
+                    ),
+                    const SizedBox(height: Dimensions.space25),
+                    LabelTextField(
+                      labelText: MyStrings.enterYourAge.tr,
+                      hintText: MyStrings.ageHint.tr,
+                      textInputType: TextInputType.number,
+                      inputAction: TextInputAction.done,
+                      focusNode: controller.ageFocusNode,
+                      controller: controller.ageController,
                       onChanged: (value) {
                         return;
                       },

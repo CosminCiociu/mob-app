@@ -20,9 +20,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
-    Get.put(ProfileController());
+    final controller = Get.put(ProfileController());
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      controller.fetchProfileData();
+    });
   }
 
   @override

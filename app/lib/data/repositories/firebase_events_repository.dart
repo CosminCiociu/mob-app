@@ -27,6 +27,13 @@ class FirebaseEventsRepository implements EventsRepository {
           continue;
         }
 
+        // Skip events that user has already declined
+        if (currentUserId != null &&
+            eventData['users_declined'] != null &&
+            (eventData['users_declined'] as List).contains(currentUserId)) {
+          continue;
+        }
+
         // Only active events
         if (eventData['status'] != 'active') {
           continue;
@@ -86,7 +93,12 @@ class FirebaseEventsRepository implements EventsRepository {
               eventData['location'] != null &&
               eventData['status'] == 'active' &&
               (currentUserId == null ||
-                  eventData['createdBy'] != currentUserId)) {
+                  eventData['createdBy'] != currentUserId) &&
+              // Skip events that user has already declined
+              (currentUserId == null ||
+                  eventData['users_declined'] == null ||
+                  !(eventData['users_declined'] as List)
+                      .contains(currentUserId))) {
             nearbyEvents.add(doc);
           }
         }
@@ -158,5 +170,115 @@ class FirebaseEventsRepository implements EventsRepository {
     }
 
     return MyStrings.categoryNotAvailable;
+  }
+
+  @override
+  Future<void> likeEvent({
+    required String eventId,
+    required String userId,
+  }) async {
+    try {
+      final eventDoc = _firestore.collection('users_events').doc(eventId);
+
+      // Use Firestore transaction to ensure atomic operation
+      await _firestore.runTransaction((transaction) async {
+        final eventSnapshot = await transaction.get(eventDoc);
+
+        if (!eventSnapshot.exists) {
+          throw Exception('Event not found');
+        }
+
+        final eventData = eventSnapshot.data() as Map<String, dynamic>;
+        List<String> userLiked = [];
+
+        // Get existing liked users or create empty list
+        if (eventData.containsKey('user_liked') &&
+            eventData['user_liked'] != null) {
+          userLiked = List<String>.from(eventData['user_liked']);
+        }
+
+        // Add user ID if not already present
+        if (!userLiked.contains(userId)) {
+          userLiked.add(userId);
+          transaction.update(eventDoc, {
+            'user_liked': userLiked,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      });
+    } catch (e) {
+      throw Exception('Failed to like event: $e');
+    }
+  }
+
+  @override
+  Future<void> declineEvent({
+    required String eventId,
+    required String userId,
+  }) async {
+    try {
+      final eventDoc = _firestore.collection('users_events').doc(eventId);
+
+      // Use Firestore transaction to ensure atomic operation
+      await _firestore.runTransaction((transaction) async {
+        final eventSnapshot = await transaction.get(eventDoc);
+
+        if (!eventSnapshot.exists) {
+          throw Exception('Event not found');
+        }
+
+        final eventData = eventSnapshot.data() as Map<String, dynamic>;
+        List<String> usersDeclined = [];
+
+        // Get existing declined users or create empty list
+        if (eventData.containsKey('users_declined') &&
+            eventData['users_declined'] != null) {
+          usersDeclined = List<String>.from(eventData['users_declined']);
+        }
+
+        // Add user ID if not already present
+        if (!usersDeclined.contains(userId)) {
+          usersDeclined.add(userId);
+          transaction.update(eventDoc, {
+            'users_declined': usersDeclined,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      });
+    } catch (e) {
+      throw Exception('Failed to decline event: $e');
+    }
+  }
+
+  @override
+  Future<void> createEventLikeNotification({
+    required String eventId,
+    required String eventCreatorId,
+    required String likerUserId,
+    required String likerName,
+    required String eventName,
+  }) async {
+    try {
+      // Don't create notification if user likes their own event
+      if (eventCreatorId == likerUserId) {
+        return;
+      }
+
+      await _firestore.collection('notifications').add({
+        'type': 'event_like',
+        'recipientId': eventCreatorId,
+        'senderId': likerUserId,
+        'senderName': likerName,
+        'eventId': eventId,
+        'eventName': eventName,
+        'title': 'Someone liked your event!',
+        'message':
+            '$likerName is interested in joining your event "$eventName"',
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Failed to create notification: $e');
+    }
   }
 }

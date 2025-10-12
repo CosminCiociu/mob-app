@@ -10,7 +10,6 @@ import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/config/app_config.dart';
 import 'package:ovo_meet/core/services/location_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A location picker widget that integrates with Google Maps and Firebase user locations.
 ///
@@ -94,14 +93,13 @@ class _EventLocationPickerState extends State<EventLocationPicker> {
 
       if (userLocationData != null && mounted) {
         // Extract location data
-        final geoPoint = userLocationData['geopoint'] as GeoPoint;
+        final geoPoint = userLocationData.geopoint;
         final userLocation = LatLng(geoPoint.latitude, geoPoint.longitude);
 
         // Get location name from address data
         String locationName = MyStrings.currentLocation;
-        if (userLocationData['address'] != null) {
-          final address = userLocationData['address'] as Map<String, dynamic>;
-          final fullAddress = address['fullAddress'] as String? ?? '';
+        if (userLocationData.address.isValid) {
+          final fullAddress = userLocationData.address.fullAddress;
           if (fullAddress.isNotEmpty &&
               fullAddress != MyStrings.addressNotFound) {
             locationName = fullAddress;

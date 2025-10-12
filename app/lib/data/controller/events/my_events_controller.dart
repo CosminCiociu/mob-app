@@ -20,6 +20,7 @@ class MyEventsController extends GetxController {
   bool get isRepeatEvent => _eventsService.isRepeatEvent;
   bool get hasSpecificTime => _eventsService.hasSpecificTime;
   bool get hasSpecificLocation => _eventsService.hasSpecificLocation;
+  bool get requiresApproval => _eventsService.requiresApproval;
 
   // Form controllers - expose service controllers
   TextEditingController get eventNameController =>
@@ -75,7 +76,11 @@ class MyEventsController extends GetxController {
 
   // Business logic methods - delegate to service
   Future<void> createEvent() => _eventsService.createEvent();
+  Future<void> updateEvent(String eventId) =>
+      _eventsService.updateEvent(eventId);
   void clearForm() => _eventsService.clearForm();
+  void populateFormForEditing(Map<String, dynamic> eventData) =>
+      _eventsService.populateFormForEditing(eventData);
 
   // Image handling methods - delegate to service
   Future<void> uploadImage() => _eventsService.uploadImage();
@@ -96,6 +101,9 @@ class MyEventsController extends GetxController {
   void setHasSpecificLocation(bool hasLocation) =>
       _eventsService.setHasSpecificLocation(hasLocation);
 
+  void setRequiresApproval(bool requiresApproval) =>
+      _eventsService.setRequiresApproval(requiresApproval);
+
   void setDateTimeRange(DateTime? start, DateTime? end) =>
       _eventsService.setDateTimeRange(start, end);
 
@@ -112,6 +120,9 @@ class MyEventsController extends GetxController {
   Future<void> fetchUserEvents() => _eventsService.fetchUserEvents();
   Future<void> deleteEvent(String eventId) =>
       _eventsService.deleteEvent(eventId);
+  Future<void> toggleEventStatus(String eventId, String currentStatus) =>
+      _eventsService.toggleEventStatus(eventId, currentStatus);
+  Future<int> getUserEventCount() => _eventsService.getUserEventCount();
 
   // Additional methods for backward compatibility
   Future<void> fetchMyEvents() => _eventsService.fetchUserEvents();

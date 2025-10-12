@@ -28,4 +28,25 @@ abstract class EventsRepository {
 
   /// Get formatted event category/subcategory
   String getEventCategory(Map<String, dynamic> eventData);
+
+  /// Add user to event's liked users list
+  Future<void> likeEvent({
+    required String eventId,
+    required String userId,
+  });
+
+  /// Add user to event's declined users list
+  Future<void> declineEvent({
+    required String eventId,
+    required String userId,
+  });
+
+  /// Create notification for event organizer about like
+  Future<void> createEventLikeNotification({
+    required String eventId,
+    required String eventCreatorId,
+    required String likerUserId,
+    required String likerName,
+    required String eventName,
+  });
 }

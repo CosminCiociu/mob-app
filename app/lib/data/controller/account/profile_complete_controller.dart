@@ -13,6 +13,7 @@ class ProfileCompleteController extends GetxController {
   TextEditingController stateController = TextEditingController();
   TextEditingController zipCodeController = TextEditingController();
   TextEditingController cityController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
 
   FocusNode usernameFocusNode = FocusNode();
   FocusNode mobileNoFocusNode = FocusNode();
@@ -20,6 +21,7 @@ class ProfileCompleteController extends GetxController {
   FocusNode stateFocusNode = FocusNode();
   FocusNode zipCodeFocusNode = FocusNode();
   FocusNode cityFocusNode = FocusNode();
+  FocusNode ageFocusNode = FocusNode();
 
   bool countryLoading = true;
   List<Countries> countryList = [];

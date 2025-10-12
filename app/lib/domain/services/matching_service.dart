@@ -31,4 +31,16 @@ abstract class MatchingService {
 
   /// Validate search radius within acceptable limits
   bool isValidSearchRadius(double radius);
+
+  /// Handle event like action
+  Future<void> handleEventLike({
+    required String eventId,
+    required String userId,
+  });
+
+  /// Handle event decline action
+  Future<void> handleEventDecline({
+    required String eventId,
+    required String userId,
+  });
 }

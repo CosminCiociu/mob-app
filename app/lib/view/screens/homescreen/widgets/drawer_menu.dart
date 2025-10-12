@@ -23,16 +23,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
       child: Container(
         height: context.height,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFF76F96),
-              Color(0xFFF66D95),
-              Color(0xFFEB507E),
-              Color(0xFFE64375),
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: MyColor.primaryGradient,
         ),
         child: Center(
           child: Padding(
@@ -93,7 +84,7 @@ class _DrawerMenuState extends State<DrawerMenu> {
                       const EdgeInsets.symmetric(vertical: Dimensions.space17),
                   child: InkWell(
                     onTap: () {
-                      Get.toNamed(RouteHelper.eventsScreen);
+                      Get.offNamed(RouteHelper.bottomNavBar, arguments: 1);
                     },
                     child: Row(children: [
                       const CustomSvgPicture(

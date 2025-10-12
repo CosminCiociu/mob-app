@@ -61,7 +61,7 @@ class _DeleteAccountBottomsheetBodyState
                 ),
                 child: Center(
                   child: Text(
-                    MyStrings.deleteAccount.tr,
+                    MyStrings.deleteEvent.tr,
                     style: mediumDefault.copyWith(
                         color: MyColor.getDeleteButtonTextColor(),
                         fontSize: Dimensions.fontLarge),

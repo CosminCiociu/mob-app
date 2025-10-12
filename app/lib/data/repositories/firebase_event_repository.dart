@@ -76,4 +76,18 @@ class FirebaseEventRepository implements EventRepository {
       throw Exception('Failed to get event: $e');
     }
   }
+
+  @override
+  Future<int> countUserEvents(String userId) async {
+    try {
+      final QuerySnapshot eventsSnapshot = await _firestore
+          .collection(_collection)
+          .where('createdBy', isEqualTo: userId)
+          .get();
+
+      return eventsSnapshot.docs.length;
+    } catch (e) {
+      throw Exception('Failed to count user events: $e');
+    }
+  }
 }

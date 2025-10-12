@@ -12,6 +12,7 @@ import 'package:ovo_meet/view/components/location/event_location_picker.dart';
 import 'package:ovo_meet/view/components/form/date_time_selector.dart';
 import 'package:ovo_meet/view/components/form/max_persons_selector.dart';
 import 'package:ovo_meet/view/components/form/age_range_selector.dart';
+import 'package:ovo_meet/view/components/form/invite_approval_selector.dart';
 
 class CreateEventForm extends StatefulWidget {
   const CreateEventForm({super.key});
@@ -22,6 +23,16 @@ class CreateEventForm extends StatefulWidget {
 
 class _CreateEventFormState extends State<CreateEventForm> {
   final formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Clear the form data when entering create event form to ensure clean state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = Get.find<MyEventsController>();
+      controller.clearForm();
+    });
+  }
 
   void _showLocationSelector(
       BuildContext context, MyEventsController controller) {
@@ -267,8 +278,18 @@ class _CreateEventFormState extends State<CreateEventForm> {
                       onChanged: (minAge, maxAge) {
                         controller.setAgeRange(minAge, maxAge);
                       },
-                      label: 'Age Range',
+                      label: MyStrings.age_between,
                       hint: 'No age limit',
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Invite Approval Selector
+                    InviteApprovalSelector(
+                      requiresApproval: controller.requiresApproval,
+                      onChanged: (requiresApproval) {
+                        controller.setRequiresApproval(requiresApproval);
+                      },
+                      label: 'Invite Approval',
                     ),
                     const SizedBox(height: 12),
 

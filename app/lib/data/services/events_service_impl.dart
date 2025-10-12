@@ -33,6 +33,7 @@ class EventsServiceImpl implements EventsService {
   bool _isRepeatEvent = false;
   bool _hasSpecificTime = false;
   bool _hasSpecificLocation = false;
+  bool _requiresApproval = true; // Default to requiring approval
   String _eventImagePath = '';
   String _selectedTimezone = 'Select Timezone';
   String _timezoneLabel = 'Select Timezone';
@@ -87,6 +88,9 @@ class EventsServiceImpl implements EventsService {
 
   @override
   bool get hasSpecificLocation => _hasSpecificLocation;
+
+  @override
+  bool get requiresApproval => _requiresApproval;
 
   @override
   String get eventImagePath => _eventImagePath;
@@ -212,6 +216,12 @@ class EventsServiceImpl implements EventsService {
   }
 
   @override
+  void setRequiresApproval(bool requiresApproval) {
+    _requiresApproval = requiresApproval;
+    _notifyStateChanged();
+  }
+
+  @override
   void setDateTimeRange(DateTime? start, DateTime? end) {
     _dateTimeStart = start;
     _dateTimeEnd = end;
@@ -259,8 +269,74 @@ class EventsServiceImpl implements EventsService {
     _notifyStateChanged();
   }
 
+  /// Populate form with existing event data for editing
+  void populateFormForEditing(Map<String, dynamic> eventData) {
+    // Clear form first
+    clearForm();
+
+    // Basic event info
+    _eventNameController.text = eventData['eventName'] ?? '';
+    _detailsController.text = eventData['details'] ?? '';
+
+    // Category
+    _selectedCategoryId = eventData['categoryId'];
+    _selectedSubcategoryId = eventData['subcategoryId'];
+
+    // DateTime
+    if (eventData['dateTime'] != null) {
+      try {
+        final dateTime = DateTime.parse(eventData['dateTime']);
+        setDateTimeRange(dateTime, null);
+        setHasSpecificTime(true);
+      } catch (e) {
+        print('Error parsing event dateTime: $e');
+      }
+    }
+
+    // Location
+    if (eventData['location'] != null) {
+      final locationData = eventData['location'];
+      if (locationData is Map<String, dynamic>) {
+        final lat = locationData['latitude'];
+        final lng = locationData['longitude'];
+        final name = locationData['name'] ?? locationData['address'];
+
+        if (lat != null && lng != null) {
+          setEventLocation(
+            LatLng(lat.toDouble(), lng.toDouble()),
+            name?.toString(),
+          );
+          setHasSpecificLocation(true);
+        }
+      }
+    }
+
+    // Max attendees
+    if (eventData['maxAttendees'] != null) {
+      setMaxPersons(eventData['maxAttendees']);
+    }
+
+    // Age range
+    setAgeRange(
+      eventData['minAge'],
+      eventData['maxAge'],
+    );
+
+    // Approval requirement
+    if (eventData.containsKey('requiresApproval')) {
+      setRequiresApproval(eventData['requiresApproval'] ?? true);
+    }
+
+    // Image URL
+    if (eventData['imageUrl'] != null && eventData['imageUrl'].isNotEmpty) {
+      _eventImagePath = eventData['imageUrl'];
+    }
+
+    _notifyStateChanged();
+  }
+
   // =========================
-  // EVENT OPERATIONS
+  // FORM OPERATIONS
   // =========================
 
   @override
@@ -279,6 +355,15 @@ class EventsServiceImpl implements EventsService {
       if (currentUser == null) {
         CustomSnackBar.errorDeferred(
             errorList: ['Please login to create event']);
+        return;
+      }
+
+      // Check event limit before creating
+      final currentEventCount = await getUserEventCount();
+      if (currentEventCount >= 3) {
+        CustomSnackBar.errorDeferred(errorList: [
+          'You can only create up to 3 events. Please delete an existing event to create a new one.'
+        ]);
         return;
       }
 
@@ -306,6 +391,7 @@ class EventsServiceImpl implements EventsService {
         'minAge': _minAge,
         'maxAge': _maxAge,
         'location': await getEventLocation(),
+        'requiresApproval': _requiresApproval,
       };
 
       // Create event using repository
@@ -314,6 +400,9 @@ class EventsServiceImpl implements EventsService {
       // Show success message
       CustomSnackBar.successDeferred(
           successList: ['Event created successfully']);
+
+      // Refresh user events to include the newly created event
+      await fetchUserEvents();
 
       // Clear form
       clearForm();
@@ -373,6 +462,96 @@ class EventsServiceImpl implements EventsService {
     }
   }
 
+  @override
+  Future<void> updateEvent(String eventId) async {
+    try {
+      setSubmitLoading(true);
+
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Validate form data
+      if (_eventNameController.text.trim().isEmpty) {
+        throw Exception('Event name is required');
+      }
+
+      // Build updated event data
+      final eventData = <String, dynamic>{
+        'eventName': _eventNameController.text.trim(),
+        'dateTime': _dateTimeStart?.toIso8601String(),
+        'categoryId': _selectedCategoryId,
+        'subcategoryId': _selectedSubcategoryId,
+        'details': _detailsController.text.trim(),
+        'imageUrl': _eventImagePath,
+        'maxAttendees': _maxPersons,
+        'minAge': _minAge,
+        'maxAge': _maxAge,
+        'location': _eventLocation != null
+            ? {
+                'latitude': _eventLocation!.latitude,
+                'longitude': _eventLocation!.longitude,
+                'name': _eventLocationName,
+              }
+            : null,
+        'requiresApproval': _requiresApproval,
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+
+      // Update event using repository
+      await _eventRepository.updateEvent(eventId, eventData);
+
+      // Refresh user events to get updated data from database
+      await fetchUserEvents();
+
+      // Show success message
+      CustomSnackBar.successDeferred(
+          successList: ['Event updated successfully']);
+
+      // Navigate back to events screen
+      Get.back();
+
+      _notifyStateChanged();
+    } catch (e) {
+      CustomSnackBar.errorDeferred(errorList: ['Failed to update event: $e']);
+    } finally {
+      setSubmitLoading(false);
+    }
+  }
+
+  @override
+  Future<void> toggleEventStatus(String eventId, String currentStatus) async {
+    try {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('User not authenticated');
+      }
+
+      // Determine new status
+      final newStatus = currentStatus == 'active' ? 'inactive' : 'active';
+
+      // Update event status
+      final eventData = <String, dynamic>{
+        'status': newStatus,
+        'updatedAt': DateTime.now().toIso8601String(),
+      };
+
+      await _eventRepository.updateEvent(eventId, eventData);
+
+      // Refresh user events to get updated data from database
+      await fetchUserEvents();
+
+      // Show success message
+      final statusText = newStatus == 'active' ? 'activated' : 'deactivated';
+      CustomSnackBar.successDeferred(
+          successList: ['Event $statusText successfully']);
+    } catch (e) {
+      CustomSnackBar.errorDeferred(
+          errorList: ['Failed to update event status: $e']);
+    }
+  }
+
   // =========================
   // FORM OPERATIONS
   // =========================
@@ -407,6 +586,7 @@ class EventsServiceImpl implements EventsService {
     _maxAge = null;
     _hasSpecificTime = false;
     _hasSpecificLocation = false;
+    _requiresApproval = true; // Default to requiring approval
     _notifyStateChanged();
   }
 
@@ -511,10 +691,16 @@ class EventsServiceImpl implements EventsService {
   @override
   Future<Map<String, dynamic>?> getEventLocation() async {
     try {
-      final locationData = await LocationService.getLocationDataForFirebase();
-      print(
-          "✅ Event location obtained: ${locationData['address']['fullAddress']}");
-      return locationData;
+      final location = await LocationService.getCurrentLocation();
+      if (location != null && location.isValid) {
+        final locationData = location.toFirebaseData();
+        print("✅ Event location obtained: ${location.displayAddress}");
+        return locationData;
+      } else {
+        print("❌ Unable to get valid location");
+        CustomSnackBar.errorDeferred(errorList: ['Unable to get location']);
+        return null;
+      }
     } catch (e) {
       print("❌ Failed to get event location: $e");
       CustomSnackBar.errorDeferred(errorList: ['Unable to get location']);
@@ -529,6 +715,21 @@ class EventsServiceImpl implements EventsService {
   @override
   void setStateChangeCallback(VoidCallback? callback) {
     onStateChanged = callback;
+  }
+
+  @override
+  Future<int> getUserEventCount() async {
+    try {
+      final User? currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        return 0;
+      }
+
+      return await _eventRepository.countUserEvents(currentUser.uid);
+    } catch (e) {
+      print("❌ EventsService: Error counting user events: $e");
+      return 0; // Return 0 if there's an error to avoid blocking event creation
+    }
   }
 
   // =========================

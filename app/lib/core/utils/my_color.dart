@@ -431,4 +431,16 @@ class MyColor {
         return primaryColor;
     }
   }
+
+  // Common gradients used across the app
+  static const LinearGradient primaryGradient = LinearGradient(
+    colors: [
+      Color(0xFFF76F96),
+      Color(0xFFF66D95),
+      Color(0xFFEB507E),
+      Color(0xFFE64375),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 }

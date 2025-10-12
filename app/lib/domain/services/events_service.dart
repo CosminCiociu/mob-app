@@ -10,6 +10,7 @@ abstract class EventsService {
   bool get isRepeatEvent;
   bool get hasSpecificTime;
   bool get hasSpecificLocation;
+  bool get requiresApproval;
   String get eventImagePath;
   String get selectedTimezone;
   String get timezoneLabel;
@@ -43,6 +44,7 @@ abstract class EventsService {
   void setRepeatEvent(bool repeat);
   void setHasSpecificTime(bool hasTime);
   void setHasSpecificLocation(bool hasLocation);
+  void setRequiresApproval(bool requiresApproval);
   void setDateTimeRange(DateTime? start, DateTime? end);
   void setEventLocation(LatLng? location, String? locationName);
   void setMaxPersons(int? maxPersons);
@@ -50,12 +52,16 @@ abstract class EventsService {
 
   // Event operations
   Future<void> createEvent();
+  Future<void> updateEvent(String eventId);
   Future<void> fetchUserEvents();
   Future<void> deleteEvent(String eventId);
+  Future<void> toggleEventStatus(String eventId, String currentStatus);
+  Future<int> getUserEventCount();
 
   // Form operations
   void updateCategorySelection(String? categoryId, String? subcategoryId);
   void clearForm();
+  void populateFormForEditing(Map<String, dynamic> eventData);
   void validateForm();
 
   // Image operations

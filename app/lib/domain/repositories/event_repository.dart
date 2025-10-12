@@ -14,4 +14,7 @@ abstract class EventRepository {
 
   /// Get event by ID
   Future<Map<String, dynamic>?> getEvent(String eventId);
+
+  /// Count total events created by a specific user
+  Future<int> countUserEvents(String userId);
 }

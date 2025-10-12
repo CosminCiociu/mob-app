@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:ovo_meet/core/route/route.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/data/controller/search_connection/search_connection_controller.dart';
@@ -20,10 +19,11 @@ class _SearchConnectionScreenState extends State<SearchConnectionScreen> {
 
     Get.put(SearchConnectionController());
 
-    print("Activating route after 4 seconds...");
+    print("Search connection screen initialized");
+    // Removed automatic navigation to match screen - not needed for events app
     Future.delayed(Duration(seconds: 4), () {
-      print("Activating ...");
-      Get.toNamed(RouteHelper.matchScreen);
+      print("Search completed, returning to home");
+      Get.back(); // Simply go back instead of showing match screen
     });
   }
 

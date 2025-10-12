@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/data/controller/home/home_controller.dart';
+import 'package:ovo_meet/data/controller/events/my_events_controller.dart';
 import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
-import 'package:ovo_meet/view/screens/events/events_screen.dart';
+import 'package:ovo_meet/view/screens/events/my_events_screen.dart';
 import 'package:ovo_meet/view/screens/profile/profile_screen.dart';
 import 'package:ovo_meet/view/screens/search_connection/search_connection_screen.dart';
 import 'package:get/get.dart';
@@ -35,7 +36,7 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
     return [
       const HomeScreen(),
       // Removed: const SearchConnectionScreen(),
-      const EventsScreen(),
+      const MyEventsScreen(),
       const MessageListScreen(),
       const ProfileScreen()
     ];
@@ -89,6 +90,17 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
           _controller.index = value;
           Get.find<HomeController>().currentIndex = 0;
           Get.find<HomeController>().update();
+
+          // Refresh events data when Events tab (index 1) is selected
+          if (value == 1) {
+            // Schedule refresh for next frame to ensure UI updates properly
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (Get.isRegistered<MyEventsController>()) {
+                print("🔄 BottomNav: Refreshing events due to tab selection");
+                Get.find<MyEventsController>().fetchMyEvents();
+              }
+            });
+          }
         });
       },
       screens: _buildScreens(),
