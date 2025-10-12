@@ -608,10 +608,48 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String metersAway = "m away";
   static const String kilometersAway = "km away";
   static const String tapUseLocationToConfirm =
-      "Tap 'Use this location' to confirm your selection";
-  static const String tapSearchResultInstruction =
-      "Tap a search result to view on map, then tap the map to add a pin";
-  static const String tapMapToAddPin =
-      "Tap on the map to add a pin, then confirm your selection";
+      "Tap 'Use this location' to confirm";
+
+  // Event Details Screen strings
+  static const String eventDetailsTitle = "Event Details";
+  static const String whenAndWhere = "When & Where";
+  static const String attendeesAndRequirements = "Attendees & Requirements";
+  static const String aboutThisEvent = "About this Event";
+  static const String lookingForText = "Looking for";
+  static const String eventImageAlt = "Event Image";
+  static const String organizedBy = "Organized by";
+  static const String startsAt = "Starts";
+  static const String endsAt = "Ends";
+  static const String attendeesCount = "Attendees";
+  static const String ageRangeText = "Age Range";
+  static const String eventType = "Type";
+  static const String joinEventAction = "Join Event";
+  static const String wouldYouLikeToJoin = "Would you like to join";
+  static const String eventDeclined = "Event declined";
+  static const String successfullyJoinedEvent =
+      "Successfully joined the event!";
+  static const String dateTBD = "Date TBD";
+  static const String locationTBD = "Location TBD";
+  static const String eventToday = "Today";
+  static const String eventTomorrow = "Tomorrow";
+  static const String eventUpcoming = "Upcoming";
+  static const String eventLiveNow = "Live Now";
+  static const String pastEvent = "Past Event";
+  static const String startingSoon = "Starting Soon";
+  static const String eventScheduled = "Scheduled";
+  static const String allAgesWelcome = "All ages";
+  static const String yearsOld = "years";
+  static const String underAge = "Under";
+  static const String generalCategory = "General";
+  static const String unknownOrganizerText = "Unknown Organizer";
+  static const String untitledEventText = "Untitled Event";
+  static const String kmAwayText = "km away";
+  static const String peopleInterestedInText = "People interested in";
+  static const String eventsText = "events";
+  static const String peopleToJoinEvent = "people to join this amazing event";
+  static const String funPeopleToJoinEvent = "Fun people to join this event";
+  static const String categoryLabel = "Category";
+  static const String priceLabel = "Price";
   static const String deleteEvent = "Delete Event";
+  static const String tapMapToAddPin = "Tap on the map to add a pin";
 }

@@ -35,8 +35,8 @@ import 'package:ovo_meet/view/screens/terms_and_conditions/terms_and_conditions.
 import 'package:get/get.dart';
 import '../../view/screens/auth/two_factor/two_factor_setup_screen/two_factor_setup_screen.dart';
 import '../../view/screens/auth/two_factor/two_factor_verification_screen/two_factor_verification_screen.dart';
-import '../../view/screens/events/widget/create_event_form.dart';
-import '../../view/screens/events/widget/edit_event_form.dart';
+import '../../view/screens/events/widgets/create_event_form.dart';
+import '../../view/screens/events/widgets/edit_event_form.dart';
 import '../../view/screens/events/event_details_screen.dart';
 
 class RouteHelper {
