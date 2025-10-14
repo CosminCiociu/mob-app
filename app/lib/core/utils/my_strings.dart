@@ -652,4 +652,25 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String priceLabel = "Price";
   static const String deleteEvent = "Delete Event";
   static const String tapMapToAddPin = "Tap on the map to add a pin";
+
+  // Additional form constants
+  static const String noLimit = "No limit";
+  static const String noAgeLimit = "No age limit";
+  static const String inviteApproval = "Invite Approval";
+  static const String eventDetailsLabel = "Event Details";
+  static const String eventDetailsHint = "Describe your event...";
+  static const String updateEvent = "Update Event";
+  static const String updating = "Updating...";
+  static const String deactivateEvent = "Deactivate Event";
+  static const String activateEvent = "Activate Event";
+  static const String eventDeactivatedSuccessfully =
+      "Event deactivated successfully";
+  static const String eventActivatedSuccessfully =
+      "Event activated successfully";
+  static const String failedToUpdateEventStatus =
+      "Failed to update event status. Please try again.";
+  static const String deleteEventConfirmation =
+      "Are you sure you want to delete this event? This action cannot be undone.";
+  static const String delete = "Delete";
+  static const String editEvent = "Edit Event";
 }

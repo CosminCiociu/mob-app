@@ -179,32 +179,77 @@ class FirebaseEventsRepository implements EventsRepository {
   }) async {
     try {
       final eventDoc = _firestore.collection('users_events').doc(eventId);
+      final userDoc = _firestore.collection('users').doc(userId);
 
       // Use Firestore transaction to ensure atomic operation
       await _firestore.runTransaction((transaction) async {
         final eventSnapshot = await transaction.get(eventDoc);
+        final userSnapshot = await transaction.get(userDoc);
 
         if (!eventSnapshot.exists) {
           throw Exception('Event not found');
         }
 
-        final eventData = eventSnapshot.data() as Map<String, dynamic>;
-        List<String> userLiked = [];
+        if (!userSnapshot.exists) {
+          throw Exception('User not found');
+        }
 
-        // Get existing liked users or create empty list
+        final eventData = eventSnapshot.data() as Map<String, dynamic>;
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+
+        // Handle event's user_liked array
+        List<String> userLiked = [];
         if (eventData.containsKey('user_liked') &&
             eventData['user_liked'] != null) {
           userLiked = List<String>.from(eventData['user_liked']);
         }
 
-        // Add user ID if not already present
+        // Handle user's events_liked map
+        Map<String, dynamic> eventsLiked = {};
+        if (userData.containsKey('events_liked') &&
+            userData['events_liked'] != null) {
+          eventsLiked = Map<String, dynamic>.from(userData['events_liked']);
+        }
+
+        // Check if event requires approval
+        final bool requiresApproval = eventData['requiresApproval'] ?? true;
+
+        // Handle event's attendees array
+        List<String> attendees = [];
+        if (eventData.containsKey('attendees') &&
+            eventData['attendees'] != null) {
+          attendees = List<String>.from(eventData['attendees']);
+        }
+
+        // Always update the event to ensure all operations happen atomically
+        Map<String, dynamic> eventUpdates = {
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        // Add user ID to event's liked users if not already present
         if (!userLiked.contains(userId)) {
           userLiked.add(userId);
-          transaction.update(eventDoc, {
-            'user_liked': userLiked,
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
         }
+        eventUpdates['user_liked'] = userLiked;
+
+        // If event doesn't require approval, automatically add user to attendees
+        if (!requiresApproval && !attendees.contains(userId)) {
+          attendees.add(userId);
+        }
+        eventUpdates['attendees'] = attendees;
+        eventUpdates['currentAttendees'] = attendees.length;
+
+        // Always update user's liked events with current timestamp
+        if (!eventsLiked.containsKey(eventId)) {
+          eventsLiked[eventId] = FieldValue.serverTimestamp();
+        }
+
+        // Perform both updates atomically
+        transaction.update(eventDoc, eventUpdates);
+        transaction.update(userDoc, {
+          'events_liked': eventsLiked,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
       });
     } catch (e) {
       throw Exception('Failed to like event: $e');
@@ -279,6 +324,31 @@ class FirebaseEventsRepository implements EventsRepository {
       });
     } catch (e) {
       throw Exception('Failed to create notification: $e');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUserLikedEvents({
+    required String userId,
+  }) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+
+      if (!userDoc.exists) {
+        throw Exception('User not found');
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+
+      // Return the events_liked map, or empty map if it doesn't exist
+      if (userData.containsKey('events_liked') &&
+          userData['events_liked'] != null) {
+        return Map<String, dynamic>.from(userData['events_liked']);
+      }
+
+      return <String, dynamic>{};
+    } catch (e) {
+      throw Exception('Failed to get user liked events: $e');
     }
   }
 }
