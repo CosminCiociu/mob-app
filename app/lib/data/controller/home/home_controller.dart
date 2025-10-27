@@ -76,8 +76,8 @@ class HomeController extends GetxController {
     // Set initial address to show current location
     _setInitialAddress();
 
-    // Load events first, then optionally update location in background
-    _loadEventsAndUpdateLocationSafely();
+    // First ensure we have user location, then load events
+    _ensureLocationAndLoadEvents();
   }
 
   /// Set initial address display
@@ -134,104 +134,193 @@ class HomeController extends GetxController {
     }
   }
 
-  /// Load events first, then safely attempt location update in background
-  Future<void> _loadEventsAndUpdateLocationSafely() async {
-    // First, immediately try to load events with existing location data
-    await _refreshEventsQuietly();
+  /// **MAIN EVENT LOADING FUNCTION**
+  /// Single consolidated function to load/refresh events without location updates.
+  /// Use showFeedback=true for user-triggered refreshes, false for silent initialization.
+  Future<void> loadEvents({bool showFeedback = false}) async {
+    try {
+      _homeService.setLoadingEvents(true);
+      update();
 
-    // Then, safely attempt to update location in the background with delay
-    Future.delayed(const Duration(seconds: 2), () {
-      _safeLocationUpdate();
-    });
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        if (showFeedback) {
+          CustomSnackBar.errorDeferred(errorList: [MyStrings.userNotLoggedIn]);
+        }
+        return;
+      }
+
+      // Check if we have location before attempting to load events
+      final userLocation = await LocationService.getUserLocationFromFirebase();
+      if (userLocation == null && showFeedback) {
+        CustomSnackBar.errorDeferred(errorList: [
+          'Location not available. Please enable location services and try again.'
+        ]);
+        print('⚠️ No location available for event search');
+      }
+
+      if (showFeedback) {
+        // Use the service method that shows user feedback
+        nearbyEvents = await _matchingService.searchNearbyEvents(
+          radiusInKm: distance.toDouble(),
+          currentUserId: user.uid,
+        );
+      } else {
+        // Use the quiet service method for initialization
+        nearbyEvents = await _matchingService.searchNearbyEventsQuietly(
+          radiusInKm: distance.toDouble(),
+          currentUserId: user.uid,
+        );
+      }
+
+      print('✅ Loaded ${nearbyEvents.length} nearby events');
+
+      _homeService.resetCurrentIndex();
+    } catch (e) {
+      if (showFeedback) {
+        CustomSnackBar.errorDeferred(errorList: [
+          'Failed to load events: ${_matchingService.getDetailedErrorMessage(e)}'
+        ]);
+      } else {
+        // Log error but don't show snackbar during initialization
+        print('Failed to load events during initialization: $e');
+      }
+    } finally {
+      _homeService.setLoadingEvents(false);
+      update();
+    }
   }
 
-  /// Safely attempt to update user location with comprehensive error handling
-  Future<void> _safeLocationUpdate() async {
+  /// Ensure user has location before loading events
+  Future<void> _ensureLocationAndLoadEvents() async {
     try {
-      print('🔄 Starting safe location update...');
+      print('🔄 Ensuring user location before loading events...');
 
-      // Use the location update method with timeout
-      final success = await LocationService.updateUserLocationInFirebase()
-          .timeout(const Duration(seconds: 15));
+      // Check if we already have a valid location in Firebase
+      final existingLocation =
+          await LocationService.getUserLocationFromFirebase();
 
-      if (success) {
-        print('✅ User location updated successfully in background');
-        // Update address display after successful location update
-        _updateAddressDisplay();
-      } else {
-        print(
-            '⚠️ Location update failed gracefully, keeping existing location');
-        if (!isClosed) {
-          try {
-            if (addressController.text == 'Finding your location...' ||
-                addressController.text == 'Updating location...') {
-              addressController.text = 'Unable to get location';
+      if (existingLocation != null && existingLocation.isValid) {
+        print('✅ Found existing location, loading events...');
+        // We have location, load events immediately
+        await loadEvents();
+        return;
+      }
+
+      print('📍 No location found, attempting to get current location...');
+
+      // No location found, try to get current location with timeout
+      try {
+        final success = await LocationService.updateUserLocationInFirebase()
+            .timeout(const Duration(seconds: 10));
+
+        if (success) {
+          print('✅ Location updated successfully, loading events...');
+          // Update address display
+          _updateAddressDisplay();
+          // Load events with new location
+          await loadEvents();
+        } else {
+          print('⚠️ Could not get location, no events will be shown');
+          // Don't load events - keep empty list
+          nearbyEvents = [];
+          _homeService.setLoadingEvents(false);
+          update();
+
+          if (!isClosed) {
+            try {
+              addressController.text = 'Location required to find events';
               update();
+            } catch (e) {
+              print('⚠️ Controller already disposed');
             }
-          } catch (e) {
-            print('⚠️ Controller already disposed, skipping address update');
           }
         }
+      } on TimeoutException catch (e) {
+        print('⏱️ Location request timed out after 10 seconds: $e');
+        // Don't load events on timeout
+        nearbyEvents = [];
+        _homeService.setLoadingEvents(false);
+        update();
+
+        if (!isClosed) {
+          try {
+            addressController.text = 'Location timeout - tap to retry';
+            update();
+
+            // Show user-friendly timeout message
+            CustomSnackBar.infoDeferred(
+              infoList: [
+                'Location request timed out. Please check your GPS signal and try again.'
+              ],
+            );
+          } catch (e) {
+            print('⚠️ Controller already disposed');
+          }
+        }
+        return;
+      } catch (locationError) {
+        final errorString = locationError.toString().toLowerCase();
+
+        if (errorString.contains('permission') ||
+            errorString.contains('denied') ||
+            errorString.contains('user denied') ||
+            errorString.contains('location_permission_denied')) {
+          print('🚫 Location permission denied: $locationError');
+          // Don't load events when permission is denied
+          nearbyEvents = [];
+          _homeService.setLoadingEvents(false);
+          update();
+
+          if (!isClosed) {
+            try {
+              addressController.text = 'Tap to enable location & find events';
+              update();
+
+              // Show user-friendly snackbar message
+              CustomSnackBar.infoDeferred(
+                infoList: [
+                  'Location access is needed to show nearby events. Please enable location permission in your device settings.'
+                ],
+              );
+            } catch (e) {
+              print('⚠️ Controller already disposed');
+            }
+          }
+          return;
+        }
+
+        // For other location errors, also don't show events
+        print('❌ Location error, no events will be shown: $locationError');
+        nearbyEvents = [];
+        _homeService.setLoadingEvents(false);
+        update();
+
+        if (!isClosed) {
+          try {
+            addressController.text = 'Unable to get location';
+            update();
+          } catch (e) {
+            print('⚠️ Controller already disposed');
+          }
+        }
+        return;
       }
     } catch (e) {
-      // Comprehensive error handling for different failure types
-      final errorString = e.toString().toLowerCase();
+      print('❌ Error ensuring location: $e');
+      // Don't load events on any error
+      nearbyEvents = [];
+      _homeService.setLoadingEvents(false);
+      update();
 
-      if (errorString.contains('google play') ||
-          errorString.contains('securityexception') ||
-          errorString.contains('deadsystemexception')) {
-        print(
-            '🔧 Google Play Services issue detected, skipping location update: $e');
-      } else if (errorString.contains('permission') ||
-          errorString.contains('denied')) {
-        print('🔐 Location permission issue, showing helpful message: $e');
-        if (!isClosed) {
-          try {
-            if (addressController.text == 'Finding your location...' ||
-                addressController.text == 'Updating location...') {
-              addressController.text = MyStrings.enableLocationToFindEvents;
-              update();
-            }
-          } catch (e) {
-            print('⚠️ Controller already disposed, skipping address update');
-          }
-        }
-      } else if (errorString.contains('timeoutexception') ||
-          errorString.contains('timeout')) {
-        print('⏱️ Location update timed out, will retry later: $e');
-        Future.delayed(const Duration(seconds: 30), () {
-          print('🔄 Retrying location update...');
-          _safeLocationUpdate();
-        });
-      } else if (errorString.contains('location service') ||
-          errorString.contains('disabled')) {
-        print('📍 Location services disabled: $e');
-        if (!isClosed) {
-          try {
-            if (addressController.text == 'Finding your location...' ||
-                addressController.text == 'Updating location...') {
-              addressController.text = MyStrings.locationServicesDisabled;
-              update();
-            }
-          } catch (e) {
-            print('⚠️ Controller already disposed, skipping address update');
-          }
-        }
-      } else {
-        print('⚠️ Location update failed (non-critical): $e');
-        if (!isClosed) {
-          try {
-            if (addressController.text == 'Finding your location...' ||
-                addressController.text == 'Updating location...') {
-              addressController.text = 'Unable to get location';
-              update();
-            }
-          } catch (e) {
-            print('⚠️ Controller already disposed, skipping address update');
-          }
+      if (!isClosed) {
+        try {
+          addressController.text = 'Error getting location';
+          update();
+        } catch (e) {
+          print('⚠️ Controller already disposed');
         }
       }
-      // Don't throw - this is a background operation that shouldn't crash the app
     }
   }
 
@@ -248,33 +337,6 @@ class HomeController extends GetxController {
   void initializeCardController() {
     if (cardController == null) {
       cardController = CardController();
-    }
-  }
-
-  /// Refresh events silently during initialization (no snackbars)
-  Future<void> _refreshEventsQuietly() async {
-    try {
-      _homeService.setLoadingEvents(true);
-      update();
-
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        // Silently fail during initialization
-        return;
-      }
-
-      nearbyEvents = await _matchingService.searchNearbyEventsQuietly(
-        radiusInKm: distance.toDouble(),
-        currentUserId: user.uid,
-      );
-
-      _homeService.resetCurrentIndex();
-    } catch (e) {
-      // Log error but don't show snackbar during initialization
-      print('Failed to refresh events during initialization: $e');
-    } finally {
-      _homeService.setLoadingEvents(false);
-      update();
     }
   }
 
@@ -356,37 +418,13 @@ class HomeController extends GetxController {
   // EVENT MANAGEMENT METHODS
   // =========================
 
-  /// Refresh events from the service layer
+  /// Refresh events from the service layer (user-triggered)
   Future<void> refreshEvents() async {
-    try {
-      _homeService.setLoadingEvents(true);
-      update();
-
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        CustomSnackBar.errorDeferred(errorList: [MyStrings.userNotLoggedIn]);
-        return;
-      }
-
-      nearbyEvents = await _matchingService.searchNearbyEvents(
-        radiusInKm: distance.toDouble(),
-        currentUserId: user.uid,
-      );
-
-      _homeService.resetCurrentIndex();
-    } catch (e) {
-      CustomSnackBar.errorDeferred(errorList: [
-        'Failed to refresh events: ${_matchingService.getDetailedErrorMessage(e)}'
-      ]);
-    } finally {
-      _homeService.setLoadingEvents(false);
-      update();
-    }
+    await loadEvents(showFeedback: true);
   }
 
-  /// Update location and refresh events
+  /// Refresh events only (no location update)
   Future<void> updateLocationAndRefresh() async {
-    await _matchingService.updateLocationAndRefresh();
     await refreshEvents();
   }
 
@@ -544,7 +582,7 @@ class HomeController extends GetxController {
     return 'Category not available';
   }
 
-  /// Force update location when user taps location header
+  /// Force update location when user taps location header (location only, no event refresh)
   Future<void> forceLocationUpdate() async {
     print('🔄 Force location update requested');
 
@@ -564,13 +602,16 @@ class HomeController extends GetxController {
     try {
       print('🔄 Starting location service update...');
 
-      // Use the location update method
-      final success = await LocationService.updateUserLocationInFirebase();
+      // Use the location update method with timeout
+      final success = await LocationService.updateUserLocationInFirebase()
+          .timeout(const Duration(seconds: 15));
 
       if (success) {
         print('✅ Location force updated successfully');
-        // Get the updated location from Firebase
+        // Get the updated location from Firebase and refresh events
         await _getUserLocationFromFirebase();
+        // Optionally refresh events with new location
+        await loadEvents(showFeedback: true);
       } else {
         print('⚠️ Force location update failed gracefully');
         _showLocationUpdateHelpMessage();
@@ -614,8 +655,8 @@ class HomeController extends GetxController {
 
   /// Refresh data when user manually requests it (e.g., pull to refresh)
   Future<void> onUserRefresh() async {
-    // Only call this for explicit user actions
-    await updateLocationAndRefresh();
+    // Only refresh events for explicit user actions
+    await refreshEvents();
   }
 
   /// Change selected address (used by location selector)

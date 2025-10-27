@@ -32,6 +32,7 @@ import 'package:ovo_meet/view/screens/privacy_policy/privacy_policy_screen.dart'
 import 'package:ovo_meet/view/screens/search_connection/search_connection_screen.dart';
 import 'package:ovo_meet/view/screens/splash/splash_screen.dart';
 import 'package:ovo_meet/view/screens/terms_and_conditions/terms_and_conditions.dart';
+import 'package:ovo_meet/view/screens/location_permission/location_permission_screen.dart';
 import 'package:get/get.dart';
 import '../../view/screens/auth/two_factor/two_factor_setup_screen/two_factor_setup_screen.dart';
 import '../../view/screens/auth/two_factor/two_factor_verification_screen/two_factor_verification_screen.dart';
@@ -81,6 +82,7 @@ class RouteHelper {
   static const String createEventForm = "/create-event-form";
   static const String editEventForm = "/edit-event-form";
   static const String eventDetailsScreen = "/event-details-screen";
+  static const String locationPermissionScreen = "/location-permission-screen";
 
   List<GetPage> routes = [
     GetPage(
@@ -148,5 +150,8 @@ class RouteHelper {
         name: editEventForm,
         page: () => EditEventForm(eventData: Get.arguments ?? {})),
     GetPage(name: eventDetailsScreen, page: () => const EventDetailsScreen()),
+    GetPage(
+        name: locationPermissionScreen,
+        page: () => const LocationPermissionScreen()),
   ];
 }

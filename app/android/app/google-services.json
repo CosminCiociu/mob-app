@@ -1,41 +1,49 @@
 {
   "project_info": {
-    "project_number": "576890475561",
-    "project_id": "clubbie-32937",
-    "storage_bucket": "clubbie-32937.firebasestorage.app"
+    "project_number": "293844036393",
+    "project_id": "clubbie-78d17",
+    "storage_bucket": "clubbie-78d17.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:576890475561:android:715aa5566a6737d0063838",
+        "mobilesdk_app_id": "1:293844036393:android:264977036573651f33a538",
         "android_client_info": {
           "package_name": "com.ovo_meet.ovo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "576890475561-it97ppmfmspdsibst0mgl7m8dc51sl26.apps.googleusercontent.com",
+          "client_id": "293844036393-1s7fgv2283srl2j1jtkdajadrtvpcbtc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ovo_meet.ovo",
-            "certificate_hash": "04ccb942d8e33fb6ea4bdbac7e0f00845007a044"
+            "certificate_hash": "e4cde6dc9c631589997f39eaa5eec9d103292385"
           }
         },
         {
-          "client_id": "576890475561-lep7pk3lcekkaucoippe6bbjms3bfomr.apps.googleusercontent.com",
+          "client_id": "293844036393-o9eh4s88qjuv2og9al87ktgd72sf2m1i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ovo_meet.ovo",
+            "certificate_hash": "6a40e2905087bb15165a635644949ad99f2852d5"
+          }
+        },
+        {
+          "client_id": "293844036393-se598askql4hsds2sb0h8vgmfc9hb8m0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAQ6NaJr8mG3iROMVlKbZBK8CSRM8z0V_I"
+          "current_key": "AIzaSyCaGyCnR5dhVelZU9tdJK3NyLKfwJEfxB8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "576890475561-lep7pk3lcekkaucoippe6bbjms3bfomr.apps.googleusercontent.com",
+              "client_id": "293844036393-se598askql4hsds2sb0h8vgmfc9hb8m0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

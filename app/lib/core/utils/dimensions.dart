@@ -80,4 +80,10 @@ class Dimensions {
   static const double snackbarHeight = 64.0;
   static const double shadowBlur = 20.0;
   static const double shadowOffset = 8.0;
+
+  // Location permission screen constants
+  static const double locationIconSize = 80.0;
+  static const double locationCardPadding = 24.0;
+  static const double locationButtonHeight = 48.0;
+  static const double locationScreenPadding = 32.0;
 }

@@ -443,4 +443,11 @@ class MyColor {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // Location permission specific colors
+  static const Color locationIconColor = Color(0xFF4CAF50);
+  static const Color locationWarningColor = Color(0xFFFF9800);
+  static const Color locationErrorColor = Color(0xFFF44336);
+  static const Color locationCardBackground = Color(0xFFF8F9FA);
+  static const Color locationButtonPrimary = primaryColor;
 }

@@ -18,19 +18,26 @@ class FirebaseLocationRepository implements LocationRepository {
       // Check location permission
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
+        print(
+            '📍 Location services are disabled. Please enable location in device settings.');
+        return null;
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        print('📍 Requesting location permission...');
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
+          print(
+              '🚫 Location access denied by user. Events require location to be shown.');
+          return null;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied');
+        print(
+            '🚫 Location permissions permanently denied. Please enable location in app settings to see events.');
+        return null;
       }
 
       // Get current position
@@ -54,7 +61,21 @@ class FirebaseLocationRepository implements LocationRepository {
 
       return LocationModel.fromPosition(position, address: address);
     } catch (e) {
-      print('Error getting current location: $e');
+      final errorString = e.toString().toLowerCase();
+
+      if (errorString.contains('permission') ||
+          errorString.contains('denied') ||
+          errorString.contains('user denied')) {
+        print('🚫 Location permission denied: $e');
+      } else if (errorString.contains('location service') ||
+          errorString.contains('disabled')) {
+        print('📍 Location services disabled: $e');
+      } else if (errorString.contains('timeout')) {
+        print('⏱️ Location request timed out: $e');
+      } else {
+        print('❌ Error getting current location: $e');
+      }
+
       return null;
     }
   }

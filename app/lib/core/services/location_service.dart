@@ -27,10 +27,24 @@ class LocationService {
         return location;
       }
 
-      print('❌ Unable to get current location');
+      print('📍 Unable to get current location - permission may be denied');
       return null;
     } catch (e) {
-      print('❌ Error getting current location: $e');
+      final errorString = e.toString().toLowerCase();
+
+      if (errorString.contains('permission') ||
+          errorString.contains('denied') ||
+          errorString.contains('user denied')) {
+        print('🚫 Location permission denied by user');
+      } else if (errorString.contains('location service') ||
+          errorString.contains('disabled')) {
+        print('📍 Location services are disabled on device');
+      } else if (errorString.contains('timeout')) {
+        print('⏱️ Location request timed out');
+      } else {
+        print('❌ Error getting current location: $e');
+      }
+
       return null;
     }
   }
@@ -46,7 +60,8 @@ class LocationService {
 
       final location = await getCurrentLocation();
       if (location == null) {
-        print('❌ Cannot update location: Unable to get current location');
+        print(
+            '📍 Cannot update location: Unable to get current location (permission may be denied)');
         return false;
       }
 
@@ -59,7 +74,17 @@ class LocationService {
       }
       return success;
     } catch (e) {
-      print('❌ Error updating user location in Firebase: $e');
+      final errorString = e.toString().toLowerCase();
+
+      if (errorString.contains('permission') ||
+          errorString.contains('denied')) {
+        print('🚫 Cannot update location: Permission denied by user');
+      } else if (errorString.contains('location service') ||
+          errorString.contains('disabled')) {
+        print('📍 Cannot update location: Location services disabled');
+      } else {
+        print('❌ Error updating user location in Firebase: $e');
+      }
       return false;
     }
   }

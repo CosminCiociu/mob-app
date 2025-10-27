@@ -673,4 +673,26 @@ We pride ourselves on building an inclusive community where everyone is welcome,
       "Are you sure you want to delete this event? This action cannot be undone.";
   static const String delete = "Delete";
   static const String editEvent = "Edit Event";
+
+  // Location Permission strings
+  static const String enableLocation = "Enable Location";
+  static const String enableLocationToUseApp =
+      "Enable Location to further use the app";
+  static const String locationAccessRequired = "Location Access Required";
+  static const String locationAccessDescription =
+      "This app needs location access to find events and people near you. Please enable location permission to continue.";
+  static const String enableLocationButton = "Enable Location";
+  static const String openSettingsButton = "Open Settings";
+  static const String locationRequiredTitle = "Location Access Required";
+  static const String locationRequiredMessage =
+      "Location permission is required to use this feature. Please enable location access to continue.";
+  static const String locationDeniedMessage =
+      "Location access is denied. Please enable location permission in your device settings.";
+  static const String locationServiceDisabledMessage =
+      "Location services are disabled. Please enable location services in your device settings.";
+  static const String tryAgain = "Try Again";
+  static const String skipForNow = "Skip for now";
+  static const String allowLocationAccess = "Allow Location Access";
+  static const String needLocationForEvents =
+      "We need your location to show nearby events and connect you with people in your area.";
 }
