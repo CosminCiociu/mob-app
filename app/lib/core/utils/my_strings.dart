@@ -138,6 +138,12 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String withdrawLimit = "Withdraw Limit";
   static const String withdrawConfirm = "Withdraw Confirm";
   static const String authorizationMethod = "Authorization Method";
+
+  // Event Preview Modal strings
+  static const String eventPreview = "Event Preview";
+  static const String lookingFor = "Looking for";
+  static const String peopleInterestedIn = "People interested in";
+  static const String events = "events";
   static const String selectAuthModeMsg = "Please select an authorization mode";
   static const String fileDownloadAt = "File download at";
   static const String noDocOpenerApp = "No doc openner apps";
@@ -518,6 +524,7 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   // Location help messages
   static const String enableLocationToFindEvents =
       "Enable location to find nearby events";
+  // static const String enableLocation = "Enable Location"; // Removed duplicate
   static const String locationServicesDisabled = "Location services disabled";
   static const String tapToEnableLocation =
       "Tap here to enable location access";
@@ -695,4 +702,6 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String allowLocationAccess = "Allow Location Access";
   static const String needLocationForEvents =
       "We need your location to show nearby events and connect you with people in your area.";
+  static const String eventLimitReached =
+      "You have reached the maximum number of events you can create. Please delete an existing event to create a new one.";
 }

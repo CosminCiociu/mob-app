@@ -71,7 +71,7 @@ class Dimensions {
   static const double defaultAgeFilter = 10.0;
   static const double minAgeRange = 10.0;
   static const double maxAgeRange = 50.0;
-  static const double maxSearchRadius = 100.0;
+  static const double maxSearchRadius = 500.0;
   static const double minSearchRadius = 1.0;
 
   // Modern UI constants

@@ -87,10 +87,10 @@ class EventActionButtons extends StatelessWidget {
                     width: 2,
                   ),
                 ),
-                child: Icon(
-                  Icons.check,
+                child: CustomSvgPicture(
+                  image: MyImages.like,
                   color: MyColor.primaryColor,
-                  size: Dimensions.fontHeader + 4,
+                  height: Dimensions.fontHeader + 4,
                 ),
               ),
             ),

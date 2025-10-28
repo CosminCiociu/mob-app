@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
 import 'package:ovo_meet/core/route/route.dart';
 import 'package:ovo_meet/view/components/app-bar/action_button_icon_widget.dart';
+import 'package:ovo_meet/core/helpers/location_permission_helper.dart';
 import 'widgets/empty_events_state.dart';
 import 'widgets/events_list.dart';
 import 'widgets/event_context_menu.dart';
@@ -18,6 +19,8 @@ class MyEventsScreen extends StatefulWidget {
 }
 
 class _MyEventsScreenState extends State<MyEventsScreen> {
+  bool _isProcessingRequest = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,20 +41,87 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
   }
 
   Future<void> _handleCreateEventPress(MyEventsController controller) async {
-    final currentEventCount = await controller.getUserEventCount();
-    if (currentEventCount >= 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'You can only create up to 3 events. Please delete an existing event to create a new one.',
-          ),
-          backgroundColor: Colors.red,
-          duration: const Duration(seconds: 3),
-        ),
+    // Prevent multiple simultaneous requests
+    if (_isProcessingRequest) return;
+
+    setState(() {
+      _isProcessingRequest = true;
+    });
+
+    try {
+      // Check location permission first with better error handling
+      final bool hasLocationPermission =
+          await LocationPermissionHelper.checkAndRequestLocation(
+        customTitle: 'Location Required for Event',
+        customDescription:
+            'We need your location to create and show your event to nearby users.',
+        showSkipOption: false,
+      ).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          // Handle timeout gracefully
+          print('Location permission check timed out');
+          return false;
+        },
       );
-      return;
+
+      if (!hasLocationPermission) {
+        // Check if the widget is still mounted before showing SnackBar
+        if (mounted) {
+          // Clear any existing SnackBars first
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Location permission is required to create events - ${DateTime.now().millisecondsSinceEpoch}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
+      final currentEventCount = await controller.getUserEventCount();
+      if (currentEventCount >= 3) {
+        // Check if the widget is still mounted before showing SnackBar
+        if (mounted) {
+          // Clear any existing SnackBars first
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                MyStrings.eventLimitReached,
+              ),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+      Get.toNamed(RouteHelper.createEventForm);
+    } catch (e) {
+      print('Error in _handleCreateEventPress: $e');
+      // Show user-friendly error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Unable to access location services. Please try again later.'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProcessingRequest = false;
+        });
+      }
     }
-    Get.toNamed(RouteHelper.createEventForm);
   }
 
   void _showDeleteConfirmationDialog(BuildContext context,
@@ -90,7 +160,10 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
         appBar: CustomAppBar(
           title: MyStrings.myEvents,
           isTitleCenter: true,
-          isShowBackBtn: false,
+          isShowBackBtn: true,
+          backButtonOnPress: () {
+            Get.offAllNamed(RouteHelper.bottomNavBar);
+          },
           // Add icon button with event counter
           action: [
             Stack(

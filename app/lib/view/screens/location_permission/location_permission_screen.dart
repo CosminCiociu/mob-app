@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/utils/my_color.dart';
 import '../../../core/utils/my_strings.dart';
@@ -62,56 +61,80 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
     });
 
     try {
-      // Check if location services are enabled
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        _showLocationServiceDialog();
-        return;
-      }
-
-      // Check current permission status
-      LocationPermission permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.always ||
-          permission == LocationPermission.whileInUse) {
-        _handleLocationEnabled();
-        return;
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        _showOpenSettingsDialog();
-        return;
-      }
-
-      // Request permission
-      permission = await Geolocator.requestPermission();
-
-      if (permission == LocationPermission.always ||
-          permission == LocationPermission.whileInUse) {
-        _handleLocationEnabled();
-      } else if (permission == LocationPermission.deniedForever) {
-        _showOpenSettingsDialog();
-      } else {
-        _showPermissionDeniedMessage();
-      }
+      // Add timeout to prevent hanging on system failures
+      await _performLocationPermissionRequest()
+          .timeout(const Duration(seconds: 15));
     } catch (e) {
-      _showErrorMessage('Failed to request location permission: $e');
+      if (e.toString().contains('TimeoutException')) {
+        _showErrorMessage(
+            'Location services are taking too long to respond. Please try again.');
+      } else {
+        _showErrorMessage(
+            'Location services are currently unavailable. Please try again later.');
+      }
+      print('Location permission error: $e');
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _performLocationPermissionRequest() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showLocationServiceDialog();
+      return;
+    }
+
+    // Check current permission status
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      _handleLocationEnabled();
+      return;
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showOpenSettingsDialog();
+      return;
+    }
+
+    // Request permission
+    permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      _handleLocationEnabled();
+    } else if (permission == LocationPermission.deniedForever) {
+      _showOpenSettingsDialog();
+    } else {
+      _showPermissionDeniedMessage();
     }
   }
 
   void _handleLocationEnabled() {
-    if (widget.onLocationEnabled != null) {
-      widget.onLocationEnabled!();
-    } else {
-      Get.back(result: true);
+    try {
+      if (widget.onLocationEnabled != null) {
+        widget.onLocationEnabled!();
+      } else {
+        // Ensure we're still in the correct state before navigating back
+        if (mounted && Navigator.canPop(context)) {
+          Navigator.pop(context, true);
+        }
+      }
+    } catch (e) {
+      print('Error in _handleLocationEnabled: $e');
     }
   }
 
   void _showLocationServiceDialog() {
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -152,6 +175,8 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
   }
 
   void _showOpenSettingsDialog() {
+    if (!mounted) return;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -192,6 +217,8 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
   }
 
   void _showPermissionDeniedMessage() {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(MyStrings.locationDeniedMessage),
@@ -202,6 +229,8 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
   }
 
   void _showErrorMessage(String message) {
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -212,81 +241,111 @@ class _LocationPermissionScreenState extends State<LocationPermissionScreen>
   }
 
   void _handleSkip() {
-    if (widget.onSkip != null) {
-      widget.onSkip!();
-    } else {
-      Get.back(result: false);
+    try {
+      if (widget.onSkip != null) {
+        widget.onSkip!();
+      } else {
+        // Ensure we're still in the correct state before navigating back
+        if (mounted && Navigator.canPop(context)) {
+          Navigator.pop(context, false);
+        }
+      }
+    } catch (e) {
+      print('Error in _handleSkip: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: MyColor.getBackgroundColor(),
-      appBar: CustomAppBar(
-        title: widget.customTitle ?? MyStrings.enableLocation,
-        bgColor: MyColor.getBackgroundColor(),
-        isShowBackBtn: true,
-        isTitleCenter: true,
-      ),
-      body: SafeArea(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.locationScreenPadding),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return WillPopScope(
+      onWillPop: () async {
+        // Handle back navigation and return false result
+        try {
+          if (mounted && Navigator.canPop(context)) {
+            Navigator.pop(context, false);
+          }
+        } catch (e) {
+          print('Error in onWillPop: $e');
+        }
+        return false; // Prevent default back navigation since we handled it manually
+      },
+      child: Scaffold(
+        backgroundColor: MyColor.getBackgroundColor(),
+        appBar: CustomAppBar(
+          title: widget.customTitle ?? MyStrings.enableLocation,
+          bgColor: MyColor.getBackgroundColor(),
+          isShowBackBtn: true,
+          isTitleCenter: true,
+          backButtonOnPress: () {
+            // Handle back button press explicitly and return false result
+            try {
+              if (mounted && Navigator.canPop(context)) {
+                Navigator.pop(context, false);
+              }
+            } catch (e) {
+              print('Error in back button press: $e');
+            }
+          },
+        ),
+        body: SafeArea(
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: Padding(
+              padding: const EdgeInsets.all(Dimensions.locationScreenPadding),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Location Icon
+                        const LocationPermissionIcon(),
+
+                        const SizedBox(height: Dimensions.space40),
+
+                        // Info Card
+                        LocationPermissionCard(
+                          title: widget.customTitle ??
+                              MyStrings.allowLocationAccess,
+                          description: widget.customDescription ??
+                              MyStrings.needLocationForEvents,
+                        ),
+
+                        const SizedBox(height: Dimensions.space40),
+                      ],
+                    ),
+                  ),
+
+                  // Bottom Actions
+                  Column(
                     children: [
-                      // Location Icon
-                      const LocationPermissionIcon(),
-
-                      const SizedBox(height: Dimensions.space40),
-
-                      // Info Card
-                      LocationPermissionCard(
-                        title:
-                            widget.customTitle ?? MyStrings.allowLocationAccess,
-                        description: widget.customDescription ??
-                            MyStrings.needLocationForEvents,
+                      // Enable Location Button
+                      CustomElevatedBtn(
+                        text: MyStrings.enableLocationButton,
+                        press: _requestLocationPermission,
+                        isLoading: _isLoading,
+                        bgColor: MyColor.primaryColor,
+                        height: Dimensions.locationButtonHeight,
                       ),
 
-                      const SizedBox(height: Dimensions.space40),
-                    ],
-                  ),
-                ),
-
-                // Bottom Actions
-                Column(
-                  children: [
-                    // Enable Location Button
-                    CustomElevatedBtn(
-                      text: MyStrings.enableLocationButton,
-                      press: _requestLocationPermission,
-                      isLoading: _isLoading,
-                      bgColor: MyColor.primaryColor,
-                      height: Dimensions.locationButtonHeight,
-                    ),
-
-                    // Skip Button (if enabled)
-                    if (widget.showSkipOption) ...[
-                      const SizedBox(height: Dimensions.space15),
-                      TextButton(
-                        onPressed: _isLoading ? null : _handleSkip,
-                        child: Text(
-                          MyStrings.skipForNow,
-                          style: regularDefault.copyWith(
-                            color: MyColor.getSecondaryTextColor(),
-                            decoration: TextDecoration.underline,
+                      // Skip Button (if enabled)
+                      if (widget.showSkipOption) ...[
+                        const SizedBox(height: Dimensions.space15),
+                        TextButton(
+                          onPressed: _isLoading ? null : _handleSkip,
+                          child: Text(
+                            MyStrings.skipForNow,
+                            style: regularDefault.copyWith(
+                              color: MyColor.getSecondaryTextColor(),
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

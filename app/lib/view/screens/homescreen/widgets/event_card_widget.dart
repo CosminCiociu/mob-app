@@ -36,7 +36,10 @@ class EventCardWidget extends StatelessWidget {
           onTap: () {
             Get.toNamed(
               RouteHelper.eventDetailsScreen,
-              arguments: eventData,
+              arguments: {
+                ...eventData,
+                'id': controller.nearbyEvents[index].id,
+              },
             );
           },
           child: Stack(

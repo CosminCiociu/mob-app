@@ -8,20 +8,29 @@ class LocationPermissionHelper {
   /// Check if location permission is granted
   static Future<bool> isLocationPermissionGranted() async {
     try {
-      // Check if location services are enabled
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return false;
-      }
-
-      // Check permission status
-      LocationPermission permission = await Geolocator.checkPermission();
-      return permission == LocationPermission.always ||
-          permission == LocationPermission.whileInUse;
+      // Add timeout to prevent hanging on system issues
+      final result = await _checkLocationPermissionInternal()
+          .timeout(const Duration(seconds: 10));
+      return result;
     } catch (e) {
       print('Error checking location permission: $e');
+      // In case of system failure, assume no permission to prevent crashes
       return false;
     }
+  }
+
+  /// Internal method to check location permission
+  static Future<bool> _checkLocationPermissionInternal() async {
+    // Check if location services are enabled
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return false;
+    }
+
+    // Check permission status
+    LocationPermission permission = await Geolocator.checkPermission();
+    return permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse;
   }
 
   /// Check location permission and navigate to permission screen if needed
@@ -38,19 +47,46 @@ class LocationPermissionHelper {
         return true;
       }
 
-      // Navigate to location permission screen
-      final result = await Get.to<bool>(
-        () => LocationPermissionScreen(
-          customTitle: customTitle,
-          customDescription: customDescription,
-          showSkipOption: showSkipOption,
+      // Navigate to location permission screen using Navigator for better stability
+      final result = await Navigator.of(Get.context!).push<bool>(
+        MaterialPageRoute(
+          builder: (context) => LocationPermissionScreen(
+            customTitle: customTitle,
+            customDescription: customDescription,
+            showSkipOption: showSkipOption,
+          ),
         ),
       );
 
-      return result ?? false;
+      // Ensure we have a valid result
+      return result == true;
     } catch (e) {
       print('Error in checkAndRequestLocation: $e');
+      // Show user-friendly error message and return false
+      if (Get.context != null && Get.context!.mounted) {
+        _showLocationErrorMessage();
+      }
       return false;
+    }
+  }
+
+  /// Show a user-friendly error message when location services fail
+  static void _showLocationErrorMessage() {
+    try {
+      if (Get.context != null) {
+        ScaffoldMessenger.of(Get.context!).clearSnackBars();
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Location services are currently unavailable. Please try again later.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error showing location error message: $e');
     }
   }
 

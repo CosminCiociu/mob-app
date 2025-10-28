@@ -74,8 +74,6 @@ class EventsContentWidget extends StatelessWidget {
                     Get.toNamed(RouteHelper.idealMatchScreen);
                   }
                 }
-
-                controller.resetCardController();
                 controller.update();
               },
             ),

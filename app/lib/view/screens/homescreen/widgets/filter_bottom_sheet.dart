@@ -71,7 +71,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   controller.update();
                 },
                 min: 5,
-                max: 100,
+                max: 500,
               ),
               const SizedBox(height: Dimensions.space15),
               Align(

@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
-import 'package:ovo_meet/core/route/route.dart';
-
 import 'widgets/event_image_header.dart';
 import 'widgets/event_info_section.dart';
-import 'widgets/event_action_buttons.dart';
+import 'widgets/action_buttons_widget.dart';
 import 'widgets/event_back_button.dart';
+import '../../../data/managers/event_manager.dart';
+import '../../../domain/services/matching_service.dart';
+import '../../../core/utils/home_controller_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
@@ -18,12 +20,41 @@ class EventDetailsScreen extends StatefulWidget {
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   late Map<String, dynamic> eventData;
+  late EventManager eventManager;
 
   @override
   void initState() {
     super.initState();
     // Get event data passed as arguments
-    eventData = Get.arguments as Map<String, dynamic>? ?? {};
+    final args = Get.arguments;
+    if (args is DocumentSnapshot) {
+      eventData = (args.data() as Map<String, dynamic>?) ?? {};
+      eventData['id'] = args.id;
+    } else if (args is Map<String, dynamic>) {
+      eventData = Map<String, dynamic>.from(args);
+      // Try to get id from args or fallback
+      if (!eventData.containsKey('id') || eventData['id'] == null) {
+        if (args['id'] != null) {
+          eventData['id'] = args['id'];
+        }
+      }
+    } else {
+      eventData = {};
+    }
+    eventManager = EventManager(Get.find<MatchingService>());
+    // Set the single event for the details screen
+    final eventId = eventData['id']?.toString();
+    if (eventId != null && eventId.isNotEmpty) {
+      eventManager.setSingleEvent(eventData, eventId);
+    } else {
+      // Optionally show error or pop
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid event data: missing id')),
+        );
+        Navigator.of(context).pop();
+      });
+    }
   }
 
   @override
@@ -54,11 +85,28 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             bottom: 80, // Add space for bottom navigation bar
             left: 0,
             right: 0,
-            child: EventActionButtons(eventData: eventData),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: Dimensions.space10),
+              height: MediaQuery.of(context).size.height * 0.7,
+              alignment: Alignment.bottomCenter,
+              child: EventActionButtonsWidget(
+                onDecline: () {
+                  // Only trigger swipe left on the main card stack
+                  final homeController = HomeControllerProvider.instance;
+                  homeController?.cardController?.triggerLeft();
+                  Navigator.of(context).pop();
+                },
+                onJoin: () {
+                  // Only trigger swipe right on the main card stack
+                  final homeController = HomeControllerProvider.instance;
+                  homeController?.cardController?.triggerRight();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
 
@@ -105,56 +153,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           // Add space for bottom action buttons
           const SizedBox(height: Dimensions.space100),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigationBar() {
-    // Use a simple container to maintain space, actual navigation handled by persistent nav
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: MyColor.colorWhite,
-        borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(Dimensions.space10)),
-        boxShadow: [
-          BoxShadow(
-            color: MyColor.colorBlack.withOpacity(0.1),
-            blurRadius: 5,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Center(
-        child: GestureDetector(
-          onTap: () {
-            // Navigate back to the events tab in the main navigation
-            Get.offNamedUntil(RouteHelper.bottomNavBar, (route) => false,
-                arguments: 1);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimensions.space20,
-              vertical: Dimensions.space10,
-            ),
-            decoration: BoxDecoration(
-              color: MyColor.primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(Dimensions.space20),
-              border: Border.all(
-                color: MyColor.primaryColor.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              'Back to Events',
-              style: TextStyle(
-                color: MyColor.primaryColor,
-                fontWeight: FontWeight.w600,
-                fontSize: Dimensions.fontDefault,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

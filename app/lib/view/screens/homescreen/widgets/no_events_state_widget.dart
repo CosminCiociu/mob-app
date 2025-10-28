@@ -5,6 +5,7 @@ import '../../../../core/utils/dimensions.dart';
 import '../../../../core/utils/my_color.dart';
 import '../../../../core/utils/my_strings.dart';
 import '../../../../core/utils/style.dart';
+import '../../../../core/helpers/location_permission_helper.dart';
 import '../../../../data/controller/home/home_controller.dart';
 
 class NoEventsStateWidget extends StatelessWidget {
@@ -14,6 +15,59 @@ class NoEventsStateWidget extends StatelessWidget {
     Key? key,
     required this.controller,
   }) : super(key: key);
+
+  Future<void> _handleCreateEventPress(BuildContext context) async {
+    try {
+      // Check location permission first with better error handling
+      final bool hasLocationPermission =
+          await LocationPermissionHelper.checkAndRequestLocation(
+        customTitle: 'Location Required for Event',
+        customDescription:
+            'We need your location to create and show your event to nearby users.',
+        showSkipOption: false,
+      ).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          // Handle timeout gracefully
+          print('Location permission check timed out');
+          return false;
+        },
+      );
+
+      if (!hasLocationPermission) {
+        // Check if the context is still valid before showing SnackBar
+        if (context.mounted) {
+          // Clear any existing SnackBars first to prevent Hero conflicts
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Location permission required for creating events - ${DateTime.now().millisecondsSinceEpoch}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
+      Get.toNamed(RouteHelper.createEventForm);
+    } catch (e) {
+      print('Error in _handleCreateEventPress: $e');
+      // Show user-friendly error message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Unable to access location services. Please try again later.'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +135,7 @@ class NoEventsStateWidget extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 onPressed: () {
-                  Get.toNamed(RouteHelper.createEventForm);
+                  _handleCreateEventPress(context);
                 },
                 icon: const Icon(Icons.add),
                 label: const Text('Create Event'),

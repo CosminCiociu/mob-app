@@ -5,8 +5,8 @@ import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-CardController? cardController;
-   final ZoomDrawerController drawerController = ZoomDrawerController(); 
+  CardController? cardController;
+  final ZoomDrawerController drawerController = ZoomDrawerController();
   List<String> girlsImages = [
     "assets/images/girl1.jpg",
     "assets/images/girl2.jpg",
@@ -16,7 +16,7 @@ CardController? cardController;
   int distance = 10;
   int age = 10;
   String selectedAddress = "";
-final bool resetSwiper=false;
+  final bool resetSwiper = false;
   final TextEditingController addressController = TextEditingController();
   chnageSelectedAddress(String address) {
     addressController.clear();
@@ -26,7 +26,14 @@ final bool resetSwiper=false;
 
   RangeValues rangeValues = RangeValues(10, 50);
   int currentIndex = 0;
-  List<String> names = ["Alexa, 22", "Bella, 32", "Catherine, 21", "Diana, 18", "Emily, 14", "Fiona, 18"];
+  List<String> names = [
+    "Alexa, 22",
+    "Bella, 32",
+    "Catherine, 21",
+    "Diana, 18",
+    "Emily, 14",
+    "Fiona, 18"
+  ];
 
   List<Map<String, String>> addresses = [
     {
@@ -65,9 +72,9 @@ final bool resetSwiper=false;
     {'genders': 'Women', 'status': false},
     {'genders': 'Other', 'status': false},
   ];
-    void resetCurrentIndex() {
+  void resetCurrentIndex() {
     currentIndex = 0;
-      print("object666");
+    print("object666");
 
     update();
   }
@@ -77,7 +84,8 @@ final bool resetSwiper=false;
     super.onInit();
     resetCurrentIndex();
   }
-void resetCardController() {
+
+  void resetCardController() {
     cardController = CardController();
     update();
   }

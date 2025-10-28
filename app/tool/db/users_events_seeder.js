@@ -387,29 +387,62 @@ function generateLocationNearUser(userLocation) {
 // Function to fetch categories from database
 async function fetchCategories() {
   try {
-    console.log("📋 Fetching categories from database...");
+    console.log("📋 Fetching categories from Firebase...");
     const categoriesSnapshot = await db
       .collection("categories")
       .where("isActive", "==", true)
       .get();
 
     if (categoriesSnapshot.empty) {
-      throw new Error(
-        "No active categories found in database. Please run the categories seeder first."
-      );
+      console.log("⚠️ No active categories found. Checking all categories...");
+      const allCategoriesSnapshot = await db.collection("categories").get();
+
+      if (allCategoriesSnapshot.empty) {
+        throw new Error(
+          "No categories found in database. Please run the categories seeder first."
+        );
+      } else {
+        console.log(
+          `📝 Found ${allCategoriesSnapshot.size} categories (some may be inactive)`
+        );
+      }
     }
 
     const categories = [];
     categoriesSnapshot.forEach((doc) => {
       const data = doc.data();
       categories.push({
-        id: data.id,
-        name: data.name,
+        id: data.id || doc.id,
+        name: data.name || data.id || doc.id,
         subcategories: data.subcategories || [],
       });
     });
 
-    console.log(`✅ Found ${categories.length} active categories`);
+    // If no active categories, fall back to all categories
+    if (categories.length === 0) {
+      const allCategoriesSnapshot = await db.collection("categories").get();
+      allCategoriesSnapshot.forEach((doc) => {
+        const data = doc.data();
+        categories.push({
+          id: data.id || doc.id,
+          name: data.name || data.id || doc.id,
+          subcategories: data.subcategories || [],
+        });
+      });
+    }
+
+    console.log(`✅ Found ${categories.length} categories to use for events`);
+
+    // Debug: Show sample categories
+    console.log("📝 Sample categories:");
+    categories.slice(0, 3).forEach((cat, index) => {
+      console.log(
+        `  ${index + 1}. ${cat.name} (${
+          cat.subcategories.length
+        } subcategories)`
+      );
+    });
+
     return categories;
   } catch (error) {
     console.error("❌ Error fetching categories:", error);
@@ -424,23 +457,8 @@ async function fetchUsers() {
     const usersSnapshot = await db.collection("users").get();
 
     if (usersSnapshot.empty) {
-      console.log("⚠️ No users found in database. Using sample user data.");
-      return [
-        {
-          id: "sample_user_1",
-          email: "user1@example.com",
-          firstName: "John",
-          lastName: "Doe",
-          location: null,
-        },
-        {
-          id: "sample_user_2",
-          email: "user2@example.com",
-          firstName: "Jane",
-          lastName: "Smith",
-          location: null,
-        },
-      ];
+      console.log("⚠️ No users found in database. Creating 10 sample users...");
+      return await createSampleUsers();
     }
 
     const users = [];
@@ -465,21 +483,167 @@ async function fetchUsers() {
 
     console.log(`✅ Found ${users.length} users in database`);
 
-    // Debug: Show sample user data
-    if (users.length > 0) {
-      console.log("📝 Sample user data:");
-      users.slice(0, 3).forEach((user, index) => {
-        console.log(
-          `  ${index + 1}. ${user.firstName} ${user.lastName} (${user.id})`
-        );
-      });
+    // If we have fewer than 10 users, create additional users
+    if (users.length < 10) {
+      console.log(
+        `📝 Creating ${10 - users.length} additional users to reach 10 total...`
+      );
+      const additionalUsers = await createSampleUsers(
+        10 - users.length,
+        users.length
+      );
+      users.push(...additionalUsers);
     }
 
-    return users;
+    // Take only the first 10 users for seeding
+    const selectedUsers = users.slice(0, 10);
+
+    // Debug: Show selected user data
+    console.log("📝 Selected users for seeding:");
+    selectedUsers.forEach((user, index) => {
+      console.log(
+        `  ${index + 1}. ${user.firstName} ${user.lastName} (${user.id})`
+      );
+    });
+
+    return selectedUsers;
   } catch (error) {
     console.error("❌ Error fetching users:", error);
     throw error;
   }
+}
+
+// Function to create sample users
+async function createSampleUsers(count = 10, startIndex = 0) {
+  const sampleUsers = [];
+  const firstNames = [
+    "Alex",
+    "Maria",
+    "David",
+    "Ana",
+    "Mihai",
+    "Elena",
+    "Radu",
+    "Ioana",
+    "Andrei",
+    "Cristina",
+    "Stefan",
+    "Andreea",
+    "Vlad",
+    "Diana",
+    "Bogdan",
+    "Raluca",
+    "Florin",
+    "Bianca",
+    "Adrian",
+    "Carmen",
+  ];
+  const lastNames = [
+    "Popescu",
+    "Ionescu",
+    "Popa",
+    "Radu",
+    "Stoica",
+    "Dumitrescu",
+    "Gheorghe",
+    "Stan",
+    "Marin",
+    "Tudor",
+    "Dima",
+    "Preda",
+    "Cristea",
+    "Matei",
+    "Niculescu",
+    "Florea",
+    "Dobre",
+    "Constantinescu",
+    "Barbu",
+    "Nistor",
+  ];
+
+  // Sample locations in Romania
+  const sampleLocations = [
+    {
+      address: {
+        administrativeArea: "București",
+        country: "Romania",
+        fullAddress: "Piața Universității, București, România",
+        locality: "București",
+        name: "Piața Universității",
+      },
+      geohash: "u8q2w5k9p",
+      geopoint: new admin.firestore.GeoPoint(44.4372, 26.1019),
+      lat: 44.4372,
+      lng: 26.1019,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    {
+      address: {
+        administrativeArea: "Cluj",
+        country: "Romania",
+        fullAddress: "Piața Unirii, Cluj-Napoca, România",
+        locality: "Cluj-Napoca",
+        name: "Piața Unirii",
+      },
+      geohash: "u8q2w5k9q",
+      geopoint: new admin.firestore.GeoPoint(46.7712, 23.6236),
+      lat: 46.7712,
+      lng: 23.6236,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    },
+    {
+      address: {
+        administrativeArea: "Timiș",
+        country: "Romania",
+        fullAddress: "Piața Victoriei, Timișoara, România",
+        locality: "Timișoara",
+        name: "Piața Victoriei",
+      },
+      geohash: "u8q2w5k9r",
+      geopoint: new admin.firestore.GeoPoint(45.7489, 21.2087),
+      lat: 45.7489,
+      lng: 21.2087,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    },
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const firstName = getRandomElement(firstNames);
+    const lastName = getRandomElement(lastNames);
+    const userIndex = startIndex + i + 1;
+
+    const userData = {
+      email: `user${userIndex}@example.com`,
+      firstName: firstName,
+      lastName: lastName,
+      displayName: `${firstName} ${lastName}`,
+      location: getRandomElement(sampleLocations),
+      isActive: true,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    try {
+      const userRef = db.collection("users").doc();
+      await userRef.set(userData);
+
+      sampleUsers.push({
+        id: userRef.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        location: userData.location,
+      });
+
+      console.log(
+        `  ✅ Created user: ${firstName} ${lastName} (${userRef.id})`
+      );
+    } catch (error) {
+      console.error(`❌ Error creating user ${firstName} ${lastName}:`, error);
+    }
+  }
+
+  return sampleUsers;
 }
 
 // Function to count existing events for a user
@@ -500,44 +664,41 @@ async function countUserEvents(userId) {
 async function generateEventsForUsers(users, categories) {
   const generatedEvents = [];
 
-  for (const user of users) {
-    const existingEventCount = await countUserEvents(user.id);
-    const eventsToCreate = Math.min(
-      3 - existingEventCount,
-      getRandomNumber(1, 3)
-    );
+  console.log(
+    `🎯 Generating exactly 3 events for each of the ${users.length} users...`
+  );
 
-    if (eventsToCreate <= 0) {
-      console.log(
-        `⏭️ User ${user.firstName} ${user.lastName} already has ${existingEventCount} events (max 3). Skipping.`
-      );
-      continue;
-    }
+  for (const user of users) {
+    // Clean up existing events for this user first
+    await cleanupUserEvents(user.id);
 
     console.log(
-      `🎯 Generating ${eventsToCreate} events for user: ${user.firstName} ${user.lastName}`
+      `📝 Creating 3 events for user: ${user.firstName} ${user.lastName}`
     );
 
-    for (let i = 0; i < eventsToCreate; i++) {
+    // Create exactly 3 events for each user
+    for (let i = 0; i < 3; i++) {
       // Select random category and subcategory
       const category = getRandomElement(categories);
       const subcategory =
-        category.subcategories.length > 0
+        category.subcategories && category.subcategories.length > 0
           ? getRandomElement(category.subcategories)
           : { id: "general", name: "General" };
 
-      // Get event template based on category
+      // Get event template based on category id or name
+      const categoryKey =
+        category.id || category.name?.toLowerCase().replace(/[^a-z0-9]/g, "_");
       const templates =
-        eventTemplates[category.id] || eventTemplates.social_community;
+        eventTemplates[categoryKey] || eventTemplates.social_community;
       const template = getRandomElement(templates);
 
       // Generate event data
       const event = {
-        eventName: template.name,
+        eventName: `${template.name} #${i + 1}`,
         details: template.description,
         categoryId: category.id,
         subcategoryId: subcategory.id,
-        dateTime: generateFutureDate(),
+        dateTime: generateFutureDate(1 + i, 30 + i * 10), // Spread events over time
         timezone: "Europe/Bucharest",
         status: "active",
         maxAttendees: template.maxAttendees,
@@ -556,7 +717,9 @@ async function generateEventsForUsers(users, categories) {
 
       generatedEvents.push(event);
       console.log(
-        `  ✅ Generated: ${event.eventName} (${category.name}/${subcategory.name})`
+        `  ✅ Generated: ${event.eventName} (${category.name || category.id}/${
+          subcategory.name
+        })`
       );
     }
   }
@@ -564,30 +727,50 @@ async function generateEventsForUsers(users, categories) {
   return generatedEvents;
 }
 
+// Function to clean up existing events for a specific user
+async function cleanupUserEvents(userId) {
+  try {
+    const userEventsSnapshot = await db
+      .collection("users_events")
+      .where("createdBy", "==", userId)
+      .get();
+
+    if (!userEventsSnapshot.empty) {
+      const batch = db.batch();
+      userEventsSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log(
+        `  🧹 Cleaned up ${userEventsSnapshot.size} existing events for user ${userId}`
+      );
+    }
+  } catch (error) {
+    console.error(`❌ Error cleaning up events for user ${userId}:`, error);
+  }
+}
+
 async function seedEventsData() {
   try {
-    console.log("🚀 Starting users_events seeding...");
+    console.log(
+      "🚀 Starting users_events seeding for 10 users with 3 events each..."
+    );
 
-    // Fetch categories and users from database
+    // Fetch categories from Firebase
     const categories = await fetchCategories();
+
+    // Ensure we have exactly 10 users (create if needed)
     const users = await fetchUsers();
 
-    if (users.length === 0) {
-      console.log("⚠️ No users found. Cannot create events without users.");
-      return;
-    }
+    console.log(`\n📊 Seeding Summary:`);
+    console.log(`  👥 Users: ${users.length}`);
+    console.log(`  📋 Categories: ${categories.length}`);
+    console.log(`  🎯 Target events: ${users.length * 3} (3 per user)`);
 
-    // Generate events for users (max 3 per user)
+    // Generate exactly 3 events for each user
     const eventsToCreate = await generateEventsForUsers(users, categories);
 
-    if (eventsToCreate.length === 0) {
-      console.log(
-        "ℹ️ No events to create. All users already have maximum events or no users available."
-      );
-      return;
-    }
-
-    console.log(`\n📝 Creating ${eventsToCreate.length} events...`);
+    console.log(`\n📝 Creating ${eventsToCreate.length} events in batches...`);
 
     // Create events in batches (Firestore has a limit of 500 operations per batch)
     const batchSize = 500;
@@ -611,8 +794,10 @@ async function seedEventsData() {
       console.log(`✅ Committed batch ${i + 1}/${batches.length}`);
     }
 
-    console.log("✅ Successfully seeded users_events collection!");
-    console.log(`📊 Total events created: ${eventsToCreate.length}`);
+    console.log("\n✅ Successfully seeded users_events collection!");
+    console.log(`📊 Final Results:`);
+    console.log(`  👥 Users created/used: ${users.length}`);
+    console.log(`  🎉 Events created: ${eventsToCreate.length}`);
 
     // Verify the data
     const eventsSnapshot = await db.collection("users_events").get();
@@ -620,34 +805,32 @@ async function seedEventsData() {
       `🔍 Verification: Found ${eventsSnapshot.size} total events in collection`
     );
 
-    // Display summary by user
-    console.log("\n📋 Events created by user:");
-    const userEventCounts = {};
-
+    // Display detailed summary by user
+    console.log("\n📋 Events created per user:");
     for (const user of users) {
       const userEventsCount = await countUserEvents(user.id);
-      userEventCounts[user.id] = userEventsCount;
       console.log(
         `👤 ${user.firstName} ${user.lastName}: ${userEventsCount}/3 events`
       );
     }
 
-    // Display sample of created events
-    console.log("\n📅 Sample of recently created events:");
-    const recentEvents = eventsToCreate.slice(0, 5);
-    recentEvents.forEach((event, index) => {
-      const user = users.find((u) => u.id === event.createdBy);
-      console.log(
-        `${index + 1}. ${event.eventName} - ${event.categoryId}/${
-          event.subcategoryId
-        } (by ${user?.firstName} ${user?.lastName})`
-      );
+    // Display sample of created events grouped by category
+    console.log("\n📅 Sample events by category:");
+    const categoryEventCounts = {};
+    eventsToCreate.forEach((event) => {
+      categoryEventCounts[event.categoryId] =
+        (categoryEventCounts[event.categoryId] || 0) + 1;
+    });
+
+    Object.entries(categoryEventCounts).forEach(([categoryId, count]) => {
+      const category = categories.find((c) => c.id === categoryId);
+      console.log(`  📊 ${category?.name || categoryId}: ${count} events`);
     });
   } catch (error) {
     console.error("❌ Error seeding events data:", error);
+    throw error;
   } finally {
     console.log("🏁 Seeding process completed");
-    process.exit(0);
   }
 }
 
@@ -682,6 +865,57 @@ async function cleanupEvents() {
   }
 }
 
+// Function to clean up existing users (for complete reset)
+async function cleanupUsers() {
+  try {
+    console.log("🧹 Cleaning up existing users...");
+
+    const usersSnapshot = await db.collection("users").get();
+    const batches = [];
+    const batchSize = 500;
+
+    for (let i = 0; i < usersSnapshot.docs.length; i += batchSize) {
+      const batch = db.batch();
+      const batchDocs = usersSnapshot.docs.slice(i, i + batchSize);
+
+      batchDocs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      batches.push(batch);
+    }
+
+    for (let i = 0; i < batches.length; i++) {
+      await batches[i].commit();
+      console.log(`✅ Cleaned user batch ${i + 1}/${batches.length}`);
+    }
+
+    console.log(`✅ Cleaned up ${usersSnapshot.docs.length} users`);
+  } catch (error) {
+    console.error("❌ Error cleaning up users:", error);
+  }
+}
+
+// Function to perform complete seed (clean + create)
+async function fullSeed() {
+  try {
+    console.log("🔄 Performing complete database seed...");
+    console.log("⚠️  This will delete all existing users and events!");
+
+    // Clean up existing data
+    await cleanupEvents();
+    await cleanupUsers();
+
+    console.log("\n🌱 Starting fresh seeding...");
+    await seedEventsData();
+
+    console.log("✅ Complete seeding finished successfully!");
+  } catch (error) {
+    console.error("❌ Error in full seed:", error);
+    throw error;
+  }
+}
+
 // Main execution
 const main = async () => {
   try {
@@ -694,17 +928,39 @@ const main = async () => {
       case "cleanup":
         await cleanupEvents();
         break;
+      case "cleanup-users":
+        await cleanupUsers();
+        break;
+      case "full-seed":
+        await fullSeed();
+        break;
       default:
         console.log("Usage:");
-        console.log("  npm run seed:events seed    - Seed events data");
-        console.log("  npm run seed:events cleanup - Clean up events");
-        console.log("  npm run seed:events         - Default: seed events");
+        console.log(
+          "  npm run seed:events seed         - Seed events data (10 users × 3 events)"
+        );
+        console.log(
+          "  npm run seed:events cleanup      - Clean up events only"
+        );
+        console.log(
+          "  npm run seed:events cleanup-users - Clean up users only"
+        );
+        console.log(
+          "  npm run seed:events full-seed    - Complete reset + seed (users & events)"
+        );
+        console.log(
+          "  npm run seed:events              - Default: seed events"
+        );
+        console.log("");
+        console.log("🎯 Running default seeding (10 users × 3 events each)...");
         await seedEventsData();
         break;
     }
   } catch (error) {
     console.error("❌ Process failed:", error);
     process.exit(1);
+  } finally {
+    process.exit(0);
   }
 };
 

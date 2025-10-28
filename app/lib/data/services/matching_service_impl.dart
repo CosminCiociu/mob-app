@@ -44,11 +44,6 @@ class MatchingServiceImpl implements MatchingService {
       final userGeoPoint = userLocation.geopoint;
       final userGeohash = userLocation.geohash;
 
-      // Show search feedback to user
-      CustomSnackBar.successDeferred(successList: [
-        '${MyStrings.searchingForEvents} within ${radiusInKm}km...'
-      ]);
-
       // Try geohash-based search first, fallback to manual if needed
       final events = await _eventsRepository.fetchNearbyEvents(
         userLocation: userGeoPoint,
@@ -56,16 +51,6 @@ class MatchingServiceImpl implements MatchingService {
         radiusInKm: radiusInKm,
         currentUserId: currentUserId,
       );
-
-      // Show results to user
-      if (events.isEmpty) {
-        CustomSnackBar.errorDeferred(
-            errorList: [MyStrings.noEventsFoundInArea]);
-      } else {
-        CustomSnackBar.successDeferred(successList: [
-          '${events.length} ${MyStrings.eventsFoundNearby} within ${radiusInKm}km'
-        ]);
-      }
 
       return events;
     } catch (e) {
@@ -302,14 +287,9 @@ class MatchingServiceImpl implements MatchingService {
         likerName: userName,
         eventName: eventName,
       );
-
-      // Show success feedback to user
-      CustomSnackBar.successDeferred(successList: [
-        'You liked "$eventName"! The organizer will be notified.'
-      ]);
     } catch (e) {
-      CustomSnackBar.errorDeferred(
-          errorList: ['Failed to like event: ${getDetailedErrorMessage(e)}']);
+      // CustomSnackBar.errorDeferred(
+      //     errorList: ['Failed to like event: ${getDetailedErrorMessage(e)}']);
     }
   }
 
