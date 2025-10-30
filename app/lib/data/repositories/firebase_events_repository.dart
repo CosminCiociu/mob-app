@@ -204,11 +204,19 @@ class FirebaseEventsRepository implements EventsRepository {
           userLiked = List<String>.from(eventData['user_liked']);
         }
 
-        // Handle user's events_liked map
-        Map<String, dynamic> eventsLiked = {};
-        if (userData.containsKey('events_liked') &&
-            userData['events_liked'] != null) {
-          eventsLiked = Map<String, dynamic>.from(userData['events_liked']);
+        // Handle user's events_attending map (events that don't require approval)
+        Map<String, dynamic> eventsAttending = {};
+        if (userData.containsKey('events_attending') &&
+            userData['events_attending'] != null) {
+          eventsAttending =
+              Map<String, dynamic>.from(userData['events_attending']);
+        }
+
+        // Handle user's events_pending map (events that require approval)
+        Map<String, dynamic> eventsPending = {};
+        if (userData.containsKey('events_pending') &&
+            userData['events_pending'] != null) {
+          eventsPending = Map<String, dynamic>.from(userData['events_pending']);
         }
 
         // Check if event requires approval
@@ -239,17 +247,41 @@ class FirebaseEventsRepository implements EventsRepository {
         eventUpdates['attendees'] = attendees;
         eventUpdates['currentAttendees'] = attendees.length;
 
-        // Always update user's liked events with current timestamp
-        if (!eventsLiked.containsKey(eventId)) {
-          eventsLiked[eventId] = FieldValue.serverTimestamp();
+        // Prepare user updates
+        Map<String, dynamic> userUpdates = {
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        // Add event to appropriate category based on approval requirement
+        if (!requiresApproval) {
+          // Event doesn't require approval - add to events_attending
+          if (!eventsAttending.containsKey(eventId)) {
+            eventsAttending[eventId] = FieldValue.serverTimestamp();
+          }
+          userUpdates['events_attending'] = eventsAttending;
+
+          // Remove from pending if it was there
+          if (eventsPending.containsKey(eventId)) {
+            eventsPending.remove(eventId);
+            userUpdates['events_pending'] = eventsPending;
+          }
+        } else {
+          // Event requires approval - add to events_pending
+          if (!eventsPending.containsKey(eventId)) {
+            eventsPending[eventId] = FieldValue.serverTimestamp();
+          }
+          userUpdates['events_pending'] = eventsPending;
+
+          // Remove from attending if it was there
+          if (eventsAttending.containsKey(eventId)) {
+            eventsAttending.remove(eventId);
+            userUpdates['events_attending'] = eventsAttending;
+          }
         }
 
         // Perform both updates atomically
         transaction.update(eventDoc, eventUpdates);
-        transaction.update(userDoc, {
-          'events_liked': eventsLiked,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+        transaction.update(userDoc, userUpdates);
       });
     } catch (e) {
       throw Exception('Failed to like event: $e');
@@ -263,32 +295,100 @@ class FirebaseEventsRepository implements EventsRepository {
   }) async {
     try {
       final eventDoc = _firestore.collection('users_events').doc(eventId);
+      final userDoc = _firestore.collection('users').doc(userId);
 
       // Use Firestore transaction to ensure atomic operation
       await _firestore.runTransaction((transaction) async {
         final eventSnapshot = await transaction.get(eventDoc);
+        final userSnapshot = await transaction.get(userDoc);
 
         if (!eventSnapshot.exists) {
           throw Exception('Event not found');
         }
 
-        final eventData = eventSnapshot.data() as Map<String, dynamic>;
-        List<String> usersDeclined = [];
+        if (!userSnapshot.exists) {
+          throw Exception('User not found');
+        }
 
-        // Get existing declined users or create empty list
+        final eventData = eventSnapshot.data() as Map<String, dynamic>;
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+
+        // Handle event's users_declined array
+        List<String> usersDeclined = [];
         if (eventData.containsKey('users_declined') &&
             eventData['users_declined'] != null) {
           usersDeclined = List<String>.from(eventData['users_declined']);
         }
 
-        // Add user ID if not already present
+        // Handle user's events_declined map
+        Map<String, dynamic> eventsDeclined = {};
+        if (userData.containsKey('events_declined') &&
+            userData['events_declined'] != null) {
+          eventsDeclined =
+              Map<String, dynamic>.from(userData['events_declined']);
+        }
+
+        // Handle user's other event maps to remove declined event from them
+        Map<String, dynamic> eventsAttending = {};
+        if (userData.containsKey('events_attending') &&
+            userData['events_attending'] != null) {
+          eventsAttending =
+              Map<String, dynamic>.from(userData['events_attending']);
+        }
+
+        Map<String, dynamic> eventsPending = {};
+        if (userData.containsKey('events_pending') &&
+            userData['events_pending'] != null) {
+          eventsPending = Map<String, dynamic>.from(userData['events_pending']);
+        }
+
+        // Prepare event updates
+        Map<String, dynamic> eventUpdates = {
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        // Add user ID to event's declined users if not already present
         if (!usersDeclined.contains(userId)) {
           usersDeclined.add(userId);
-          transaction.update(eventDoc, {
-            'users_declined': usersDeclined,
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
         }
+        eventUpdates['users_declined'] = usersDeclined;
+
+        // Prepare user updates
+        Map<String, dynamic> userUpdates = {
+          'updatedAt': FieldValue.serverTimestamp(),
+        };
+
+        // Add event to user's declined events with timestamp
+        if (!eventsDeclined.containsKey(eventId)) {
+          eventsDeclined[eventId] = FieldValue.serverTimestamp();
+        }
+        userUpdates['events_declined'] = eventsDeclined;
+
+        // Remove event from user's other event categories
+        bool needsAttendingUpdate = false;
+        bool needsPendingUpdate = false;
+
+        if (eventsAttending.containsKey(eventId)) {
+          eventsAttending.remove(eventId);
+          needsAttendingUpdate = true;
+        }
+
+        if (eventsPending.containsKey(eventId)) {
+          eventsPending.remove(eventId);
+          needsPendingUpdate = true;
+        }
+
+        // Only update fields that changed
+        if (needsAttendingUpdate) {
+          userUpdates['events_attending'] = eventsAttending;
+        }
+        if (needsPendingUpdate) {
+          userUpdates['events_pending'] = eventsPending;
+        }
+
+        // Perform both updates atomically
+        transaction.update(eventDoc, eventUpdates);
+        transaction.update(userDoc, userUpdates);
       });
     } catch (e) {
       throw Exception('Failed to decline event: $e');
@@ -324,31 +424,6 @@ class FirebaseEventsRepository implements EventsRepository {
       });
     } catch (e) {
       throw Exception('Failed to create notification: $e');
-    }
-  }
-
-  @override
-  Future<Map<String, dynamic>> getUserLikedEvents({
-    required String userId,
-  }) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-
-      if (!userDoc.exists) {
-        throw Exception('User not found');
-      }
-
-      final userData = userDoc.data() as Map<String, dynamic>;
-
-      // Return the events_liked map, or empty map if it doesn't exist
-      if (userData.containsKey('events_liked') &&
-          userData['events_liked'] != null) {
-        return Map<String, dynamic>.from(userData['events_liked']);
-      }
-
-      return <String, dynamic>{};
-    } catch (e) {
-      throw Exception('Failed to get user liked events: $e');
     }
   }
 }

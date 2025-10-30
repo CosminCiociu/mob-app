@@ -25,6 +25,7 @@ import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/language/language_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
 import 'package:ovo_meet/view/screens/events/my_events_screen.dart';
+import 'package:ovo_meet/view/screens/events/attending_events_screen.dart';
 import 'package:ovo_meet/view/screens/notification/notification_screen.dart';
 import 'package:ovo_meet/view/screens/onboard/onboar_screen.dart';
 import 'package:ovo_meet/view/screens/partner_profile/partner_profile_screen.dart';
@@ -71,6 +72,7 @@ class RouteHelper {
   static const String searchConnectionScreen = "/search-connection-screen";
   static const String partnersProfileScreen = "/partner-profile-screen";
   static const String myEventsScreen = "/my-events-screen";
+  static const String attendingEventsScreen = "/attending-events-screen";
   static const String messageListScreen = "/message-list-screen";
   static const String chatScreen = "/chat-screen";
   static const String audioCallScreen = "/audio-call-screen";
@@ -138,6 +140,8 @@ class RouteHelper {
     GetPage(
         name: partnersProfileScreen, page: () => const PartnersProfileScreen()),
     GetPage(name: myEventsScreen, page: () => const MyEventsScreen()),
+    GetPage(
+        name: attendingEventsScreen, page: () => const AttendingEventsScreen()),
     GetPage(name: messageListScreen, page: () => const MessageListScreen()),
     GetPage(name: chatScreen, page: () => const ChatScreen()),
     GetPage(name: audioCallScreen, page: () => const AudioCallScreen()),

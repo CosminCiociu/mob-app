@@ -7,6 +7,7 @@ import '../../domain/services/events_service.dart';
 import '../../domain/repositories/event_repository.dart';
 import '../../domain/repositories/image_repository.dart';
 import '../../core/services/location_service.dart';
+import '../../core/utils/my_strings.dart';
 
 import '../../core/utils/my_color.dart';
 import '../../core/utils/dimensions.dart';
@@ -361,9 +362,7 @@ class EventsServiceImpl implements EventsService {
       // Check event limit before creating
       final currentEventCount = await getUserEventCount();
       if (currentEventCount >= 3) {
-        CustomSnackBar.errorDeferred(errorList: [
-          'You can only create up to 3 events. Please delete an existing event to create a new one.'
-        ]);
+        CustomSnackBar.errorDeferred(errorList: [MyStrings.eventLimitReached]);
         return;
       }
 

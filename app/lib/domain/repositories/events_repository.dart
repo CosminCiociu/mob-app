@@ -49,9 +49,4 @@ abstract class EventsRepository {
     required String likerName,
     required String eventName,
   });
-
-  /// Get list of events that a user has liked
-  Future<Map<String, dynamic>> getUserLikedEvents({
-    required String userId,
-  });
 }

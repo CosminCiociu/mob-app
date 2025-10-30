@@ -3,11 +3,12 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_images.dart';
 import 'package:ovo_meet/data/controller/home/home_controller.dart';
 import 'package:ovo_meet/data/controller/events/my_events_controller.dart';
+import 'package:ovo_meet/data/controller/events/attending_events_controller.dart';
 import 'package:ovo_meet/view/screens/homescreen/home_screen.dart';
 import 'package:ovo_meet/view/screens/message_list/messages_list_screen.dart';
 import 'package:ovo_meet/view/screens/events/my_events_screen.dart';
+import 'package:ovo_meet/view/screens/events/attending_events_screen.dart';
 import 'package:ovo_meet/view/screens/profile/profile_screen.dart';
-import 'package:ovo_meet/view/screens/search_connection/search_connection_screen.dart';
 import 'package:get/get.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -35,9 +36,9 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
   List<Widget> _buildScreens() {
     return [
       const HomeScreen(),
-      // Removed: const SearchConnectionScreen(),
-      const MyEventsScreen(),
+      const AttendingEventsScreen(),
       const MessageListScreen(),
+      const MyEventsScreen(),
       const ProfileScreen()
     ];
   }
@@ -52,9 +53,8 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
         activeColorPrimary: MyColor.buttonColor,
         inactiveColorPrimary: MyColor.greyColor,
       ),
-      // Removed: PersistentBottomNavBarItem for index 1
       PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageThree,
+        icon: Image.asset(MyImages.presistentOnBoardImageTwo,
             color: _controller.index == 1
                 ? MyColor.buttonColor
                 : MyColor.greyColor),
@@ -70,8 +70,16 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
         inactiveColorPrimary: MyColor.greyColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Image.asset(MyImages.presistentOnBoardImageFive,
+        icon: Image.asset(MyImages.presistentOnBoardImageThree,
             color: _controller.index == 3
+                ? MyColor.buttonColor
+                : MyColor.greyColor),
+        activeColorPrimary: MyColor.buttonColor,
+        inactiveColorPrimary: MyColor.greyColor,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Image.asset(MyImages.presistentOnBoardImageFive,
+            color: _controller.index == 4
                 ? MyColor.buttonColor
                 : MyColor.greyColor),
         activeColorPrimary: MyColor.buttonColor,
@@ -91,13 +99,28 @@ class _BottomNavbarScreenState extends State<BottomNavbarScreen> {
           Get.find<HomeController>().currentIndex = 0;
           Get.find<HomeController>().update();
 
-          // Refresh events data when Events tab (index 1) is selected
-          if (value == 1) {
+          // Refresh events data when My Events tab (index 3) is selected
+          if (value == 3) {
             // Schedule refresh for next frame to ensure UI updates properly
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (Get.isRegistered<MyEventsController>()) {
                 print("🔄 BottomNav: Refreshing events due to tab selection");
                 Get.find<MyEventsController>().fetchMyEvents();
+              }
+            });
+          }
+
+          // Refresh attending events data when Attending Events tab (index 1) is selected
+          if (value == 1) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              try {
+                final attendingController =
+                    Get.find<AttendingEventsController>();
+                attendingController.fetchAttendingEvents();
+                print(
+                    "🔄 BottomNav: Refreshing attending events due to tab selection");
+              } catch (e) {
+                print("⚠️ AttendingEventsController not found: $e");
               }
             });
           }

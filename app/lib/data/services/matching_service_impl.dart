@@ -237,6 +237,7 @@ class MatchingServiceImpl implements MatchingService {
     required String userId,
   }) async {
     try {
+      print('🚀 Handling like for event $eventId by user $userId');
       // Get current user's display name for notification
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
@@ -254,6 +255,8 @@ class MatchingServiceImpl implements MatchingService {
           userData?['firstName'] ??
           userData?['name'] ??
           'Someone';
+      
+      print('👤 User name: $userName');
 
       // Get event information
       final eventDoc = await FirebaseFirestore.instance
@@ -262,23 +265,33 @@ class MatchingServiceImpl implements MatchingService {
           .get();
 
       if (!eventDoc.exists) {
+        print('❌ Event not found: $eventId');
         throw Exception('Event not found');
       }
 
       final eventData = eventDoc.data() as Map<String, dynamic>;
       final eventName = eventData['eventName'] ?? 'Untitled Event';
       final eventCreatorId = eventData['createdBy'];
+      final requiresApproval = eventData['requiresApproval'] ?? true;
+
+      print('🎯 Event name: $eventName');
+      print('👨‍💼 Event creator: $eventCreatorId');
+      print('🔒 Requires approval: $requiresApproval');
 
       if (eventCreatorId == null) {
+        print('❌ Event creator not found');
         throw Exception('Event creator not found');
       }
 
+      print('📤 Calling repository likeEvent...');
       // Add user to event's liked users list
       await _eventsRepository.likeEvent(
         eventId: eventId,
         userId: userId,
       );
+      print('✅ Repository likeEvent completed successfully');
 
+      print('📬 Creating notification...');
       // Create notification for event organizer
       await _eventsRepository.createEventLikeNotification(
         eventId: eventId,
@@ -287,7 +300,12 @@ class MatchingServiceImpl implements MatchingService {
         likerName: userName,
         eventName: eventName,
       );
+      print('✅ Notification created successfully');
+      
+      print('🎉 Event like process completed for event $eventId');
     } catch (e) {
+      print('❌ Error in handleEventLike: $e');
+      print('📍 Stack trace: ${StackTrace.current}');
       // CustomSnackBar.errorDeferred(
       //     errorList: ['Failed to like event: ${getDetailedErrorMessage(e)}']);
     }

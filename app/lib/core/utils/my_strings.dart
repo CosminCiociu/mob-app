@@ -482,6 +482,7 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String addressNotFound = 'Address not found';
 
   static const String myEvents = "My Events";
+  static const String attendingEvents = "Attending";
   static const String createEvent = "Create Event";
   static const String eventName = "Event Name";
   static const String createYourEvent = "Create your event";
@@ -489,6 +490,25 @@ We pride ourselves on building an inclusive community where everyone is welcome,
   static const String eventNameHint = "Enter event name";
   static const String eventDateTime = "Event Date & Time";
   static const String eventDateTimeHint = "1 October 2025 14:00";
+
+  // Attending screen strings
+  static const String upcoming = "Upcoming";
+  static const String active = "Active";
+  static const String past = "Past";
+  static const String pendingApproval = "Pending";
+  static const String hostedBy = "Hosted by";
+  static const String spotsAvailable = "spots available";
+  static const String leaveEvent = "Leave Event";
+  static const String unsaveEvent = "Unsave";
+  static const String reminderOn = "Reminder On";
+  static const String reminderOff = "Reminder Off";
+  static const String chatWithHost = "Chat with Host";
+  static const String viewOnMap = "View on Map";
+  static const String noAttendingEvents =
+      "You haven't joined any adventures yet!";
+  static const String exploreEventsToStart =
+      "Explore events and start connecting with people.";
+  static const String browseEvents = "Browse Events";
 
   // Event related error/success messages
   static const String pleaseLoginToCreateEvent =

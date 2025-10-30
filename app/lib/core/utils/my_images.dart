@@ -107,8 +107,8 @@ class MyImages {
 
   static const String presistentOnBoardImageOne =
       "assets/images/onboard/home.png";
-//   static const String presistentOnBoardImageTwo =
-//       "assets/images/onboard/event.png";
+  static const String presistentOnBoardImageTwo =
+      "assets/images/onboard/community.png";
   static const String presistentOnBoardImageThree =
       "assets/images/onboard/event_1.png";
   static const String presistentOnBoardImageFour =
