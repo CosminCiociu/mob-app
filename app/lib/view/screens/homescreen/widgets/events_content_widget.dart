@@ -45,7 +45,8 @@ class EventsContentWidget extends StatelessWidget {
                   ? controller.nearbyEvents.length
                   : 1, // Default to 1 when no events
               stackNum: 3,
-              swipeEdge: 4.0,
+              swipeEdge: 2.5,
+              allowVerticalMovement: false,
               maxWidth: MediaQuery.of(context).size.width * 0.9,
               maxHeight: MediaQuery.of(context).size.width * 1.8,
               minWidth: MediaQuery.of(context).size.width * 0.5,
@@ -56,7 +57,12 @@ class EventsContentWidget extends StatelessWidget {
                       : _buildDefaultCard(context, controller, index),
               cardController: controller.cardController,
               swipeUpdateCallback:
-                  (DragUpdateDetails details, Alignment align) {},
+                  (DragUpdateDetails details, Alignment align) {
+                // Update swipe progress based on horizontal alignment
+                // Normalize alignment.x (-2.5 to 2.5) to progress (-1.0 to 1.0)
+                final progress = (align.x / 2.5).clamp(-1.0, 1.0);
+                controller.updateSwipeProgress(progress);
+              },
               swipeCompleteCallback:
                   (CardSwipeOrientation orientation, int index) {
                 final maxLength = controller.nearbyEvents.isNotEmpty

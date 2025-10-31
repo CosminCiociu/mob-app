@@ -724,4 +724,45 @@ We pride ourselves on building an inclusive community where everyone is welcome,
       "We need your location to show nearby events and connect you with people in your area.";
   static const String eventLimitReached =
       "You have reached the maximum number of events you can create. Please delete an existing event to create a new one.";
+
+  // Event Members Management
+  static const String eventMembers = "Event Members";
+  static const String pendingRequests = "Pending Requests";
+  static const String confirmedMembers = "Confirmed Members";
+  static const String acceptRequest = "Accept";
+  static const String declineRequest = "Decline";
+  static const String sendMessage = "Message";
+  static const String noMembersYetTitle = "No Members Yet";
+  static const String noMembersYetMessage =
+      "When people join your event, they'll appear here.";
+  static const String noPendingRequestsTitle = "No Pending Requests";
+  static const String noPendingRequestsMessage =
+      "All join requests have been processed.";
+  static const String memberAccepted = "Member accepted successfully";
+  static const String memberDeclined = "Member request declined";
+  static const String failedToUpdateMember = "Failed to update member status";
+  static const String viewMembers = "View Members";
+  static const String membersCount = "members";
+  static const String memberRequestProcessed =
+      "Member request processed successfully";
+  static const String confirmedMember = "Confirmed";
+  static const String confirmed = "Confirmed";
+  static const String eventTitle = "Event";
+  static const String totalMembers = "members";
+  static const String noConfirmedMembers = "No confirmed members yet";
+  static const String noPendingRequests = "No pending requests";
+  static const String hasBeenAccepted = "has been accepted";
+  static const String declined = "Declined";
+  static const String hasBeenDeclined = "has been declined";
+  static const String openingChatWith = "Opening chat with";
+
+  // Event attendees screen
+  static const String eventAttendees = "Event Attendees";
+  static const String attendees = "Attendees";
+  static const String attendeesList = "Attendees List";
+  static const String noAttendeesYet = "No attendees yet";
+  static const String waitingForPeople = "Waiting for people to join";
+  static const String chatWithUser = "Chat";
+  static const String viewProfile = "View Profile";
+  static const String attendeesCountText = "attendees";
 }

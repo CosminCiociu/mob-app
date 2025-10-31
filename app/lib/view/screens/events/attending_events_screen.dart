@@ -4,7 +4,6 @@ import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/style.dart';
-import 'package:ovo_meet/core/route/route.dart';
 import 'package:ovo_meet/data/controller/events/attending_events_controller.dart';
 import 'package:ovo_meet/domain/services/attending_events_service.dart';
 import 'package:ovo_meet/view/components/app-bar/custom_appbar.dart';
@@ -53,10 +52,7 @@ class _AttendingEventsScreenState extends State<AttendingEventsScreen>
         appBar: CustomAppBar(
           title: MyStrings.attendingEvents,
           isTitleCenter: true,
-          isShowBackBtn: true,
-          backButtonOnPress: () {
-            Get.offAllNamed(RouteHelper.bottomNavBar);
-          },
+          isShowBackBtn: false,
         ),
         body: controller.isLoading
             ? const Center(child: CircularProgressIndicator())
@@ -210,7 +206,6 @@ class _AttendingEventsScreenState extends State<AttendingEventsScreen>
           return AttendingEventCard(
             event: event,
             isPending: isPending,
-            onTap: () => _navigateToEventDetails(event),
             onLeave: () => _showLeaveEventDialog(controller, event),
             onToggleReminder: () => _toggleReminder(controller, event),
             onChatWithHost: () => _chatWithHost(event),
@@ -252,10 +247,6 @@ class _AttendingEventsScreenState extends State<AttendingEventsScreen>
         ],
       ),
     );
-  }
-
-  void _navigateToEventDetails(Map<String, dynamic> event) {
-    Get.toNamed(RouteHelper.eventDetailsScreen, arguments: event);
   }
 
   void _showLeaveEventDialog(

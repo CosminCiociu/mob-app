@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/core/utils/event_formatter.dart';
+import 'package:ovo_meet/core/route/route.dart';
+import 'package:ovo_meet/services/user_service.dart';
 
-class AttendingEventCard extends StatelessWidget {
+class AttendingEventCard extends StatefulWidget {
   final Map<String, dynamic> event;
-  final VoidCallback? onTap;
   final VoidCallback? onLeave;
   final VoidCallback? onToggleReminder;
   final VoidCallback? onChatWithHost;
@@ -18,7 +20,6 @@ class AttendingEventCard extends StatelessWidget {
   const AttendingEventCard({
     Key? key,
     required this.event,
-    this.onTap,
     this.onLeave,
     this.onToggleReminder,
     this.onChatWithHost,
@@ -27,71 +28,106 @@ class AttendingEventCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<AttendingEventCard> createState() => _AttendingEventCardState();
+}
+
+class _AttendingEventCardState extends State<AttendingEventCard> {
+  final UserService _userService = UserService();
+  String? _hostDisplayName;
+  bool _isLoadingHostName = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHostDisplayName();
+  }
+
+  void _loadHostDisplayName() async {
+    final createdBy = widget.event['createdBy']?.toString();
+    if (createdBy != null && createdBy.isNotEmpty) {
+      setState(() {
+        _isLoadingHostName = true;
+      });
+
+      try {
+        final displayName = await _userService.getUserDisplayName(createdBy);
+        if (mounted) {
+          setState(() {
+            _hostDisplayName = displayName;
+            _isLoadingHostName = false;
+          });
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _hostDisplayName = 'Unknown Host';
+            _isLoadingHostName = false;
+          });
+        }
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isUpcoming = EventFormatter.isUpcoming(event['dateTime']);
+    final bool isUpcoming = EventFormatter.isUpcoming(widget.event['dateTime']);
     final bool isActive = _isEventActive();
 
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap?.call();
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: Dimensions.space15),
-        decoration: BoxDecoration(
-          color: MyColor.colorWhite,
-          borderRadius: BorderRadius.circular(Dimensions.space20),
-          boxShadow: [
-            BoxShadow(
-              color: MyColor.primaryColor.withOpacity(0.08),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
-              spreadRadius: 0,
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-              spreadRadius: 0,
-            ),
-          ],
-          border: Border.all(
-            color: isPending
-                ? Colors.orange.withOpacity(0.3)
-                : isActive
-                    ? Colors.green.withOpacity(0.3)
-                    : MyColor.primaryColor.withOpacity(0.15),
-            width: 1.5,
+    return Container(
+      margin: const EdgeInsets.only(bottom: Dimensions.space15),
+      decoration: BoxDecoration(
+        color: MyColor.colorWhite,
+        borderRadius: BorderRadius.circular(Dimensions.space20),
+        boxShadow: [
+          BoxShadow(
+            color: MyColor.primaryColor.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+            spreadRadius: 0,
           ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+        ],
+        border: Border.all(
+          color: widget.isPending
+              ? Colors.orange.withOpacity(0.3)
+              : isActive
+                  ? Colors.green.withOpacity(0.3)
+                  : MyColor.primaryColor.withOpacity(0.15),
+          width: 1.5,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Event Image Header
-            _buildImageHeader(context, isUpcoming, isActive),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Event Image Header
+          _buildImageHeader(context, isUpcoming, isActive),
 
-            // Event Content
-            Padding(
-              padding: const EdgeInsets.all(Dimensions.space20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildEventTitle(),
-                  const SizedBox(height: Dimensions.space12),
-                  _buildDateTime(),
-                  const SizedBox(height: Dimensions.space10),
-                  _buildHostInfo(),
-                  const SizedBox(height: Dimensions.space10),
-                  _buildLocationInfo(),
-                  const SizedBox(height: Dimensions.space15),
-                  _buildAttendeesInfo(),
-                  const SizedBox(height: Dimensions.space15),
-                  _buildActionButtons(),
-                ],
-              ),
+          // Event Content
+          Padding(
+            padding: const EdgeInsets.all(Dimensions.space20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildEventTitle(),
+                const SizedBox(height: Dimensions.space12),
+                _buildDateTime(),
+                const SizedBox(height: Dimensions.space10),
+                _buildHostInfo(),
+                const SizedBox(height: Dimensions.space10),
+                _buildLocationInfo(),
+                const SizedBox(height: Dimensions.space15),
+                _buildAttendeesInfo(),
+                const SizedBox(height: Dimensions.space15),
+                _buildActionButtons(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -121,7 +157,7 @@ class AttendingEventCard extends StatelessWidget {
         ),
 
         // Category Badge
-        if (event['categoryId'] != null)
+        if (widget.event['categoryId'] != null)
           Positioned(
             top: Dimensions.space15,
             left: Dimensions.space15,
@@ -137,18 +173,18 @@ class AttendingEventCard extends StatelessWidget {
         topLeft: Radius.circular(Dimensions.space20),
         topRight: Radius.circular(Dimensions.space20),
       ),
-      child:
-          event['imageUrl'] != null && event['imageUrl'].toString().isNotEmpty
-              ? Image.network(
-                  event['imageUrl'],
-                  height: 180,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildDefaultImageContent();
-                  },
-                )
-              : _buildDefaultImageContent(),
+      child: widget.event['imageUrl'] != null &&
+              widget.event['imageUrl'].toString().isNotEmpty
+          ? Image.network(
+              widget.event['imageUrl'],
+              height: 180,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return _buildDefaultImageContent();
+              },
+            )
+          : _buildDefaultImageContent(),
     );
   }
 
@@ -192,7 +228,7 @@ class AttendingEventCard extends StatelessWidget {
   }
 
   LinearGradient _buildEventGradient(bool isUpcoming, bool isActive) {
-    if (isPending) {
+    if (widget.isPending) {
       return LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -236,7 +272,7 @@ class AttendingEventCard extends StatelessWidget {
     String statusText;
     IconData statusIcon;
 
-    if (isPending) {
+    if (widget.isPending) {
       badgeColor = Colors.orange;
       statusText = 'PENDING';
       statusIcon = Icons.hourglass_empty;
@@ -310,7 +346,7 @@ class AttendingEventCard extends StatelessWidget {
         ],
       ),
       child: Text(
-        event['categoryId'].toString().toUpperCase(),
+        widget.event['categoryId'].toString().toUpperCase(),
         style: boldSmall.copyWith(
           color: MyColor.primaryColor,
           fontSize: 10,
@@ -322,7 +358,7 @@ class AttendingEventCard extends StatelessWidget {
 
   Widget _buildEventTitle() {
     return Text(
-      event['eventName'] ?? 'Untitled Event',
+      widget.event['eventName'] ?? 'Untitled Event',
       style: boldExtraLarge.copyWith(
         color: MyColor.getTextColor(),
         fontSize: 20,
@@ -334,7 +370,7 @@ class AttendingEventCard extends StatelessWidget {
   }
 
   Widget _buildDateTime() {
-    if (event['dateTime'] == null) return const SizedBox.shrink();
+    if (widget.event['dateTime'] == null) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(Dimensions.space12),
@@ -359,16 +395,16 @@ class AttendingEventCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  EventFormatter.formatEventDateTime(event['dateTime']),
+                  EventFormatter.formatEventDateTime(widget.event['dateTime']),
                   style: boldDefault.copyWith(
                     color: MyColor.primaryColor,
                     fontSize: 14,
                   ),
                 ),
-                if (EventFormatter.getRelativeTime(event['dateTime'])
+                if (EventFormatter.getRelativeTime(widget.event['dateTime'])
                     .isNotEmpty)
                   Text(
-                    EventFormatter.getRelativeTime(event['dateTime']),
+                    EventFormatter.getRelativeTime(widget.event['dateTime']),
                     style: regularSmall.copyWith(
                       color: Colors.green.shade600,
                       fontWeight: FontWeight.w600,
@@ -400,10 +436,10 @@ class AttendingEventCard extends StatelessWidget {
           CircleAvatar(
             radius: 20,
             backgroundColor: Colors.blue.withOpacity(0.2),
-            backgroundImage: event['hostAvatar'] != null
-                ? NetworkImage(event['hostAvatar'])
+            backgroundImage: widget.event['hostAvatar'] != null
+                ? NetworkImage(widget.event['hostAvatar'])
                 : null,
-            child: event['hostAvatar'] == null
+            child: widget.event['hostAvatar'] == null
                 ? Icon(
                     Icons.person,
                     color: Colors.blue.shade600,
@@ -426,16 +462,29 @@ class AttendingEventCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        event['hostName'] ?? 'Unknown Host',
-                        style: boldDefault.copyWith(
-                          color: Colors.blue.shade700,
-                          fontSize: 14,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      child: _isLoadingHostName
+                          ? SizedBox(
+                              height: 14,
+                              width: 14,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.blue.shade600,
+                                ),
+                              ),
+                            )
+                          : Text(
+                              _hostDisplayName ??
+                                  widget.event['hostName'] ??
+                                  'Unknown Host',
+                              style: boldDefault.copyWith(
+                                color: Colors.blue.shade700,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                     ),
-                    if (event['hostVerified'] == true)
+                    if (widget.event['hostVerified'] == true)
                       Icon(
                         Icons.verified,
                         size: 16,
@@ -473,9 +522,10 @@ class AttendingEventCard extends StatelessWidget {
           Expanded(
             child: Text(
               EventFormatter.formatEventLocationShort(
-                event['locationData'],
-                event['locationName'] ??
-                    event['inPersonOrVirtual'] ??
+                widget.event['location']['address'] ??
+                    widget.event['location']['address']['name'],
+                widget.event['location']['address']['name'] ??
+                    widget.event['inPersonOrVirtual'] ??
                     'Location TBD',
               ),
               style: regularDefault.copyWith(
@@ -491,8 +541,8 @@ class AttendingEventCard extends StatelessWidget {
   }
 
   Widget _buildAttendeesInfo() {
-    final int currentAttendees = event['currentAttendees'] ?? 0;
-    final int maxAttendees = event['maxAttendees'] ?? 0;
+    final int currentAttendees = widget.event['currentAttendees'] ?? 0;
+    final int maxAttendees = widget.event['maxAttendees'] ?? 0;
     final int spotsLeft =
         maxAttendees > 0 ? maxAttendees - currentAttendees : 0;
 
@@ -547,40 +597,48 @@ class AttendingEventCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        // Leave/Unsave Button
+        // View Members Button
         _buildActionButton(
-          icon: Icons.heart_broken,
-          label: MyStrings.leaveEvent,
-          color: Colors.red.shade600,
-          onTap: onLeave,
-        ),
-
-        // Reminder Toggle
-        _buildActionButton(
-          icon: event['hasReminder'] == true
-              ? Icons.notifications_active
-              : Icons.notifications_none,
-          label: event['hasReminder'] == true
-              ? MyStrings.reminderOn
-              : MyStrings.reminderOff,
-          color: Colors.orange.shade600,
-          onTap: onToggleReminder,
-        ),
-
-        // Chat with Host
-        _buildActionButton(
-          icon: Icons.chat_bubble_outline,
-          label: MyStrings.chatWithHost,
+          icon: Icons.group,
+          label: 'View Members',
           color: Colors.blue.shade600,
-          onTap: onChatWithHost,
+          onTap: () => _onViewAttendees(),
         ),
+
+        // Reminder Toggle - Hidden for now
+        // _buildActionButton(
+        //   icon: widget.event['hasReminder'] == true
+        //       ? Icons.notifications_active
+        //       : Icons.notifications_none,
+        //   label: widget.event['hasReminder'] == true
+        //       ? MyStrings.reminderOn
+        //       : MyStrings.reminderOff,
+        //   color: Colors.orange.shade600,
+        //   onTap: widget.onToggleReminder,
+        // ),
+
+        // Chat with Host - Hidden for now
+        // _buildActionButton(
+        //   icon: Icons.chat_bubble_outline,
+        //   label: MyStrings.chatWithHost,
+        //   color: Colors.blue.shade600,
+        //   onTap: widget.onChatWithHost,
+        // ),
 
         // View on Map
         _buildActionButton(
           icon: Icons.map_outlined,
           label: MyStrings.viewOnMap,
           color: Colors.green.shade600,
-          onTap: onViewMap,
+          onTap: widget.onViewMap,
+        ),
+
+        // Leave/Unsave Button
+        _buildActionButton(
+          icon: Icons.heart_broken,
+          label: MyStrings.leaveEvent,
+          color: Colors.red.shade600,
+          onTap: widget.onLeave,
         ),
       ],
     );
@@ -639,7 +697,7 @@ class AttendingEventCard extends StatelessWidget {
   }
 
   bool _isEventActive() {
-    final eventDateTime = _parseEventDateTime(event['dateTime']);
+    final eventDateTime = _parseEventDateTime(widget.event['dateTime']);
     if (eventDateTime == null) return false;
 
     final now = DateTime.now();
@@ -661,5 +719,20 @@ class AttendingEventCard extends StatelessWidget {
     }
 
     return null;
+  }
+
+  void _onViewAttendees() {
+    final eventId = widget.event['id']?.toString() ?? '';
+    final eventName = widget.event['eventName']?.toString() ?? 'Event';
+
+    if (eventId.isNotEmpty) {
+      Get.toNamed(
+        RouteHelper.eventAttendeesScreen,
+        parameters: {
+          'eventId': eventId,
+          'eventName': eventName,
+        },
+      );
+    }
   }
 }

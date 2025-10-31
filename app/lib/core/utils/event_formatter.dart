@@ -70,9 +70,70 @@ class EventFormatter {
 
     // Then check location data
     if (locationData != null) {
-      // Check if it has address or name
+      // Check if locationData is the address object itself (Firebase format)
+      if (locationData['fullAddress'] != null &&
+          locationData['fullAddress'].toString().isNotEmpty) {
+        return locationData['fullAddress'].toString();
+      }
+
+      // Build from name + locality + country (Firebase format)
+      final List<String> locationParts = [];
+
+      if (locationData['name'] != null &&
+          locationData['name'].toString().isNotEmpty) {
+        locationParts.add(locationData['name'].toString());
+      }
+
+      if (locationData['locality'] != null &&
+          locationData['locality'].toString().isNotEmpty) {
+        locationParts.add(locationData['locality'].toString());
+      }
+
+      if (locationData['country'] != null &&
+          locationData['country'].toString().isNotEmpty) {
+        locationParts.add(locationData['country'].toString());
+      }
+
+      if (locationParts.isNotEmpty) {
+        return locationParts.join(', ');
+      }
+
+      // Check for nested address structure (legacy format)
+      if (locationData['address'] is Map<String, dynamic>) {
+        final address = locationData['address'] as Map<String, dynamic>;
+
+        // Prefer fullAddress if available
+        if (address['fullAddress'] != null &&
+            address['fullAddress'].toString().isNotEmpty) {
+          return address['fullAddress'].toString();
+        }
+
+        // Build from name + locality + country
+        final List<String> legacyLocationParts = [];
+
+        if (address['name'] != null && address['name'].toString().isNotEmpty) {
+          legacyLocationParts.add(address['name'].toString());
+        }
+
+        if (address['locality'] != null &&
+            address['locality'].toString().isNotEmpty) {
+          legacyLocationParts.add(address['locality'].toString());
+        }
+
+        if (address['country'] != null &&
+            address['country'].toString().isNotEmpty) {
+          legacyLocationParts.add(address['country'].toString());
+        }
+
+        if (legacyLocationParts.isNotEmpty) {
+          return legacyLocationParts.join(', ');
+        }
+      }
+
+      // Fallback to simple address field (legacy format)
       if (locationData['address'] != null &&
-          locationData['address'].toString().isNotEmpty) {
+          locationData['address'].toString().isNotEmpty &&
+          locationData['address'] is! Map) {
         return locationData['address'].toString();
       }
 
@@ -97,6 +158,65 @@ class EventFormatter {
   /// Returns a shorter, user-friendly location string
   static String formatEventLocationShort(
       Map<String, dynamic>? locationData, String? locationName) {
+    // For short format, try to get the most relevant parts first
+    if (locationName != null &&
+        locationName.isNotEmpty &&
+        locationName != 'null') {
+      if (locationName.length > 30) {
+        return '${locationName.substring(0, 27)}...';
+      }
+      return locationName;
+    }
+
+    if (locationData != null) {
+      // For short format, prefer name + locality over full address (Firebase format)
+      final List<String> shortParts = [];
+
+      if (locationData['name'] != null &&
+          locationData['name'].toString().isNotEmpty) {
+        shortParts.add(locationData['name'].toString());
+      }
+
+      if (locationData['locality'] != null &&
+          locationData['locality'].toString().isNotEmpty) {
+        shortParts.add(locationData['locality'].toString());
+      }
+
+      if (shortParts.isNotEmpty) {
+        final shortLocation = shortParts.join(', ');
+        if (shortLocation.length > 30) {
+          return '${shortLocation.substring(0, 27)}...';
+        }
+        return shortLocation;
+      }
+
+      // Check for nested address structure (legacy format)
+      if (locationData['address'] is Map<String, dynamic>) {
+        final address = locationData['address'] as Map<String, dynamic>;
+
+        // For short format, prefer name + locality over full address
+        final List<String> legacyShortParts = [];
+
+        if (address['name'] != null && address['name'].toString().isNotEmpty) {
+          legacyShortParts.add(address['name'].toString());
+        }
+
+        if (address['locality'] != null &&
+            address['locality'].toString().isNotEmpty) {
+          legacyShortParts.add(address['locality'].toString());
+        }
+
+        if (legacyShortParts.isNotEmpty) {
+          final shortLocation = legacyShortParts.join(', ');
+          if (shortLocation.length > 30) {
+            return '${shortLocation.substring(0, 27)}...';
+          }
+          return shortLocation;
+        }
+      }
+    }
+
+    // Fallback to full location formatting
     final fullLocation = formatEventLocation(locationData, locationName);
 
     if (fullLocation == 'Location TBD') {

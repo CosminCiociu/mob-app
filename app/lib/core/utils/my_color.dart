@@ -450,4 +450,14 @@ class MyColor {
   static const Color locationErrorColor = Color(0xFFF44336);
   static const Color locationCardBackground = Color(0xFFF8F9FA);
   static const Color locationButtonPrimary = primaryColor;
+
+  // Event member management colors
+  static const Color acceptColor = Color(0xFF10B981); // Green for accept
+  static const Color declineColor = Color(0xFFEF4444); // Red for decline
+  static const Color memberPendingColor =
+      Color(0xFFF59E0B); // Orange for pending
+  static const Color memberCardBackground = Color(0xFFFAFAFA);
+  static const Color memberActionButton = Color(0xFFFFFFFF);
+  static const Color memberStatusIndicator = Color(0xFFE5E7EB);
+  static const Color messageIconColor = Color(0xFF6366F1);
 }

@@ -9,7 +9,6 @@ import 'package:ovo_meet/view/components/app-bar/action_button_icon_widget.dart'
 import 'package:ovo_meet/core/helpers/location_permission_helper.dart';
 import 'widgets/empty_events_state.dart';
 import 'widgets/events_list.dart';
-import 'widgets/event_context_menu.dart';
 
 class MyEventsScreen extends StatefulWidget {
   const MyEventsScreen({super.key});
@@ -124,34 +123,6 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
     }
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context,
-      MyEventsController controller, Map<String, dynamic> event) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Event'),
-          content: Text(
-              'Are you sure you want to delete "${event['eventName'] ?? 'this event'}"?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                controller.deleteEvent(event['id']);
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<MyEventsController>(
@@ -213,19 +184,9 @@ class _MyEventsScreenState extends State<MyEventsScreen> {
                 : EventsList(
                     controller: controller,
                     onEventLongPress: (event) {
-                      // Show event context menu on long press
-                      EventContextMenu.show(
-                        context,
-                        event,
-                        controller,
-                        () => _showDeleteConfirmationDialog(
-                            context, controller, event),
-                      );
+                      // Do nothing on long press
                     },
-                    onEventTap: (event) {
-                      // Navigate to edit event form on tap
-                      Get.toNamed(RouteHelper.editEventForm, arguments: event);
-                    },
+                    onEventTap: null, // Disable tap functionality
                   ),
       ),
     );

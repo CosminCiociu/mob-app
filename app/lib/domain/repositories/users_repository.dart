@@ -20,4 +20,7 @@ abstract class UsersRepository {
     required String userId,
     required Map<String, dynamic> locationData,
   });
+
+  /// Get user by ID
+  Future<DocumentSnapshot?> getUserById(String userId);
 }

@@ -40,6 +40,8 @@ import '../../view/screens/auth/two_factor/two_factor_verification_screen/two_fa
 import '../../view/screens/events/widgets/create_event_form.dart';
 import '../../view/screens/events/widgets/edit_event_form.dart';
 import '../../view/screens/events/event_details_screen.dart';
+import '../../view/screens/events/event_attendees_screen.dart';
+import '../../view/screens/event/event_members_demo_screen.dart';
 
 class RouteHelper {
   //use screen in screen name and route name
@@ -84,7 +86,9 @@ class RouteHelper {
   static const String createEventForm = "/create-event-form";
   static const String editEventForm = "/edit-event-form";
   static const String eventDetailsScreen = "/event-details-screen";
+  static const String eventAttendeesScreen = "/event-attendees-screen";
   static const String locationPermissionScreen = "/location-permission-screen";
+  static const String eventMembersDemoScreen = "/event-members-demo-screen";
 
   List<GetPage> routes = [
     GetPage(
@@ -155,7 +159,16 @@ class RouteHelper {
         page: () => EditEventForm(eventData: Get.arguments ?? {})),
     GetPage(name: eventDetailsScreen, page: () => const EventDetailsScreen()),
     GetPage(
+        name: eventAttendeesScreen,
+        page: () => EventAttendeesScreen(
+              eventId: Get.parameters['eventId'] ?? '',
+              eventName: Get.parameters['eventName'] ?? 'Event',
+            )),
+    GetPage(
         name: locationPermissionScreen,
         page: () => const LocationPermissionScreen()),
+    GetPage(
+        name: eventMembersDemoScreen,
+        page: () => const EventMembersDemoScreen()),
   ];
 }

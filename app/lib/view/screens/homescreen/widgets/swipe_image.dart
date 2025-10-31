@@ -174,10 +174,10 @@ class _TinderSwapCardState extends State<TinderSwapCard>
 
     return Align(
       alignment: _animationController.status == AnimationStatus.forward &&
-              (frontCardAlign.x > 3.0 ||
-                  frontCardAlign.x < -3.0 ||
-                  frontCardAlign.y > 3 ||
-                  frontCardAlign.y < -3)
+              (frontCardAlign.x > widget._swipeEdge ||
+                  frontCardAlign.x < -widget._swipeEdge ||
+                  frontCardAlign.y > widget._swipeEdgeVertical ||
+                  frontCardAlign.y < -widget._swipeEdgeVertical)
           ? CardAnimation.backCardAlign(
               _animationController,
               widget._cardAligns[index],
@@ -186,10 +186,10 @@ class _TinderSwapCardState extends State<TinderSwapCard>
           : widget._cardAligns[index],
       child: SizedBox.fromSize(
         size: _animationController.status == AnimationStatus.forward &&
-                (frontCardAlign.x > 3.0 ||
-                    frontCardAlign.x < -3.0 ||
-                    frontCardAlign.y > 3 ||
-                    frontCardAlign.y < -3)
+                (frontCardAlign.x > widget._swipeEdge ||
+                    frontCardAlign.x < -widget._swipeEdge ||
+                    frontCardAlign.y > widget._swipeEdgeVertical ||
+                    frontCardAlign.y < -widget._swipeEdgeVertical)
             ? CardAnimation.backCardSize(
                 _animationController,
                 widget._cardSizes[index],
@@ -372,9 +372,9 @@ class CardAnimation {
       endX = beginAlign.x > 0
           ? (beginAlign.x > swipeEdge ? beginAlign.x + 10.0 : baseAlign.x)
           : (beginAlign.x < -swipeEdge ? beginAlign.x - 10.0 : baseAlign.x);
-      endY = beginAlign.x > 3.0 || beginAlign.x < -swipeEdge
-          ? beginAlign.y
-          : baseAlign.y;
+      // Allow horizontal swipes to maintain their Y position for natural swiping
+      endY =
+          (beginAlign.x.abs() > swipeEdge * 0.5) ? beginAlign.y : baseAlign.y;
 
       if (swipeUp || swipeDown) {
         if (beginAlign.y < 0) {

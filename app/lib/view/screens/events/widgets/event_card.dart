@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:get/get.dart';
 import 'package:ovo_meet/core/utils/dimensions.dart';
 import 'package:ovo_meet/core/utils/my_color.dart';
 import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/core/utils/event_formatter.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
+import 'package:ovo_meet/core/route/route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../data/controller/event_members_controller.dart';
+import '../../event/event_members_screen.dart';
 
 class EventCard extends StatelessWidget {
   final Map<String, dynamic> event;
@@ -427,10 +432,8 @@ class EventCard extends StatelessWidget {
           Expanded(
             child: Text(
               EventFormatter.formatEventLocationShort(
-                event['locationData'],
-                event['locationName'] ??
-                    event['inPersonOrVirtual'] ??
-                    'Location TBD',
+                event['location'],
+                event['inPersonOrVirtual'],
               ),
               style: regularDefault.copyWith(
                 color: Colors.grey.shade700,
@@ -665,41 +668,44 @@ class EventCard extends StatelessWidget {
   }
 
   Widget _buildFooterActions(bool isUpcoming) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        // Attendees count or join status
+        // Attendees count info
         _buildAttendeesInfo(),
 
-        // Action buttons
-        Row(
-          children: [
-            if (isUpcoming) ...[
-              _buildActionButton(
-                icon: Icons.share_outlined,
-                color: Colors.blue.shade600,
-                onTap: () {
-                  // Handle share action
-                },
-              ),
-              const SizedBox(width: Dimensions.space8),
-              _buildActionButton(
-                icon: Icons.favorite_border,
-                color: Colors.red.shade600,
-                onTap: () {
-                  // Handle favorite action
-                },
-              ),
-            ] else ...[
-              _buildActionButton(
-                icon: Icons.info_outline,
-                color: Colors.grey.shade600,
-                onTap: () {
-                  // Handle view details action
-                },
-              ),
-            ],
-          ],
+        const SizedBox(height: Dimensions.space15),
+
+        // Action buttons row
+        _buildActionButtons(),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        // View Members Button
+        _buildActionButton(
+          icon: Icons.group,
+          label: 'View Members',
+          color: Colors.blue.shade600,
+          onTap: () => _openEventMembersScreen(),
+        ),
+
+        // Edit Event Button
+        _buildActionButton(
+          icon: Icons.edit_outlined,
+          label: 'Edit Event',
+          color: Colors.orange.shade600,
+          onTap: () => _editEvent(),
+        ),
+
+        // Delete Event Button
+        _buildActionButton(
+          icon: Icons.delete_outline,
+          label: 'Delete Event',
+          color: Colors.red.shade600,
+          onTap: () => _deleteEvent(),
         ),
       ],
     );
@@ -732,22 +738,118 @@ class EventCard extends StatelessWidget {
 
   Widget _buildActionButton({
     required IconData icon,
+    required String label,
     required Color color,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(20),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap?.call();
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(
+            vertical: Dimensions.space10,
+            horizontal: Dimensions.space8,
+          ),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(Dimensions.space12),
+            border: Border.all(
+              color: color.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 18,
+                color: color,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: boldSmall.copyWith(
+                  color: color,
+                  fontSize: 10,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
-        child: Icon(
-          icon,
-          size: 16,
-          color: color,
+      ),
+    );
+  }
+
+  void _openEventMembersScreen() {
+    final eventId = event['id']?.toString();
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (eventId == null || currentUserId == null) {
+      Get.snackbar(
+        'Error',
+        'Unable to load event members',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Initialize the controller with event data
+    final controller = Get.put(EventMembersController());
+    controller.eventId.value = eventId;
+    controller.currentUserId.value = currentUserId;
+
+    // Navigate to members screen
+    Get.to(() => const EventMembersScreen());
+  }
+
+  void _editEvent() {
+    final eventId = event['id']?.toString();
+    if (eventId != null) {
+      Get.toNamed(RouteHelper.editEventForm, arguments: event);
+    } else {
+      Get.snackbar(
+        'Error',
+        'Unable to edit event. Event ID not found.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  void _deleteEvent() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Delete Event'),
+        content: Text(
+          'Are you sure you want to delete "${event['eventName'] ?? 'this event'}"?',
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              // Here you would typically call a method from the controller
+              // For now, we'll show a snackbar
+              Get.snackbar(
+                'Feature Coming Soon',
+                'Delete functionality will be available soon.',
+                snackPosition: SnackPosition.BOTTOM,
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
       ),
     );
   }

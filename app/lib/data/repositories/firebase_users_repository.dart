@@ -83,4 +83,14 @@ class FirebaseUsersRepository implements UsersRepository {
       throw Exception('Failed to update user location: $e');
     }
   }
+
+  @override
+  Future<DocumentSnapshot?> getUserById(String userId) async {
+    try {
+      final userDoc = await _firestore.collection('users').doc(userId).get();
+      return userDoc.exists ? userDoc : null;
+    } catch (e) {
+      throw Exception('Failed to get user by ID: $e');
+    }
+  }
 }

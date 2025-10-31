@@ -197,11 +197,11 @@ class FirebaseEventsRepository implements EventsRepository {
         final eventData = eventSnapshot.data() as Map<String, dynamic>;
         final userData = userSnapshot.data() as Map<String, dynamic>;
 
-        // Handle event's user_liked array
-        List<String> userLiked = [];
-        if (eventData.containsKey('user_liked') &&
-            eventData['user_liked'] != null) {
-          userLiked = List<String>.from(eventData['user_liked']);
+        // Handle event's users_pending map (users who liked the event with timestamps)
+        Map<String, dynamic> usersPending = {};
+        if (eventData.containsKey('users_pending') &&
+            eventData['users_pending'] != null) {
+          usersPending = Map<String, dynamic>.from(eventData['users_pending']);
         }
 
         // Handle user's events_attending map (events that don't require approval)
@@ -234,11 +234,11 @@ class FirebaseEventsRepository implements EventsRepository {
           'updatedAt': FieldValue.serverTimestamp(),
         };
 
-        // Add user ID to event's liked users if not already present
-        if (!userLiked.contains(userId)) {
-          userLiked.add(userId);
+        // Add user ID to event's pending users with timestamp if not already present
+        if (!usersPending.containsKey(userId)) {
+          usersPending[userId] = FieldValue.serverTimestamp();
         }
-        eventUpdates['user_liked'] = userLiked;
+        eventUpdates['users_pending'] = usersPending;
 
         // If event doesn't require approval, automatically add user to attendees
         if (!requiresApproval && !attendees.contains(userId)) {
@@ -424,6 +424,181 @@ class FirebaseEventsRepository implements EventsRepository {
       });
     } catch (e) {
       throw Exception('Failed to create notification: $e');
+    }
+  }
+
+  /// Accept a pending member request for an event
+  Future<void> acceptMember({
+    required String eventId,
+    required String userId,
+    required String currentUserId,
+  }) async {
+    try {
+      final batch = _firestore.batch();
+
+      // Remove from users_pending map in event
+      final eventRef = _firestore.collection('users_events').doc(eventId);
+      batch.update(eventRef, {
+        'users_pending.$userId': FieldValue.delete(),
+      });
+
+      // Add to user's attending events
+      final userEventsRef = _firestore.collection('users').doc(userId);
+      batch.update(userEventsRef, {
+        'events_attending': FieldValue.arrayUnion([eventId]),
+        'events_pending': FieldValue.arrayRemove([eventId]),
+      });
+
+      await batch.commit();
+
+      // Create notification for accepted user
+      await _createMemberStatusNotification(
+        eventId: eventId,
+        recipientId: userId,
+        senderId: currentUserId,
+        status: 'accepted',
+      );
+    } catch (e) {
+      throw Exception('Failed to accept member: $e');
+    }
+  }
+
+  /// Decline a pending member request for an event
+  Future<void> declineMember({
+    required String eventId,
+    required String userId,
+    required String currentUserId,
+  }) async {
+    try {
+      final batch = _firestore.batch();
+
+      // Remove from users_pending map in event
+      final eventRef = _firestore.collection('users_events').doc(eventId);
+      batch.update(eventRef, {
+        'users_pending.$userId': FieldValue.delete(),
+      });
+
+      // Add to user's declined events
+      final userEventsRef = _firestore.collection('users').doc(userId);
+      batch.update(userEventsRef, {
+        'events_declined': FieldValue.arrayUnion([eventId]),
+        'events_pending': FieldValue.arrayRemove([eventId]),
+      });
+
+      await batch.commit();
+
+      // Create notification for declined user
+      await _createMemberStatusNotification(
+        eventId: eventId,
+        recipientId: userId,
+        senderId: currentUserId,
+        status: 'declined',
+      );
+    } catch (e) {
+      throw Exception('Failed to decline member: $e');
+    }
+  }
+
+  /// Create notification for member status change
+  Future<void> _createMemberStatusNotification({
+    required String eventId,
+    required String recipientId,
+    required String senderId,
+    required String status,
+  }) async {
+    try {
+      // Get event details
+      final eventDoc =
+          await _firestore.collection('users_events').doc(eventId).get();
+      final eventData = eventDoc.data();
+      final eventName = eventData?['title'] ?? 'Event';
+
+      // Get sender details
+      final senderDoc =
+          await _firestore.collection('users').doc(senderId).get();
+      final senderData = senderDoc.data();
+      final senderName = senderData?['firstname'] ?? 'Event organizer';
+
+      String title =
+          status == 'accepted' ? 'Request Accepted!' : 'Request Declined';
+      String message = status == 'accepted'
+          ? 'Your request to join "$eventName" has been accepted by $senderName'
+          : 'Your request to join "$eventName" has been declined by $senderName';
+
+      await _firestore.collection('notifications').add({
+        'type': 'member_status',
+        'recipientId': recipientId,
+        'senderId': senderId,
+        'senderName': senderName,
+        'eventId': eventId,
+        'eventName': eventName,
+        'status': status,
+        'title': title,
+        'message': message,
+        'isRead': false,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      throw Exception('Failed to create member status notification: $e');
+    }
+  }
+
+  /// Get event members (confirmed and pending)
+  Future<Map<String, List<Map<String, dynamic>>>> getEventMembers({
+    required String eventId,
+  }) async {
+    try {
+      final eventDoc =
+          await _firestore.collection('users_events').doc(eventId).get();
+      final eventData = eventDoc.data();
+
+      if (eventData == null) {
+        throw Exception('Event not found');
+      }
+
+      Map<String, dynamic> usersPending = eventData['users_pending'] ?? {};
+      List<Map<String, dynamic>> confirmedMembers = [];
+      List<Map<String, dynamic>> pendingMembers = [];
+
+      // Get pending users details
+      for (String userId in usersPending.keys) {
+        final userDoc = await _firestore.collection('users').doc(userId).get();
+        final userData = userDoc.data();
+        if (userData != null) {
+          pendingMembers.add({
+            'id': userId,
+            'email': userData['email'] ?? '',
+            'displayName': userData['firstname'] ?? '',
+            'photoUrl': userData['image'] ?? '',
+            'phoneNumber': userData['mobile'] ?? '',
+            'pendingTimestamp': usersPending[userId],
+          });
+        }
+      }
+
+      // Get confirmed members (users who have this event in their events_attending)
+      final usersQuery = await _firestore
+          .collection('users')
+          .where('events_attending', arrayContains: eventId)
+          .get();
+
+      for (var userDoc in usersQuery.docs) {
+        final userData = userDoc.data();
+        confirmedMembers.add({
+          'id': userDoc.id,
+          'email': userData['email'] ?? '',
+          'displayName': userData['firstname'] ?? '',
+          'photoUrl': userData['image'] ?? '',
+          'phoneNumber': userData['mobile'] ?? '',
+        });
+      }
+
+      return {
+        'confirmed': confirmedMembers,
+        'pending': pendingMembers,
+      };
+    } catch (e) {
+      throw Exception('Failed to get event members: $e');
     }
   }
 }

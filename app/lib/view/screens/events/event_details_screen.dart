@@ -9,7 +9,11 @@ import 'widgets/event_back_button.dart';
 import '../../../data/managers/event_manager.dart';
 import '../../../domain/services/matching_service.dart';
 import '../../../core/utils/home_controller_provider.dart';
+import '../../../core/utils/my_strings.dart';
+import '../../../data/controller/event_members_controller.dart';
+import '../event/event_members_screen_v2.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   const EventDetailsScreen({super.key});
@@ -150,10 +154,109 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             sectionType: EventInfoSectionType.description,
           ),
 
+          // Members management section (only for event creators)
+          _buildMembersSection(),
+
           // Add space for bottom action buttons
           const SizedBox(height: Dimensions.space100),
         ],
       ),
     );
+  }
+
+  Widget _buildMembersSection() {
+    // Check if current user is the event creator
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final eventCreatorId = eventData['createdBy']?.toString();
+    final isEventCreator = currentUser?.uid == eventCreatorId;
+
+    if (!isEventCreator) {
+      return const SizedBox.shrink(); // Don't show for non-creators
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(top: Dimensions.space20),
+      padding: const EdgeInsets.all(Dimensions.space15),
+      decoration: BoxDecoration(
+        color: MyColor.getCardColor(),
+        borderRadius: BorderRadius.circular(Dimensions.space12),
+        border: Border.all(
+          color: MyColor.cardBorderColor,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.group,
+                color: MyColor.primaryColor,
+                size: 24,
+              ),
+              const SizedBox(width: Dimensions.space10),
+              Text(
+                MyStrings.eventMembers,
+                style: TextStyle(
+                  fontSize: Dimensions.fontLarge,
+                  fontWeight: FontWeight.w600,
+                  color: MyColor.getPrimaryTextColor(),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Dimensions.space10),
+          Text(
+            'Manage who can join your event',
+            style: TextStyle(
+              fontSize: Dimensions.fontDefault,
+              color: MyColor.getSecondaryTextColor(),
+            ),
+          ),
+          const SizedBox(height: Dimensions.space15),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _openEventMembersScreen(),
+              icon: const Icon(Icons.people_outline),
+              label: Text(MyStrings.viewMembers),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: MyColor.primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  vertical: Dimensions.space12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Dimensions.space8),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openEventMembersScreen() {
+    final eventId = eventData['id']?.toString();
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (eventId == null || currentUserId == null) {
+      Get.snackbar(
+        'Error',
+        'Unable to load event members',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // Initialize the controller with event data
+    final controller = Get.put(EventMembersController());
+    controller.eventId.value = eventId;
+    controller.currentUserId.value = currentUserId;
+
+    // Navigate to members screen
+    Get.to(() => const EventMembersScreen());
   }
 }

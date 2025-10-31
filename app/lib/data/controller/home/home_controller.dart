@@ -30,6 +30,10 @@ class HomeController extends GetxController {
   final ZoomDrawerController drawerController = ZoomDrawerController();
   final TextEditingController addressController = TextEditingController();
 
+  // Swipe progress tracking (-1.0 to 1.0, negative = left, positive = right)
+  double _swipeProgress = 0.0;
+  double get swipeProgress => _swipeProgress;
+
   // =========================
   // SERVICES (Legacy support)
   // =========================
@@ -162,6 +166,7 @@ class HomeController extends GetxController {
   void onSwipeComplete(dynamic orientation, int index) {
     _handleSwipeOrientation(orientation, index);
     _eventManager.handleSwipeComplete(index);
+    _swipeProgress = 0.0; // Reset swipe progress after completion
     update();
   }
 
@@ -230,6 +235,13 @@ class HomeController extends GetxController {
   void resetCardController() {
     _eventManager.reset();
     _homeService.resetCurrentIndexWithFeedback();
+    _swipeProgress = 0.0;
+    update();
+  }
+
+  /// Update swipe progress for visual feedback
+  void updateSwipeProgress(double progress) {
+    _swipeProgress = progress.clamp(-1.0, 1.0);
     update();
   }
 

@@ -49,4 +49,23 @@ abstract class EventsRepository {
     required String likerName,
     required String eventName,
   });
+
+  /// Accept a pending member request for an event
+  Future<void> acceptMember({
+    required String eventId,
+    required String userId,
+    required String currentUserId,
+  });
+
+  /// Decline a pending member request for an event
+  Future<void> declineMember({
+    required String eventId,
+    required String userId,
+    required String currentUserId,
+  });
+
+  /// Get event members (confirmed and pending)
+  Future<Map<String, List<Map<String, dynamic>>>> getEventMembers({
+    required String eventId,
+  });
 }
