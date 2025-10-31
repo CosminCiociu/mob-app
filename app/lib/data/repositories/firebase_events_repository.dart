@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
-import 'package:geolocator/geolocator.dart';
 import '../../domain/repositories/events_repository.dart';
-import '../../core/utils/my_strings.dart';
+import '../../core/utils/firebase_repository_base.dart';
+import '../../core/utils/event_operations_util.dart';
 
 /// Concrete implementation of EventsRepository using Firebase Firestore
-class FirebaseEventsRepository implements EventsRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+class FirebaseEventsRepository extends FirebaseRepositoryBase
+    implements EventsRepository {
+  static CollectionReference get _eventsCollection =>
+      FirebaseRepositoryBase.getCollection(
+          FirebaseRepositoryBase.eventsCollection);
+  static CollectionReference get _usersCollection =>
+      FirebaseRepositoryBase.getCollection(
+          FirebaseRepositoryBase.usersCollection);
 
   @override
   Future<List<DocumentSnapshot>> fetchNearbyEventsManual({
@@ -14,53 +20,20 @@ class FirebaseEventsRepository implements EventsRepository {
     required double radiusInKm,
     String? currentUserId,
   }) async {
-    try {
+    return FirebaseRepositoryBase.executeWithErrorHandling(
+        'fetch nearby events manually', () async {
       // Get all events
-      final allEvents = await _firestore.collection('users_events').get();
-      final foundEvents = <DocumentSnapshot>[];
+      final allEvents = await _eventsCollection.get();
 
-      for (var doc in allEvents.docs) {
-        final eventData = doc.data();
-
-        // Skip own events
-        if (currentUserId != null && eventData['createdBy'] == currentUserId) {
-          continue;
-        }
-
-        // Skip events that user has already declined
-        if (currentUserId != null &&
-            eventData['users_declined'] != null &&
-            (eventData['users_declined'] as List).contains(currentUserId)) {
-          continue;
-        }
-
-        // Only active events
-        if (eventData['status'] != 'active') {
-          continue;
-        }
-
-        if (eventData['location'] != null) {
-          final eventLocation = eventData['location'] as Map<String, dynamic>;
-          final eventGeoPoint = eventLocation['geopoint'] as GeoPoint;
-
-          final distanceInMeters = Geolocator.distanceBetween(
-            userLocation.latitude,
-            userLocation.longitude,
-            eventGeoPoint.latitude,
-            eventGeoPoint.longitude,
-          );
-          final distanceInKm = distanceInMeters / 1000;
-
-          if (distanceInKm <= radiusInKm) {
-            foundEvents.add(doc);
-          }
-        }
-      }
-
-      return foundEvents;
-    } catch (e) {
-      throw Exception('Failed to fetch nearby events manually: $e');
-    }
+      // Use utility method to filter events with location and radius checks
+      return EventOperationsUtil.filterEvents(
+        allEvents.docs,
+        currentUserId: currentUserId,
+        userLocation: userLocation,
+        radiusInKm: radiusInKm,
+        activeOnly: true,
+      );
+    });
   }
 
   @override
@@ -75,13 +48,23 @@ class FirebaseEventsRepository implements EventsRepository {
       final centerPoint = GeoFirePoint(userLocation);
 
       // Query nearby events using geoflutterfire_plus
-      final geoQuery =
-          GeoCollectionReference(_firestore.collection('users_events'))
-              .subscribeWithin(
+      final geoQuery = GeoCollectionReference(
+              FirebaseRepositoryBase.firestore.collection('users_events'))
+          .subscribeWithin(
         center: centerPoint,
         radiusInKm: radiusInKm,
         field: 'location.geopoint',
-        geopointFrom: (data) => data['location']['geopoint'] as GeoPoint,
+        geopointFrom: (data) {
+          final location = data['location'];
+          if (location != null && location is Map<String, dynamic>) {
+            final geopoint = location['geopoint'];
+            if (geopoint is GeoPoint) {
+              return geopoint;
+            }
+          }
+          // Return a default GeoPoint if the data is invalid
+          return GeoPoint(0, 0);
+        },
       );
 
       final nearbyEvents = <DocumentSnapshot>[];
@@ -127,12 +110,11 @@ class FirebaseEventsRepository implements EventsRepository {
 
   @override
   Future<List<DocumentSnapshot>> getAllEvents() async {
-    try {
-      final allEventsQuery = await _firestore.collection('users_events').get();
+    return FirebaseRepositoryBase.executeWithErrorHandling('get all events',
+        () async {
+      final allEventsQuery = await _eventsCollection.get();
       return allEventsQuery.docs;
-    } catch (e) {
-      throw Exception('Failed to get all events: $e');
-    }
+    });
   }
 
   @override
@@ -142,34 +124,12 @@ class FirebaseEventsRepository implements EventsRepository {
 
   @override
   String getEventLocation(Map<String, dynamic> eventData) {
-    if (eventData['location'] == null) {
-      return MyStrings.locationNotAvailable;
-    }
-
-    final location = eventData['location'] as Map<String, dynamic>;
-    final address = location['address'] as Map<String, dynamic>?;
-
-    if (address != null && address['administrativeArea'] != null) {
-      return address['administrativeArea'] as String;
-    }
-
-    return MyStrings.locationNotAvailable;
+    return EventOperationsUtil.getEventLocation(eventData);
   }
 
   @override
   String getEventCategory(Map<String, dynamic> eventData) {
-    final category = eventData['categoryId'] as String? ?? '';
-    final subcategory = eventData['subcategoryId'] as String? ?? '';
-
-    if (category.isNotEmpty && subcategory.isNotEmpty) {
-      return '$category / $subcategory';
-    } else if (category.isNotEmpty) {
-      return category;
-    } else if (subcategory.isNotEmpty) {
-      return subcategory;
-    }
-
-    return MyStrings.categoryNotAvailable;
+    return EventOperationsUtil.getEventCategory(eventData);
   }
 
   @override
@@ -178,11 +138,15 @@ class FirebaseEventsRepository implements EventsRepository {
     required String userId,
   }) async {
     try {
-      final eventDoc = _firestore.collection('users_events').doc(eventId);
-      final userDoc = _firestore.collection('users').doc(userId);
+      final eventDoc = FirebaseRepositoryBase.firestore
+          .collection('users_events')
+          .doc(eventId);
+      final userDoc =
+          FirebaseRepositoryBase.firestore.collection('users').doc(userId);
 
       // Use Firestore transaction to ensure atomic operation
-      await _firestore.runTransaction((transaction) async {
+      await FirebaseRepositoryBase.firestore
+          .runTransaction((transaction) async {
         final eventSnapshot = await transaction.get(eventDoc);
         final userSnapshot = await transaction.get(userDoc);
 
@@ -204,19 +168,18 @@ class FirebaseEventsRepository implements EventsRepository {
           usersPending = Map<String, dynamic>.from(eventData['users_pending']);
         }
 
-        // Handle user's events_attending map (events that don't require approval)
-        Map<String, dynamic> eventsAttending = {};
+        // Handle user's events_attending array (events that don't require approval)
+        List<String> eventsAttending = [];
         if (userData.containsKey('events_attending') &&
             userData['events_attending'] != null) {
-          eventsAttending =
-              Map<String, dynamic>.from(userData['events_attending']);
+          eventsAttending = List<String>.from(userData['events_attending']);
         }
 
-        // Handle user's events_pending map (events that require approval)
-        Map<String, dynamic> eventsPending = {};
+        // Handle user's events_pending array (events that require approval)
+        List<String> eventsPending = [];
         if (userData.containsKey('events_pending') &&
             userData['events_pending'] != null) {
-          eventsPending = Map<String, dynamic>.from(userData['events_pending']);
+          eventsPending = List<String>.from(userData['events_pending']);
         }
 
         // Check if event requires approval
@@ -255,27 +218,23 @@ class FirebaseEventsRepository implements EventsRepository {
         // Add event to appropriate category based on approval requirement
         if (!requiresApproval) {
           // Event doesn't require approval - add to events_attending
-          if (!eventsAttending.containsKey(eventId)) {
-            eventsAttending[eventId] = FieldValue.serverTimestamp();
+          if (!eventsAttending.contains(eventId)) {
+            userUpdates['events_attending'] = FieldValue.arrayUnion([eventId]);
           }
-          userUpdates['events_attending'] = eventsAttending;
 
           // Remove from pending if it was there
-          if (eventsPending.containsKey(eventId)) {
-            eventsPending.remove(eventId);
-            userUpdates['events_pending'] = eventsPending;
+          if (eventsPending.contains(eventId)) {
+            userUpdates['events_pending'] = FieldValue.arrayRemove([eventId]);
           }
         } else {
           // Event requires approval - add to events_pending
-          if (!eventsPending.containsKey(eventId)) {
-            eventsPending[eventId] = FieldValue.serverTimestamp();
+          if (!eventsPending.contains(eventId)) {
+            userUpdates['events_pending'] = FieldValue.arrayUnion([eventId]);
           }
-          userUpdates['events_pending'] = eventsPending;
 
           // Remove from attending if it was there
-          if (eventsAttending.containsKey(eventId)) {
-            eventsAttending.remove(eventId);
-            userUpdates['events_attending'] = eventsAttending;
+          if (eventsAttending.contains(eventId)) {
+            userUpdates['events_attending'] = FieldValue.arrayRemove([eventId]);
           }
         }
 
@@ -294,11 +253,15 @@ class FirebaseEventsRepository implements EventsRepository {
     required String userId,
   }) async {
     try {
-      final eventDoc = _firestore.collection('users_events').doc(eventId);
-      final userDoc = _firestore.collection('users').doc(userId);
+      final eventDoc = FirebaseRepositoryBase.firestore
+          .collection('users_events')
+          .doc(eventId);
+      final userDoc =
+          FirebaseRepositoryBase.firestore.collection('users').doc(userId);
 
       // Use Firestore transaction to ensure atomic operation
-      await _firestore.runTransaction((transaction) async {
+      await FirebaseRepositoryBase.firestore
+          .runTransaction((transaction) async {
         final eventSnapshot = await transaction.get(eventDoc);
         final userSnapshot = await transaction.get(userDoc);
 
@@ -320,26 +283,24 @@ class FirebaseEventsRepository implements EventsRepository {
           usersDeclined = List<String>.from(eventData['users_declined']);
         }
 
-        // Handle user's events_declined map
-        Map<String, dynamic> eventsDeclined = {};
+        // Handle user's events_declined array
+        List<String> eventsDeclined = [];
         if (userData.containsKey('events_declined') &&
             userData['events_declined'] != null) {
-          eventsDeclined =
-              Map<String, dynamic>.from(userData['events_declined']);
+          eventsDeclined = List<String>.from(userData['events_declined']);
         }
 
-        // Handle user's other event maps to remove declined event from them
-        Map<String, dynamic> eventsAttending = {};
+        // Handle user's other event arrays to remove declined event from them
+        List<String> eventsAttending = [];
         if (userData.containsKey('events_attending') &&
             userData['events_attending'] != null) {
-          eventsAttending =
-              Map<String, dynamic>.from(userData['events_attending']);
+          eventsAttending = List<String>.from(userData['events_attending']);
         }
 
-        Map<String, dynamic> eventsPending = {};
+        List<String> eventsPending = [];
         if (userData.containsKey('events_pending') &&
             userData['events_pending'] != null) {
-          eventsPending = Map<String, dynamic>.from(userData['events_pending']);
+          eventsPending = List<String>.from(userData['events_pending']);
         }
 
         // Prepare event updates
@@ -358,32 +319,18 @@ class FirebaseEventsRepository implements EventsRepository {
           'updatedAt': FieldValue.serverTimestamp(),
         };
 
-        // Add event to user's declined events with timestamp
-        if (!eventsDeclined.containsKey(eventId)) {
-          eventsDeclined[eventId] = FieldValue.serverTimestamp();
+        // Add event to user's declined events
+        if (!eventsDeclined.contains(eventId)) {
+          userUpdates['events_declined'] = FieldValue.arrayUnion([eventId]);
         }
-        userUpdates['events_declined'] = eventsDeclined;
 
         // Remove event from user's other event categories
-        bool needsAttendingUpdate = false;
-        bool needsPendingUpdate = false;
-
-        if (eventsAttending.containsKey(eventId)) {
-          eventsAttending.remove(eventId);
-          needsAttendingUpdate = true;
+        if (eventsAttending.contains(eventId)) {
+          userUpdates['events_attending'] = FieldValue.arrayRemove([eventId]);
         }
 
-        if (eventsPending.containsKey(eventId)) {
-          eventsPending.remove(eventId);
-          needsPendingUpdate = true;
-        }
-
-        // Only update fields that changed
-        if (needsAttendingUpdate) {
-          userUpdates['events_attending'] = eventsAttending;
-        }
-        if (needsPendingUpdate) {
-          userUpdates['events_pending'] = eventsPending;
+        if (eventsPending.contains(eventId)) {
+          userUpdates['events_pending'] = FieldValue.arrayRemove([eventId]);
         }
 
         // Perform both updates atomically
@@ -409,44 +356,48 @@ class FirebaseEventsRepository implements EventsRepository {
         return;
       }
 
-      await _firestore.collection('notifications').add({
-        'type': 'event_like',
-        'recipientId': eventCreatorId,
-        'senderId': likerUserId,
-        'senderName': likerName,
-        'eventId': eventId,
-        'eventName': eventName,
-        'title': 'Someone liked your event!',
-        'message':
-            '$likerName is interested in joining your event "$eventName"',
-        'isRead': false,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await FirebaseRepositoryBase.createNotification(
+        type: 'event_like',
+        recipientId: eventCreatorId,
+        senderId: likerUserId,
+        title: 'Someone liked your event!',
+        message: '$likerName is interested in joining your event "$eventName"',
+        additionalData: {
+          'senderName': likerName,
+          'eventId': eventId,
+          'eventName': eventName,
+        },
+      );
     } catch (e) {
       throw Exception('Failed to create notification: $e');
     }
   }
 
   /// Accept a pending member request for an event
+  @override
   Future<void> acceptMember({
     required String eventId,
     required String userId,
     required String currentUserId,
   }) async {
     try {
-      final batch = _firestore.batch();
+      final batch = FirebaseRepositoryBase.firestore.batch();
 
-      // Remove from users_pending map in event
-      final eventRef = _firestore.collection('users_events').doc(eventId);
+      // Remove from users_pending map and add to attendees array in event
+      final eventRef = _eventsCollection.doc(eventId);
       batch.update(eventRef, {
         'users_pending.$userId': FieldValue.delete(),
+        'attendees': FieldValue.arrayUnion([userId]),
+        'currentAttendees': FieldValue.increment(1),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
       // Add to user's attending events
-      final userEventsRef = _firestore.collection('users').doc(userId);
+      final userEventsRef = _usersCollection.doc(userId);
       batch.update(userEventsRef, {
         'events_attending': FieldValue.arrayUnion([eventId]),
         'events_pending': FieldValue.arrayRemove([eventId]),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
       await batch.commit();
@@ -464,22 +415,23 @@ class FirebaseEventsRepository implements EventsRepository {
   }
 
   /// Decline a pending member request for an event
+  @override
   Future<void> declineMember({
     required String eventId,
     required String userId,
     required String currentUserId,
   }) async {
     try {
-      final batch = _firestore.batch();
+      final batch = FirebaseRepositoryBase.firestore.batch();
 
       // Remove from users_pending map in event
-      final eventRef = _firestore.collection('users_events').doc(eventId);
+      final eventRef = _eventsCollection.doc(eventId);
       batch.update(eventRef, {
         'users_pending.$userId': FieldValue.delete(),
       });
 
       // Add to user's declined events
-      final userEventsRef = _firestore.collection('users').doc(userId);
+      final userEventsRef = _usersCollection.doc(userId);
       batch.update(userEventsRef, {
         'events_declined': FieldValue.arrayUnion([eventId]),
         'events_pending': FieldValue.arrayRemove([eventId]),
@@ -508,14 +460,18 @@ class FirebaseEventsRepository implements EventsRepository {
   }) async {
     try {
       // Get event details
-      final eventDoc =
-          await _firestore.collection('users_events').doc(eventId).get();
+      final eventDoc = await FirebaseRepositoryBase.firestore
+          .collection('users_events')
+          .doc(eventId)
+          .get();
       final eventData = eventDoc.data();
       final eventName = eventData?['title'] ?? 'Event';
 
       // Get sender details
-      final senderDoc =
-          await _firestore.collection('users').doc(senderId).get();
+      final senderDoc = await FirebaseRepositoryBase.firestore
+          .collection('users')
+          .doc(senderId)
+          .get();
       final senderData = senderDoc.data();
       final senderName = senderData?['firstname'] ?? 'Event organizer';
 
@@ -525,7 +481,7 @@ class FirebaseEventsRepository implements EventsRepository {
           ? 'Your request to join "$eventName" has been accepted by $senderName'
           : 'Your request to join "$eventName" has been declined by $senderName';
 
-      await _firestore.collection('notifications').add({
+      await FirebaseRepositoryBase.firestore.collection('notifications').add({
         'type': 'member_status',
         'recipientId': recipientId,
         'senderId': senderId,
@@ -544,12 +500,15 @@ class FirebaseEventsRepository implements EventsRepository {
   }
 
   /// Get event members (confirmed and pending)
+  @override
   Future<Map<String, List<Map<String, dynamic>>>> getEventMembers({
     required String eventId,
   }) async {
     try {
-      final eventDoc =
-          await _firestore.collection('users_events').doc(eventId).get();
+      final eventDoc = await FirebaseRepositoryBase.firestore
+          .collection('users_events')
+          .doc(eventId)
+          .get();
       final eventData = eventDoc.data();
 
       if (eventData == null) {
@@ -562,7 +521,10 @@ class FirebaseEventsRepository implements EventsRepository {
 
       // Get pending users details
       for (String userId in usersPending.keys) {
-        final userDoc = await _firestore.collection('users').doc(userId).get();
+        final userDoc = await FirebaseRepositoryBase.firestore
+            .collection('users')
+            .doc(userId)
+            .get();
         final userData = userDoc.data();
         if (userData != null) {
           pendingMembers.add({
@@ -577,7 +539,7 @@ class FirebaseEventsRepository implements EventsRepository {
       }
 
       // Get confirmed members (users who have this event in their events_attending)
-      final usersQuery = await _firestore
+      final usersQuery = await FirebaseRepositoryBase.firestore
           .collection('users')
           .where('events_attending', arrayContains: eventId)
           .get();

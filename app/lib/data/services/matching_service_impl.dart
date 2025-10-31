@@ -7,6 +7,7 @@ import '../../core/services/location_service.dart';
 import '../../core/utils/my_strings.dart';
 import '../../core/utils/dimensions.dart';
 import '../../view/components/snack_bar/show_custom_snackbar.dart';
+import '../model/location/location_model.dart';
 
 /// Concrete implementation of MatchingService for matching and discovery operations
 class MatchingServiceImpl implements MatchingService {
@@ -35,8 +36,8 @@ class MatchingServiceImpl implements MatchingService {
             'Invalid search radius: ${radiusInKm}km. Must be between ${Dimensions.minSearchRadius}km and ${Dimensions.maxSearchRadius}km.');
       }
 
-      // Get user location
-      final userLocation = await LocationService.getUserLocationFromFirebase();
+      // Get user location - with fallback to device location if not in Firebase
+      final userLocation = await _ensureUserLocationAvailable(currentUserId);
       if (userLocation == null) {
         throw Exception(MyStrings.userLocationNotFound);
       }
@@ -76,8 +77,9 @@ class MatchingServiceImpl implements MatchingService {
         radiusInKm = Dimensions.defaultSearchRadius.toDouble();
       }
 
-      // Get user location - if not available, return empty list quietly
-      final userLocation = await LocationService.getUserLocationFromFirebase();
+      // Get user location - with quiet fallback to device location if not in Firebase
+      final userLocation =
+          await _ensureUserLocationAvailableQuietly(currentUserId);
       if (userLocation == null) {
         print('User location not found, returning empty events list');
         return []; // Return empty list instead of throwing exception
@@ -112,8 +114,8 @@ class MatchingServiceImpl implements MatchingService {
         throw Exception(MyStrings.userNotLoggedIn);
       }
 
-      // Get user location
-      final userLocation = await LocationService.getUserLocationFromFirebase();
+      // Get user location - with fallback to device location if not in Firebase
+      final userLocation = await _ensureUserLocationAvailable(currentUserId);
       if (userLocation == null) {
         throw Exception(MyStrings.userLocationNotFound);
       }
@@ -255,7 +257,7 @@ class MatchingServiceImpl implements MatchingService {
           userData?['firstName'] ??
           userData?['name'] ??
           'Someone';
-      
+
       print('👤 User name: $userName');
 
       // Get event information
@@ -301,7 +303,7 @@ class MatchingServiceImpl implements MatchingService {
         eventName: eventName,
       );
       print('✅ Notification created successfully');
-      
+
       print('🎉 Event like process completed for event $eventId');
     } catch (e) {
       print('❌ Error in handleEventLike: $e');
@@ -348,6 +350,111 @@ class MatchingServiceImpl implements MatchingService {
     } catch (e) {
       print('❌ Failed to decline event: ${getDetailedErrorMessage(e)}');
       // Don't show error snackbar for declines to keep UI clean
+    }
+  }
+
+  /// Ensures user location is available - gets from Firebase or device GPS
+  /// Shows user feedback during the process
+  Future<LocationModel?> _ensureUserLocationAvailable(String userId) async {
+    try {
+      print('📍 Checking for user location in Firebase...');
+
+      // First try to get location from Firebase
+      final savedLocation = await LocationService.getUserLocationFromFirebase();
+      if (savedLocation != null && savedLocation.isValid) {
+        print(
+            '✅ Found valid location in Firebase: ${savedLocation.displayAddress}');
+        return savedLocation;
+      }
+
+      print(
+          '📍 No location in Firebase, getting current location from device...');
+      CustomSnackBar.infoDeferred(infoList: ['Getting your location...']);
+
+      // Get current location from device
+      final currentLocation = await LocationService.getCurrentLocation();
+      if (currentLocation == null || !currentLocation.isValid) {
+        print('❌ Unable to get current location from device');
+        CustomSnackBar.errorDeferred(errorList: [
+          'Unable to access your location. Please check location permissions.'
+        ]);
+        return null;
+      }
+
+      print(
+          '✅ Got current location from device: ${currentLocation.displayAddress}');
+      CustomSnackBar.infoDeferred(infoList: ['Updating your location...']);
+
+      // Update location in Firebase
+      final updateSuccess =
+          await LocationService.updateUserLocationInFirebase();
+      if (updateSuccess) {
+        print('✅ Location updated in Firebase successfully');
+        CustomSnackBar.successDeferred(
+            successList: ['Location updated successfully']);
+        return currentLocation;
+      } else {
+        print(
+            '⚠️ Failed to update location in Firebase, but using current location');
+        CustomSnackBar.warningDeferred(
+            warningList: ['Using current location (update failed)']);
+        return currentLocation;
+      }
+    } catch (e) {
+      print('❌ Error ensuring user location: $e');
+      CustomSnackBar.errorDeferred(
+          errorList: ['Location error: ${getDetailedErrorMessage(e)}']);
+      return null;
+    }
+  }
+
+  /// Quietly ensures user location is available - gets from Firebase or device GPS
+  /// No user feedback, for quiet operations
+  Future<LocationModel?> _ensureUserLocationAvailableQuietly(
+      String userId) async {
+    try {
+      print('📍 Quietly checking for user location in Firebase...');
+
+      // First try to get location from Firebase
+      final savedLocation = await LocationService.getUserLocationFromFirebase();
+      if (savedLocation != null && savedLocation.isValid) {
+        print(
+            '✅ Found valid location in Firebase: ${savedLocation.displayAddress}');
+        return savedLocation;
+      }
+
+      print(
+          '📍 No location in Firebase, quietly getting current location from device...');
+
+      // Get current location from device
+      final currentLocation = await LocationService.getCurrentLocation();
+      if (currentLocation == null || !currentLocation.isValid) {
+        print('❌ Unable to get current location from device');
+        return null;
+      }
+
+      print(
+          '✅ Got current location from device: ${currentLocation.displayAddress}');
+
+      // Quietly update location in Firebase (no user feedback)
+      try {
+        final updateSuccess =
+            await LocationService.updateUserLocationInFirebase();
+        if (updateSuccess) {
+          print('✅ Location quietly updated in Firebase successfully');
+        } else {
+          print(
+              '⚠️ Failed to update location in Firebase, but using current location');
+        }
+      } catch (updateError) {
+        print('⚠️ Error updating location in Firebase: $updateError');
+        // Continue with current location even if Firebase update fails
+      }
+
+      return currentLocation;
+    } catch (e) {
+      print('❌ Error quietly ensuring user location: $e');
+      return null;
     }
   }
 }

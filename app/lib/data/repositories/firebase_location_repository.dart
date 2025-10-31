@@ -1,49 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/repositories/location_repository.dart';
 import '../model/location/location_model.dart';
 import '../model/location/address_model.dart';
-
 import '../../core/helper/shared_preference_helper.dart';
+import '../../core/utils/firebase_repository_base.dart';
+import '../../core/utils/location_operations_util.dart';
 
 /// Firebase implementation of LocationRepository
-class FirebaseLocationRepository implements LocationRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+class FirebaseLocationRepository extends FirebaseRepositoryBase
+    implements LocationRepository {
+  static const String _repositoryName = 'FirebaseLocationRepository';
 
   @override
   Future<LocationModel?> getCurrentLocation() async {
+    FirebaseRepositoryBase.logDebug(
+        _repositoryName, 'Getting current location');
+
     try {
-      // Check location permission
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        print(
-            '📍 Location services are disabled. Please enable location in device settings.');
+      // Use LocationOperationsUtil for permission checks and location retrieval
+      final position = await LocationOperationsUtil.getCurrentPosition();
+      if (position == null) {
+        FirebaseRepositoryBase.logWarning(
+            _repositoryName, 'Failed to get current position');
         return null;
       }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        print('📍 Requesting location permission...');
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          print(
-              '🚫 Location access denied by user. Events require location to be shown.');
-          return null;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        print(
-            '🚫 Location permissions permanently denied. Please enable location in app settings to see events.');
-        return null;
-      }
-
-      // Get current position
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
 
       // Get address from coordinates
       AddressModel? address;
@@ -56,26 +38,17 @@ class FirebaseLocationRepository implements LocationRepository {
           address = AddressModel.fromPlacemark(placemarks.first);
         }
       } catch (e) {
-        print('Failed to get address: $e');
+        FirebaseRepositoryBase.logWarning(
+            _repositoryName, 'Failed to get address: $e');
       }
 
-      return LocationModel.fromPosition(position, address: address);
+      final location = LocationModel.fromPosition(position, address: address);
+      FirebaseRepositoryBase.logInfo(
+          _repositoryName, 'Successfully got current location');
+      return location;
     } catch (e) {
-      final errorString = e.toString().toLowerCase();
-
-      if (errorString.contains('permission') ||
-          errorString.contains('denied') ||
-          errorString.contains('user denied')) {
-        print('🚫 Location permission denied: $e');
-      } else if (errorString.contains('location service') ||
-          errorString.contains('disabled')) {
-        print('📍 Location services disabled: $e');
-      } else if (errorString.contains('timeout')) {
-        print('⏱️ Location request timed out: $e');
-      } else {
-        print('❌ Error getting current location: $e');
-      }
-
+      FirebaseRepositoryBase.logError(
+          _repositoryName, 'Error getting current location', e);
       return null;
     }
   }
@@ -84,51 +57,82 @@ class FirebaseLocationRepository implements LocationRepository {
   Future<bool> updateUserLocationInFirebase(
       String userId, LocationModel location) async {
     try {
-      await _firestore.collection('users').doc(userId).update({
-        'location': location.toFirebaseMap(),
-        'lastLocationUpdate': FieldValue.serverTimestamp(),
+      await FirebaseRepositoryBase.executeWithErrorHandling(
+          'update user location in Firebase', () async {
+        FirebaseRepositoryBase.logDebug(
+            _repositoryName, 'Updating location for user $userId');
+
+        await FirebaseRepositoryBase.firestore
+            .collection(FirebaseRepositoryBase.usersCollection)
+            .doc(userId)
+            .update({
+          'location': location.toFirebaseMap(),
+          'lastLocationUpdate': FieldValue.serverTimestamp(),
+        });
+
+        FirebaseRepositoryBase.logInfo(
+            _repositoryName, 'Successfully updated user location in Firebase');
       });
       return true;
     } catch (e) {
-      print('Error updating user location in Firebase: $e');
+      FirebaseRepositoryBase.logError(
+          _repositoryName, 'Error updating user location in Firebase', e);
       return false;
     }
   }
 
   @override
   Future<LocationModel?> getUserLocationFromFirebase(String userId) async {
-    try {
-      DocumentSnapshot doc =
-          await _firestore.collection('users').doc(userId).get();
+    return FirebaseRepositoryBase.executeWithErrorHandling(
+        'get user location from Firebase', () async {
+      FirebaseRepositoryBase.logDebug(
+          _repositoryName, 'Getting location for user $userId');
+
+      final doc = await FirebaseRepositoryBase.firestore
+          .collection(FirebaseRepositoryBase.usersCollection)
+          .doc(userId)
+          .get();
+
       if (doc.exists && doc.data() != null) {
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        final data = FirebaseRepositoryBase.extractDocumentData(doc);
         if (data.containsKey('location')) {
-          return LocationModel.fromFirebaseMap(data['location']);
+          final location = LocationModel.fromFirebaseMap(data['location']);
+          FirebaseRepositoryBase.logInfo(
+              _repositoryName, 'Successfully retrieved user location');
+          return location;
         }
       }
+
+      FirebaseRepositoryBase.logWarning(
+          _repositoryName, 'No location found for user $userId');
       return null;
-    } catch (e) {
-      print('Error getting user location from Firebase: $e');
-      return null;
-    }
+    });
   }
 
   @override
   Future<void> cacheLocation(LocationModel location) async {
-    try {
+    return FirebaseRepositoryBase.executeWithErrorHandling('cache location',
+        () async {
+      FirebaseRepositoryBase.logDebug(_repositoryName, 'Caching location');
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
           SharedPreferenceHelper.userLocationKey, location.toJson());
       await prefs.setInt(SharedPreferenceHelper.locationTimestampKey,
           DateTime.now().millisecondsSinceEpoch);
-    } catch (e) {
-      print('Error caching location: $e');
-    }
+
+      FirebaseRepositoryBase.logInfo(
+          _repositoryName, 'Successfully cached location');
+    });
   }
 
   @override
   Future<LocationModel?> getCachedLocation() async {
-    try {
+    return FirebaseRepositoryBase.executeWithErrorHandling(
+        'get cached location', () async {
+      FirebaseRepositoryBase.logDebug(
+          _repositoryName, 'Getting cached location');
+
       final prefs = await SharedPreferences.getInstance();
       final locationJson =
           prefs.getString(SharedPreferenceHelper.userLocationKey);
@@ -142,24 +146,36 @@ class FirebaseLocationRepository implements LocationRepository {
         const maxCacheAge = Duration(hours: 1);
 
         if (now.difference(cachedTime) < maxCacheAge) {
-          return LocationModel.fromJson(locationJson);
+          final location = LocationModel.fromJson(locationJson);
+          FirebaseRepositoryBase.logInfo(
+              _repositoryName, 'Retrieved valid cached location');
+          return location;
+        } else {
+          FirebaseRepositoryBase.logWarning(
+              _repositoryName, 'Cached location is expired');
         }
+      } else {
+        FirebaseRepositoryBase.logWarning(
+            _repositoryName, 'No cached location found');
       }
+
       return null;
-    } catch (e) {
-      print('Error getting cached location: $e');
-      return null;
-    }
+    });
   }
 
   @override
   Future<void> clearCachedLocation() async {
-    try {
+    return FirebaseRepositoryBase.executeWithErrorHandling(
+        'clear cached location', () async {
+      FirebaseRepositoryBase.logDebug(
+          _repositoryName, 'Clearing cached location');
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(SharedPreferenceHelper.userLocationKey);
       await prefs.remove(SharedPreferenceHelper.locationTimestampKey);
-    } catch (e) {
-      print('Error clearing cached location: $e');
-    }
+
+      FirebaseRepositoryBase.logInfo(
+          _repositoryName, 'Successfully cleared cached location');
+    });
   }
 }

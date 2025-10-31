@@ -1,93 +1,76 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/repositories/event_repository.dart';
+import '../../core/utils/firebase_repository_base.dart';
 
 /// Firebase implementation of EventRepository
-class FirebaseEventRepository implements EventRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'users_events';
+class FirebaseEventRepository extends FirebaseRepositoryBase
+    implements EventRepository {
+  static CollectionReference get _eventsCollection =>
+      FirebaseRepositoryBase.getCollection(
+          FirebaseRepositoryBase.eventsCollection);
 
   @override
   Future<void> createEvent(Map<String, dynamic> eventData) async {
-    try {
-      await _firestore.collection(_collection).add({
-        ...eventData,
-        'createdAt': FieldValue.serverTimestamp(),
-        'status': 'active',
-      });
-    } catch (e) {
-      throw Exception('Failed to create event: $e');
-    }
+    return FirebaseRepositoryBase.executeWithErrorHandling('create event',
+        () async {
+      await _eventsCollection
+          .add(FirebaseRepositoryBase.addCreateTimestamp(eventData));
+    });
   }
 
   @override
   Future<List<Map<String, dynamic>>> fetchUserEvents(String userId) async {
-    try {
-      final QuerySnapshot eventsSnapshot = await _firestore
-          .collection(_collection)
+    return FirebaseRepositoryBase.executeWithErrorHandling('fetch user events',
+        () async {
+      final QuerySnapshot eventsSnapshot = await _eventsCollection
           .where('createdBy', isEqualTo: userId)
           .orderBy('createdAt', descending: true)
           .get();
 
-      return eventsSnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id; // Add document ID
-        return data;
-      }).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch user events: $e');
-    }
+      return FirebaseRepositoryBase.extractDocumentsData(eventsSnapshot.docs);
+    });
   }
 
   @override
   Future<void> deleteEvent(String eventId) async {
-    try {
-      await _firestore.collection(_collection).doc(eventId).delete();
-    } catch (e) {
-      throw Exception('Failed to delete event: $e');
-    }
+    return FirebaseRepositoryBase.executeWithErrorHandling('delete event',
+        () async {
+      await _eventsCollection.doc(eventId).delete();
+    });
   }
 
   @override
   Future<void> updateEvent(
       String eventId, Map<String, dynamic> eventData) async {
-    try {
-      await _firestore.collection(_collection).doc(eventId).update({
-        ...eventData,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      throw Exception('Failed to update event: $e');
-    }
+    return FirebaseRepositoryBase.executeWithErrorHandling('update event',
+        () async {
+      await _eventsCollection
+          .doc(eventId)
+          .update(FirebaseRepositoryBase.addUpdateTimestamp(eventData));
+    });
   }
 
   @override
   Future<Map<String, dynamic>?> getEvent(String eventId) async {
-    try {
-      final DocumentSnapshot doc =
-          await _firestore.collection(_collection).doc(eventId).get();
+    return FirebaseRepositoryBase.executeWithErrorHandling('get event',
+        () async {
+      final DocumentSnapshot doc = await _eventsCollection.doc(eventId).get();
 
       if (doc.exists) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
-        return data;
+        return FirebaseRepositoryBase.extractDocumentData(doc);
       }
       return null;
-    } catch (e) {
-      throw Exception('Failed to get event: $e');
-    }
+    });
   }
 
   @override
   Future<int> countUserEvents(String userId) async {
-    try {
-      final QuerySnapshot eventsSnapshot = await _firestore
-          .collection(_collection)
-          .where('createdBy', isEqualTo: userId)
-          .get();
+    return FirebaseRepositoryBase.executeWithErrorHandling('count user events',
+        () async {
+      final QuerySnapshot eventsSnapshot =
+          await _eventsCollection.where('createdBy', isEqualTo: userId).get();
 
       return eventsSnapshot.docs.length;
-    } catch (e) {
-      throw Exception('Failed to count user events: $e');
-    }
+    });
   }
 }

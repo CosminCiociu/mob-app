@@ -1,125 +1,112 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/repositories/category_repository.dart';
 import '../../domain/models/category_model.dart';
+import '../../core/utils/firebase_repository_base.dart';
 
 /// Firebase implementation of CategoryRepository
-class FirebaseCategoryRepository implements CategoryRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collection = 'categories';
+class FirebaseCategoryRepository extends FirebaseRepositoryBase
+    implements CategoryRepository {
+  static const String _repositoryName = 'FirebaseCategoryRepository';
 
   @override
   Future<List<CategoryModel>> fetchCategories() async {
-    try {
-      print(
-          "🔄 FirebaseCategoryRepository: Fetching categories from $_collection");
+    return FirebaseRepositoryBase.executeWithErrorHandling('fetch categories',
+        () async {
+      FirebaseRepositoryBase.logDebug(_repositoryName,
+          'Fetching categories from ${FirebaseRepositoryBase.categoriesCollection}');
 
-      final QuerySnapshot categoriesSnapshot = await _firestore
-          .collection(_collection)
-          .where('isActive', isEqualTo: true)
-          .get();
+      final activeDocs = await FirebaseRepositoryBase.getActiveDocuments(
+          FirebaseRepositoryBase.categoriesCollection);
 
-      final categories = categoriesSnapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id; // Add document ID
-        return CategoryModel.fromMap(data);
-      }).toList();
+      final categories = FirebaseRepositoryBase.convertDocumentsToModels(
+        activeDocs,
+        CategoryModel.fromMap,
+      );
 
       // Sort by createdAt in-memory to avoid needing Firestore composite index
-      categories.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+      final sortedCategories = FirebaseRepositoryBase.sortByCreatedAt(
+        categories,
+        (category) => category.createdAt,
+      );
 
-      print(
-          "✅ FirebaseCategoryRepository: Fetched ${categories.length} categories");
-      return categories;
-    } catch (e) {
-      print("❌ FirebaseCategoryRepository: Error fetching categories: $e");
-      throw Exception('Failed to fetch categories: $e');
-    }
+      FirebaseRepositoryBase.logInfo(
+          _repositoryName, 'Fetched ${sortedCategories.length} categories');
+      return sortedCategories;
+    });
   }
 
   @override
   Future<CategoryModel?> getCategoryById(String categoryId) async {
-    try {
-      print(
-          "🔍 FirebaseCategoryRepository: Fetching category with ID: $categoryId");
+    return FirebaseRepositoryBase.executeWithErrorHandling('get category by ID',
+        () async {
+      FirebaseRepositoryBase.logDebug(
+          _repositoryName, 'Fetching category with ID: $categoryId');
 
-      final DocumentSnapshot categoryDoc =
-          await _firestore.collection(_collection).doc(categoryId).get();
+      final categoryDoc = await FirebaseRepositoryBase.getDocumentById(
+        FirebaseRepositoryBase.categoriesCollection,
+        categoryId,
+      );
 
-      if (categoryDoc.exists) {
-        final data = categoryDoc.data() as Map<String, dynamic>;
-        data['id'] = categoryDoc.id;
+      if (categoryDoc != null) {
+        final data = FirebaseRepositoryBase.extractDocumentData(categoryDoc);
         final category = CategoryModel.fromMap(data);
 
-        print("✅ FirebaseCategoryRepository: Found category: ${category.name}");
+        FirebaseRepositoryBase.logInfo(
+            _repositoryName, 'Found category: ${category.name}');
         return category;
       }
 
-      print("⚠️ FirebaseCategoryRepository: Category not found: $categoryId");
+      FirebaseRepositoryBase.logWarning(
+          _repositoryName, 'Category not found: $categoryId');
       return null;
-    } catch (e) {
-      print(
-          "❌ FirebaseCategoryRepository: Error fetching category $categoryId: $e");
-      throw Exception('Failed to fetch category: $e');
-    }
+    });
   }
 
   @override
   Future<List<CategoryModel>> searchCategories(String query) async {
-    try {
-      print(
-          "🔍 FirebaseCategoryRepository: Searching categories with query: $query");
+    return FirebaseRepositoryBase.executeWithErrorHandling('search categories',
+        () async {
+      FirebaseRepositoryBase.logDebug(
+          _repositoryName, 'Searching categories with query: $query');
 
-      final QuerySnapshot categoriesSnapshot = await _firestore
-          .collection(_collection)
-          .where('isActive', isEqualTo: true)
-          .get();
+      final activeDocs = await FirebaseRepositoryBase.getActiveDocuments(
+          FirebaseRepositoryBase.categoriesCollection);
 
-      final categories = categoriesSnapshot.docs
-          .map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            data['id'] = doc.id;
-            return CategoryModel.fromMap(data);
-          })
-          .where((category) =>
-              category.name.toLowerCase().contains(query.toLowerCase()) ||
-              category.description.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      final searchResults = FirebaseRepositoryBase.searchInDocuments(
+        activeDocs,
+        query,
+        ['name', 'description'],
+      );
 
-      print(
-          "✅ FirebaseCategoryRepository: Found ${categories.length} categories matching '$query'");
+      final categories = searchResults.map(CategoryModel.fromMap).toList();
+
+      FirebaseRepositoryBase.logInfo(_repositoryName,
+          'Found ${categories.length} categories matching "$query"');
       return categories;
-    } catch (e) {
-      print("❌ FirebaseCategoryRepository: Error searching categories: $e");
-      throw Exception('Failed to search categories: $e');
-    }
+    });
   }
 
   @override
   Future<bool> categoryExists(String categoryId) async {
     try {
-      final DocumentSnapshot categoryDoc =
-          await _firestore.collection(_collection).doc(categoryId).get();
-
-      return categoryDoc.exists;
+      return await FirebaseRepositoryBase.documentExists(
+        FirebaseRepositoryBase.categoriesCollection,
+        categoryId,
+      );
     } catch (e) {
-      print(
-          "❌ FirebaseCategoryRepository: Error checking category existence: $e");
+      FirebaseRepositoryBase.logError(
+          _repositoryName, 'Error checking category existence', e);
       return false;
     }
   }
 
   @override
   Future<int> getCategoriesCount() async {
-    try {
-      final QuerySnapshot categoriesSnapshot = await _firestore
-          .collection(_collection)
-          .where('isActive', isEqualTo: true)
-          .get();
-
-      return categoriesSnapshot.docs.length;
-    } catch (e) {
-      print("❌ FirebaseCategoryRepository: Error getting categories count: $e");
-      throw Exception('Failed to get categories count: $e');
-    }
+    return FirebaseRepositoryBase.executeWithErrorHandling(
+        'get categories count', () async {
+      return await FirebaseRepositoryBase.getCollectionCount(
+        FirebaseRepositoryBase.categoriesCollection,
+        whereConditions: {'isActive': true},
+      );
+    });
   }
 }

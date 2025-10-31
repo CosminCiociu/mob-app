@@ -41,6 +41,7 @@ import '../../view/screens/events/widgets/create_event_form.dart';
 import '../../view/screens/events/widgets/edit_event_form.dart';
 import '../../view/screens/events/event_details_screen.dart';
 import '../../view/screens/events/event_attendees_screen.dart';
+import '../../view/screens/events/my_event_attendees_screen.dart';
 import '../../view/screens/event/event_members_demo_screen.dart';
 
 class RouteHelper {
@@ -87,6 +88,7 @@ class RouteHelper {
   static const String editEventForm = "/edit-event-form";
   static const String eventDetailsScreen = "/event-details-screen";
   static const String eventAttendeesScreen = "/event-attendees-screen";
+  static const String myEventAttendeesScreen = "/my-event-attendees-screen";
   static const String locationPermissionScreen = "/location-permission-screen";
   static const String eventMembersDemoScreen = "/event-members-demo-screen";
 
@@ -161,6 +163,12 @@ class RouteHelper {
     GetPage(
         name: eventAttendeesScreen,
         page: () => EventAttendeesScreen(
+              eventId: Get.parameters['eventId'] ?? '',
+              eventName: Get.parameters['eventName'] ?? 'Event',
+            )),
+    GetPage(
+        name: myEventAttendeesScreen,
+        page: () => MyEventAttendeesScreen(
               eventId: Get.parameters['eventId'] ?? '',
               eventName: Get.parameters['eventName'] ?? 'Event',
             )),

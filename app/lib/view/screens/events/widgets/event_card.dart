@@ -8,9 +8,6 @@ import 'package:ovo_meet/core/utils/style.dart';
 import 'package:ovo_meet/core/utils/event_formatter.dart';
 import 'package:ovo_meet/core/utils/my_strings.dart';
 import 'package:ovo_meet/core/route/route.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../../../data/controller/event_members_controller.dart';
-import '../../event/event_members_screen.dart';
 
 class EventCard extends StatelessWidget {
   final Map<String, dynamic> event;
@@ -789,25 +786,24 @@ class EventCard extends StatelessWidget {
   }
 
   void _openEventMembersScreen() {
-    final eventId = event['id']?.toString();
-    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final eventId = event['id']?.toString() ?? '';
+    final eventName = event['eventName']?.toString() ?? 'Event';
 
-    if (eventId == null || currentUserId == null) {
+    if (eventId.isNotEmpty) {
+      Get.toNamed(
+        RouteHelper.myEventAttendeesScreen,
+        parameters: {
+          'eventId': eventId,
+          'eventName': eventName,
+        },
+      );
+    } else {
       Get.snackbar(
         'Error',
         'Unable to load event members',
         snackPosition: SnackPosition.BOTTOM,
       );
-      return;
     }
-
-    // Initialize the controller with event data
-    final controller = Get.put(EventMembersController());
-    controller.eventId.value = eventId;
-    controller.currentUserId.value = currentUserId;
-
-    // Navigate to members screen
-    Get.to(() => const EventMembersScreen());
   }
 
   void _editEvent() {
