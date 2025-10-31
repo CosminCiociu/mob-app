@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../domain/services/attending_events_service.dart';
 import '../../core/utils/my_strings.dart';
+import '../../core/utils/firebase_repository_base.dart';
 
 /// Implementation of AttendingEventsService
 class AttendingEventsServiceImpl implements AttendingEventsService {
@@ -224,10 +225,10 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
           eventsAttending.remove(eventId);
           userUpdates['events_attending'] = eventsAttending;
 
-          // Update event's attendees count and list
+          // Update event's attendees count and map
           final attendees =
-              (eventData['attendees'] as List?)?.cast<String>() ?? [];
-          if (attendees.contains(user.uid)) {
+              (eventData['attendees'] as Map<String, dynamic>?) ?? {};
+          if (attendees.containsKey(user.uid)) {
             attendees.remove(user.uid);
             eventUpdates['attendees'] = attendees;
             eventUpdates['currentAttendees'] = attendees.length;
@@ -247,11 +248,13 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         userUpdates['events_declined'] = eventsDeclined;
         userUpdates['updatedAt'] = FieldValue.serverTimestamp();
 
-        // Update event's declined users
-        final usersDeclined =
-            (eventData['users_declined'] as List?)?.cast<String>() ?? [];
-        if (!usersDeclined.contains(user.uid)) {
-          usersDeclined.add(user.uid);
+        // Update event's declined users map
+        final usersDeclined = FirebaseRepositoryBase.extractStringMap(
+            eventData, 'users_declined');
+        if (!usersDeclined.containsKey(user.uid)) {
+          usersDeclined[user.uid] = {
+            'declinedAt': FieldValue.serverTimestamp(),
+          };
           eventUpdates['users_declined'] = usersDeclined;
         }
         eventUpdates['updatedAt'] = FieldValue.serverTimestamp();

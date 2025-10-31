@@ -669,9 +669,6 @@ async function generateEventsForUsers(users, categories) {
   );
 
   for (const user of users) {
-    // Clean up existing events for this user first
-    await cleanupUserEvents(user.id);
-
     console.log(
       `📝 Creating 3 events for user: ${user.firstName} ${user.lastName}`
     );
@@ -698,16 +695,20 @@ async function generateEventsForUsers(users, categories) {
         details: template.description,
         categoryId: category.id,
         subcategoryId: subcategory.id,
-        dateTime: generateFutureDate(1 + i, 30 + i * 10), // Spread events over time
+        // Spread events over time
         timezone: "Europe/Bucharest",
         status: "active",
         maxAttendees: template.maxAttendees,
         minAge: getRandomNumber(16, 25),
         maxAge: getRandomNumber(35, 65),
         imageUrl: "",
-        attendees: [user.id],
-        user_liked: [], // Users who liked this event
-        users_declined: [], // Users who declined this event
+        attendees: {
+          [user.id]: {
+            joinedAt: admin.firestore.FieldValue.serverTimestamp(),
+          },
+        },
+        users_pending: {},
+        users_declined: {},
         createdBy: user.id,
         requiresApproval: Math.random() > 0.5, // 50% chance of requiring approval
         location: generateLocationNearUser(user.location),
@@ -755,6 +756,9 @@ async function seedEventsData() {
     console.log(
       "🚀 Starting users_events seeding for 10 users with 3 events each..."
     );
+
+    // Clean up all existing events first
+    await cleanupEvents();
 
     // Fetch categories from Firebase
     const categories = await fetchCategories();

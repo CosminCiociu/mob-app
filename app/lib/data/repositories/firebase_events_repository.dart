@@ -80,8 +80,8 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
               // Skip events that user has already declined
               (currentUserId == null ||
                   eventData['users_declined'] == null ||
-                  !(eventData['users_declined'] as List)
-                      .contains(currentUserId))) {
+                  !(eventData['users_declined'] as Map<String, dynamic>)
+                      .containsKey(currentUserId))) {
             nearbyEvents.add(doc);
           }
         }
@@ -168,29 +168,21 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
           usersPending = Map<String, dynamic>.from(eventData['users_pending']);
         }
 
-        // Handle user's events_attending array (events that don't require approval)
-        List<String> eventsAttending = [];
-        if (userData.containsKey('events_attending') &&
-            userData['events_attending'] != null) {
-          eventsAttending = List<String>.from(userData['events_attending']);
-        }
+        // Handle user's events_attending map
+        Map<String, dynamic> eventsAttending =
+            FirebaseRepositoryBase.extractStringMap(
+                userData, 'events_attending');
 
-        // Handle user's events_pending array (events that require approval)
-        List<String> eventsPending = [];
-        if (userData.containsKey('events_pending') &&
-            userData['events_pending'] != null) {
-          eventsPending = List<String>.from(userData['events_pending']);
-        }
+        // Handle user's events_pending map
+        Map<String, dynamic> eventsPending =
+            FirebaseRepositoryBase.extractStringMap(userData, 'events_pending');
 
         // Check if event requires approval
         final bool requiresApproval = eventData['requiresApproval'] ?? true;
 
-        // Handle event's attendees array
-        List<String> attendees = [];
-        if (eventData.containsKey('attendees') &&
-            eventData['attendees'] != null) {
-          attendees = List<String>.from(eventData['attendees']);
-        }
+        // Handle event's attendees map
+        Map<String, dynamic> attendees =
+            FirebaseRepositoryBase.extractStringMap(eventData, 'attendees');
 
         // Always update the event to ensure all operations happen atomically
         Map<String, dynamic> eventUpdates = {
@@ -199,13 +191,17 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
 
         // Add user ID to event's pending users with timestamp if not already present
         if (!usersPending.containsKey(userId)) {
-          usersPending[userId] = FieldValue.serverTimestamp();
+          usersPending[userId] = {
+            'requestedAt': FieldValue.serverTimestamp(),
+          };
         }
         eventUpdates['users_pending'] = usersPending;
 
         // If event doesn't require approval, automatically add user to attendees
-        if (!requiresApproval && !attendees.contains(userId)) {
-          attendees.add(userId);
+        if (!requiresApproval && !attendees.containsKey(userId)) {
+          attendees[userId] = {
+            'joinedAt': FieldValue.serverTimestamp(),
+          };
         }
         eventUpdates['attendees'] = attendees;
         eventUpdates['currentAttendees'] = attendees.length;
@@ -218,23 +214,29 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
         // Add event to appropriate category based on approval requirement
         if (!requiresApproval) {
           // Event doesn't require approval - add to events_attending
-          if (!eventsAttending.contains(eventId)) {
-            userUpdates['events_attending'] = FieldValue.arrayUnion([eventId]);
+          if (!eventsAttending.containsKey(eventId)) {
+            userUpdates.addAll(
+                FirebaseRepositoryBase.addEventToUserAttending(eventId));
           }
 
           // Remove from pending if it was there
-          if (eventsPending.contains(eventId)) {
-            userUpdates['events_pending'] = FieldValue.arrayRemove([eventId]);
+          if (eventsPending.containsKey(eventId)) {
+            userUpdates.addAll(
+                FirebaseRepositoryBase.removeEventFromUserPending(eventId));
           }
+          // Remove user from event's pending users since they are now attending
+          usersPending.remove(userId);
         } else {
           // Event requires approval - add to events_pending
-          if (!eventsPending.contains(eventId)) {
-            userUpdates['events_pending'] = FieldValue.arrayUnion([eventId]);
+          if (!eventsPending.containsKey(eventId)) {
+            userUpdates
+                .addAll(FirebaseRepositoryBase.addEventToUserPending(eventId));
           }
 
           // Remove from attending if it was there
-          if (eventsAttending.contains(eventId)) {
-            userUpdates['events_attending'] = FieldValue.arrayRemove([eventId]);
+          if (eventsAttending.containsKey(eventId)) {
+            userUpdates.addAll(
+                FirebaseRepositoryBase.removeEventFromUserAttending(eventId));
           }
         }
 
@@ -276,32 +278,23 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
         final eventData = eventSnapshot.data() as Map<String, dynamic>;
         final userData = userSnapshot.data() as Map<String, dynamic>;
 
-        // Handle event's users_declined array
-        List<String> usersDeclined = [];
-        if (eventData.containsKey('users_declined') &&
-            eventData['users_declined'] != null) {
-          usersDeclined = List<String>.from(eventData['users_declined']);
-        }
+        // Handle event's users_declined map
+        Map<String, dynamic> usersDeclined =
+            FirebaseRepositoryBase.extractStringMap(
+                eventData, 'users_declined');
 
-        // Handle user's events_declined array
-        List<String> eventsDeclined = [];
-        if (userData.containsKey('events_declined') &&
-            userData['events_declined'] != null) {
-          eventsDeclined = List<String>.from(userData['events_declined']);
-        }
+        // Handle user's events_declined map
+        Map<String, dynamic> eventsDeclined =
+            FirebaseRepositoryBase.extractStringMap(
+                userData, 'events_declined');
 
-        // Handle user's other event arrays to remove declined event from them
-        List<String> eventsAttending = [];
-        if (userData.containsKey('events_attending') &&
-            userData['events_attending'] != null) {
-          eventsAttending = List<String>.from(userData['events_attending']);
-        }
+        // Handle user's other event maps to remove declined event from them
+        Map<String, dynamic> eventsAttending =
+            FirebaseRepositoryBase.extractStringMap(
+                userData, 'events_attending');
 
-        List<String> eventsPending = [];
-        if (userData.containsKey('events_pending') &&
-            userData['events_pending'] != null) {
-          eventsPending = List<String>.from(userData['events_pending']);
-        }
+        Map<String, dynamic> eventsPending =
+            FirebaseRepositoryBase.extractStringMap(userData, 'events_pending');
 
         // Prepare event updates
         Map<String, dynamic> eventUpdates = {
@@ -309,8 +302,10 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
         };
 
         // Add user ID to event's declined users if not already present
-        if (!usersDeclined.contains(userId)) {
-          usersDeclined.add(userId);
+        if (!usersDeclined.containsKey(userId)) {
+          usersDeclined[userId] = {
+            'declinedAt': FieldValue.serverTimestamp(),
+          };
         }
         eventUpdates['users_declined'] = usersDeclined;
 
@@ -320,17 +315,20 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
         };
 
         // Add event to user's declined events
-        if (!eventsDeclined.contains(eventId)) {
-          userUpdates['events_declined'] = FieldValue.arrayUnion([eventId]);
+        if (!eventsDeclined.containsKey(eventId)) {
+          userUpdates
+              .addAll(FirebaseRepositoryBase.addEventToUserDeclined(eventId));
         }
 
         // Remove event from user's other event categories
-        if (eventsAttending.contains(eventId)) {
-          userUpdates['events_attending'] = FieldValue.arrayRemove([eventId]);
+        if (eventsAttending.containsKey(eventId)) {
+          userUpdates.addAll(
+              FirebaseRepositoryBase.removeEventFromUserAttending(eventId));
         }
 
-        if (eventsPending.contains(eventId)) {
-          userUpdates['events_pending'] = FieldValue.arrayRemove([eventId]);
+        if (eventsPending.containsKey(eventId)) {
+          userUpdates.addAll(
+              FirebaseRepositoryBase.removeEventFromUserPending(eventId));
         }
 
         // Perform both updates atomically
@@ -383,22 +381,27 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
     try {
       final batch = FirebaseRepositoryBase.firestore.batch();
 
-      // Remove from users_pending map and add to attendees array in event
+      // Remove from users_pending map and add to attendees map in event
       final eventRef = _eventsCollection.doc(eventId);
       batch.update(eventRef, {
         'users_pending.$userId': FieldValue.delete(),
-        'attendees': FieldValue.arrayUnion([userId]),
+        'attendees.$userId': {
+          'joinedAt': FieldValue.serverTimestamp(),
+        },
         'currentAttendees': FieldValue.increment(1),
         'updatedAt': FieldValue.serverTimestamp(),
       });
 
       // Add to user's attending events
       final userEventsRef = _usersCollection.doc(userId);
-      batch.update(userEventsRef, {
-        'events_attending': FieldValue.arrayUnion([eventId]),
-        'events_pending': FieldValue.arrayRemove([eventId]),
+      final userUpdates = <String, dynamic>{
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      };
+      userUpdates
+          .addAll(FirebaseRepositoryBase.addEventToUserAttending(eventId));
+      userUpdates
+          .addAll(FirebaseRepositoryBase.removeEventFromUserPending(eventId));
+      batch.update(userEventsRef, userUpdates);
 
       await batch.commit();
 
@@ -432,10 +435,12 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
 
       // Add to user's declined events
       final userEventsRef = _usersCollection.doc(userId);
-      batch.update(userEventsRef, {
-        'events_declined': FieldValue.arrayUnion([eventId]),
-        'events_pending': FieldValue.arrayRemove([eventId]),
-      });
+      final userUpdates = <String, dynamic>{};
+      userUpdates
+          .addAll(FirebaseRepositoryBase.addEventToUserDeclined(eventId));
+      userUpdates
+          .addAll(FirebaseRepositoryBase.removeEventFromUserPending(eventId));
+      batch.update(userEventsRef, userUpdates);
 
       await batch.commit();
 
@@ -515,9 +520,33 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
         throw Exception('Event not found');
       }
 
-      Map<String, dynamic> usersPending = eventData['users_pending'] ?? {};
+      Map<String, dynamic> usersPending =
+          FirebaseRepositoryBase.extractStringMap(eventData, 'users_pending');
+      Map<String, dynamic> attendees =
+          FirebaseRepositoryBase.extractStringMap(eventData, 'attendees');
       List<Map<String, dynamic>> confirmedMembers = [];
       List<Map<String, dynamic>> pendingMembers = [];
+
+      // Get attendees details from event's attendees map
+      for (String userId in attendees.keys) {
+        final userDoc = await FirebaseRepositoryBase.firestore
+            .collection('users')
+            .doc(userId)
+            .get();
+        final userData = userDoc.data();
+        if (userData != null) {
+          confirmedMembers.add({
+            'id': userId,
+            'email': userData['email'] ?? '',
+            'name': userData['displayName'] ?? 'Unknown User',
+            'displayName': userData['displayName'] ?? 'Unknown User',
+            'profileImage': userData['image'] ?? '',
+            'photoUrl': userData['image'] ?? '',
+            'phoneNumber': userData['mobile'] ?? '',
+            'joinedTimestamp': attendees[userId],
+          });
+        }
+      }
 
       // Get pending users details
       for (String userId in usersPending.keys) {
@@ -530,29 +559,14 @@ class FirebaseEventsRepository extends FirebaseRepositoryBase
           pendingMembers.add({
             'id': userId,
             'email': userData['email'] ?? '',
-            'displayName': userData['firstname'] ?? '',
+            'name': userData['displayName'] ?? 'Unknown User',
+            'displayName': userData['displayName'] ?? 'Unknown User',
+            'profileImage': userData['image'] ?? '',
             'photoUrl': userData['image'] ?? '',
             'phoneNumber': userData['mobile'] ?? '',
             'pendingTimestamp': usersPending[userId],
           });
         }
-      }
-
-      // Get confirmed members (users who have this event in their events_attending)
-      final usersQuery = await FirebaseRepositoryBase.firestore
-          .collection('users')
-          .where('events_attending', arrayContains: eventId)
-          .get();
-
-      for (var userDoc in usersQuery.docs) {
-        final userData = userDoc.data();
-        confirmedMembers.add({
-          'id': userDoc.id,
-          'email': userData['email'] ?? '',
-          'displayName': userData['firstname'] ?? '',
-          'photoUrl': userData['image'] ?? '',
-          'phoneNumber': userData['mobile'] ?? '',
-        });
       }
 
       return {

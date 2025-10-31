@@ -75,7 +75,7 @@ class PendingAttendeeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  attendee['name'] ?? attendee['displayName'] ?? 'Unknown User',
+                  attendee['displayName'] ?? 'Unknown User',
                   style: boldDefault.copyWith(
                     color: MyColor.getTextColor(),
                     fontSize: 16,
@@ -143,7 +143,7 @@ class PendingAttendeeCard extends StatelessWidget {
           ),
 
           // Action Buttons
-          Column(
+          Row(
             children: [
               // Accept Button
               GestureDetector(
@@ -161,7 +161,7 @@ class PendingAttendeeCard extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(width: 8),
               // Decline Button
               GestureDetector(
                 onTap: onDeclineTap,

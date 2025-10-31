@@ -70,6 +70,48 @@ abstract class FirebaseRepositoryBase {
     return removeFromArrayField(field, userId);
   }
 
+  /// User event Map operations (new structure)
+  static Map<String, dynamic> addUserEventToMap(
+      String field, String eventId, String timestampKey) {
+    return {
+      '$field.$eventId': {
+        timestampKey: FieldValue.serverTimestamp(),
+      }
+    };
+  }
+
+  static Map<String, dynamic> removeUserEventFromMap(
+      String field, String eventId) {
+    return {
+      '$field.$eventId': FieldValue.delete(),
+    };
+  }
+
+  /// Helper methods for specific user event operations
+  static Map<String, dynamic> addEventToUserAttending(String eventId) {
+    return addUserEventToMap('events_attending', eventId, 'attending_at');
+  }
+
+  static Map<String, dynamic> addEventToUserPending(String eventId) {
+    return addUserEventToMap('events_pending', eventId, 'pending_at');
+  }
+
+  static Map<String, dynamic> addEventToUserDeclined(String eventId) {
+    return addUserEventToMap('events_declined', eventId, 'declined_at');
+  }
+
+  static Map<String, dynamic> removeEventFromUserAttending(String eventId) {
+    return removeUserEventFromMap('events_attending', eventId);
+  }
+
+  static Map<String, dynamic> removeEventFromUserPending(String eventId) {
+    return removeUserEventFromMap('events_pending', eventId);
+  }
+
+  static Map<String, dynamic> removeEventFromUserDeclined(String eventId) {
+    return removeUserEventFromMap('events_declined', eventId);
+  }
+
   /// Safe list extraction from Firestore data
   static List<String> extractStringArray(
       Map<String, dynamic> data, String field) {
@@ -77,6 +119,31 @@ abstract class FirebaseRepositoryBase {
       return List<String>.from(data[field]);
     }
     return [];
+  }
+
+  /// Safe map extraction from Firestore data
+  static Map<String, dynamic> extractStringMap(
+      Map<String, dynamic> data, String field) {
+    if (data.containsKey(field) && data[field] != null) {
+      final fieldValue = data[field];
+
+      // Handle Map (expected format)
+      if (fieldValue is Map) {
+        return Map<String, dynamic>.from(fieldValue);
+      }
+
+      // Handle List (legacy format) - convert to empty map and log
+      if (fieldValue is List) {
+        logWarning('FirebaseRepositoryBase',
+            'Field "$field" is a List but expected Map. Returning empty Map.');
+        return {};
+      }
+
+      // Log unexpected type
+      logWarning('FirebaseRepositoryBase',
+          'Field "$field" has unexpected type: ${fieldValue.runtimeType}');
+    }
+    return {};
   }
 
   /// Common error handling
@@ -110,8 +177,8 @@ abstract class FirebaseRepositoryBase {
 
     // Skip events that user has already declined
     if (eventData['users_declined'] != null) {
-      final declinedUsers = extractStringArray(eventData, 'users_declined');
-      if (declinedUsers.contains(currentUserId)) {
+      final declinedUsers = extractStringMap(eventData, 'users_declined');
+      if (declinedUsers.containsKey(currentUserId)) {
         return true;
       }
     }

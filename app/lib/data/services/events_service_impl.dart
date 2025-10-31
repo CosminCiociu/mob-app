@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../domain/services/events_service.dart';
@@ -385,12 +386,18 @@ class EventsServiceImpl implements EventsService {
         'details': _detailsController.text.trim(),
         'imageUrl': _eventImagePath,
         'createdBy': currentUser.uid,
-        'attendees': [currentUser.uid],
+        'attendees': {
+          currentUser.uid: {
+            'joinedAt': FieldValue.serverTimestamp(),
+          },
+        },
         'maxAttendees': _maxPersons,
         'minAge': _minAge,
         'maxAge': _maxAge,
         'location': await getEventLocation(),
         'requiresApproval': _requiresApproval,
+        'users_pending': {},
+        'users_declined': {},
       };
 
       // Create event using repository
@@ -406,8 +413,8 @@ class EventsServiceImpl implements EventsService {
       // Clear form
       clearForm();
 
-      // Navigate to bottom navigation with events tab selected (index 1)
-      Get.offNamed(RouteHelper.bottomNavBar, arguments: 1);
+      // Navigate to bottom navigation with events tab selected (index 3)
+      Get.offNamed(RouteHelper.bottomNavBar, arguments: 3);
     } catch (e) {
       CustomSnackBar.errorDeferred(errorList: ['Failed to create event: $e']);
     } finally {

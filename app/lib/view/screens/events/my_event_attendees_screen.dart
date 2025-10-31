@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/utils/dimensions.dart';
 import '../../../core/utils/my_color.dart';
 import '../../../core/utils/style.dart';
-import '../../../services/user_service.dart';
-import '../../../domain/repositories/event_repository.dart';
-import '../../../data/repositories/firebase_event_repository.dart';
-import '../../../data/repositories/firebase_users_repository.dart';
 import '../../../data/repositories/firebase_events_repository.dart';
 import '../../components/app-bar/custom_appbar.dart';
 import '../../components/card/event_attendee_card.dart';
@@ -35,10 +30,7 @@ class _MyEventAttendeesScreenState extends State<MyEventAttendeesScreen> {
   late List<Map<String, dynamic>> _attendees;
   late List<Map<String, dynamic>> _pendingAttendees;
   bool _isLoading = false;
-  final EventRepository _eventRepository = FirebaseEventRepository();
   final FirebaseEventsRepository _eventsRepository = FirebaseEventsRepository();
-  final FirebaseUsersRepository _usersRepository = FirebaseUsersRepository();
-  final UserService _userService = UserService();
 
   @override
   void initState() {
@@ -56,21 +48,15 @@ class _MyEventAttendeesScreenState extends State<MyEventAttendeesScreen> {
     });
 
     try {
-      // Get event data from Firebase
-      final eventData = await _eventRepository.getEvent(widget.eventId);
-
-      if (eventData == null) {
-        throw Exception('Event not found');
-      }
-
-      // Load both confirmed and pending attendees
-      await Future.wait([
-        _loadConfirmedAttendees(eventData),
-        _loadPendingAttendees(eventData),
-      ]);
+      // Use the repository method to get event members
+      final eventMembers = await _eventsRepository.getEventMembers(
+        eventId: widget.eventId,
+      );
 
       if (mounted) {
         setState(() {
+          _attendees = eventMembers['confirmed'] ?? [];
+          _pendingAttendees = eventMembers['pending'] ?? [];
           _isLoading = false;
         });
       }
@@ -89,197 +75,6 @@ class _MyEventAttendeesScreenState extends State<MyEventAttendeesScreen> {
           colorText: Colors.white,
         );
       }
-    }
-  }
-
-  Future<void> _loadConfirmedAttendees(Map<String, dynamic> eventData) async {
-    // Get attendees array from event data
-    final List<dynamic> attendeeIds = eventData['attendees'] ?? [];
-    final List<Map<String, dynamic>> attendeesList = [];
-
-    for (String attendeeId in attendeeIds.cast<String>()) {
-      final attendeeData = await _fetchUserData(attendeeId, eventData);
-      if (attendeeData != null) {
-        attendeesList.add(attendeeData);
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _attendees = attendeesList;
-      });
-    }
-  }
-
-  Future<void> _loadPendingAttendees(Map<String, dynamic> eventData) async {
-    // Get users_pending map from event data
-    final Map<String, dynamic> usersPending = eventData['users_pending'] ?? {};
-    final List<Map<String, dynamic>> pendingList = [];
-
-    for (String userId in usersPending.keys) {
-      final attendeeData = await _fetchUserData(userId, eventData);
-      if (attendeeData != null) {
-        // Add pending timestamp
-        attendeeData['pendingTimestamp'] = usersPending[userId];
-        pendingList.add(attendeeData);
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _pendingAttendees = pendingList;
-      });
-    }
-  }
-
-  Future<Map<String, dynamic>?> _fetchUserData(
-      String userId, Map<String, dynamic> eventData) async {
-    try {
-      // Get user document from Firebase
-      final userDoc = await _usersRepository.getUserById(userId);
-
-      if (userDoc != null && userDoc.exists) {
-        final userData = userDoc.data() as Map<String, dynamic>?;
-
-        // Check if userData is null
-        if (userData == null) {
-          print('User data is null for user $userId');
-          return {
-            'id': userId,
-            'name': 'Unknown User',
-            'displayName': 'Unknown User',
-            'profileImage': null,
-            'age': null,
-            'location': 'Location not set',
-            'joinedAt': DateTime.now().toIso8601String(),
-          };
-        }
-
-        // Get display name using UserService
-        final displayName = await _userService.getUserDisplayName(userId);
-
-        // Extract location information with robust null safety
-        String locationText = 'Location not set';
-        try {
-          final location = userData['location'];
-          if (location != null && location is Map<String, dynamic>) {
-            // Try to get nested address structure first
-            final address = location['address'];
-            if (address != null && address is Map<String, dynamic>) {
-              final locality = address['locality']?.toString() ?? '';
-              final country = address['country']?.toString() ?? '';
-              final fullAddress = address['fullAddress']?.toString() ?? '';
-
-              if (locality.isNotEmpty && country.isNotEmpty) {
-                locationText = '$locality, $country';
-              } else if (fullAddress.isNotEmpty) {
-                locationText = fullAddress;
-              }
-            }
-            // Fallback to direct location fields
-            else {
-              final displayAddress =
-                  location['displayAddress']?.toString() ?? '';
-              final name = location['name']?.toString() ?? '';
-
-              if (displayAddress.isNotEmpty) {
-                locationText = displayAddress;
-              } else if (name.isNotEmpty) {
-                locationText = name;
-              }
-            }
-          }
-        } catch (e) {
-          print('Error parsing location for user $userId: $e');
-          locationText = 'Location not set';
-        }
-
-        // Calculate age if birthDate is available
-        int? age;
-        if (userData['birthDate'] != null) {
-          try {
-            DateTime birthDate;
-
-            // Handle different birthDate formats
-            if (userData['birthDate'] is Timestamp) {
-              // Firestore Timestamp
-              birthDate = (userData['birthDate'] as Timestamp).toDate();
-            } else if (userData['birthDate'] is String) {
-              // String format
-              birthDate = DateTime.parse(userData['birthDate']);
-            } else {
-              // Unknown format, skip age calculation
-              birthDate = DateTime.now();
-            }
-
-            final now = DateTime.now();
-            age = now.year - birthDate.year;
-            if (now.month < birthDate.month ||
-                (now.month == birthDate.month && now.day < birthDate.day)) {
-              age--;
-            }
-          } catch (e) {
-            print('Error calculating age for user $userId: $e');
-            // Ignore age calculation errors
-          }
-        }
-
-        // Handle joinedAt timestamp properly
-        String joinedAtString;
-        try {
-          if (eventData['createdAt'] is Timestamp) {
-            joinedAtString = (eventData['createdAt'] as Timestamp)
-                .toDate()
-                .toIso8601String();
-          } else if (eventData['createdAt'] is String) {
-            joinedAtString = eventData['createdAt'];
-          } else {
-            joinedAtString = DateTime.now().toIso8601String();
-          }
-        } catch (e) {
-          joinedAtString = DateTime.now().toIso8601String();
-        }
-
-        // Build attendee data structure
-        return {
-          'id': userId,
-          'name': displayName,
-          'displayName': displayName,
-          'profileImage':
-              userData['profileImageUrl'], // Use null if not available
-          'age': age,
-          'location': locationText,
-          'joinedAt': joinedAtString,
-          // Additional user data that might be useful
-          'email': userData['email'],
-          'firstName': userData['firstName'],
-          'lastName': userData['lastName'],
-        };
-      } else {
-        // Handle case where user document doesn't exist
-        print('User document not found for ID: $userId');
-        return {
-          'id': userId,
-          'name': 'Unknown User',
-          'displayName': 'Unknown User',
-          'profileImage': null,
-          'age': null,
-          'location': 'Location not set',
-          'joinedAt': DateTime.now().toIso8601String(),
-        };
-      }
-    } catch (e) {
-      print('Error fetching data for user $userId: $e');
-      // Return a fallback entry
-      return {
-        'id': userId,
-        'name': 'Unknown User',
-        'displayName': 'Unknown User',
-        'profileImage': null,
-        'age': null,
-        'location': 'Location not set',
-        'joinedAt': DateTime.now().toIso8601String(),
-      };
     }
   }
 

@@ -155,8 +155,8 @@ class EventOperationsUtil {
 
     // User cannot interact with declined events
     final declinedUsers =
-        FirebaseRepositoryBase.extractStringArray(eventData, 'users_declined');
-    if (declinedUsers.contains(userId)) {
+        FirebaseRepositoryBase.extractStringMap(eventData, 'users_declined');
+    if (declinedUsers.containsKey(userId)) {
       return false;
     }
 
@@ -173,7 +173,7 @@ class EventOperationsUtil {
     return eventData['requiresApproval'] as bool? ?? true;
   }
 
-  /// Build user event relationship updates
+  /// Build user event relationship updates using Map structure
   static Map<String, dynamic> buildUserEventUpdates({
     String? addToAttending,
     String? removeFromAttending,
@@ -187,28 +187,28 @@ class EventOperationsUtil {
     };
 
     if (addToAttending != null) {
-      updates.addAll(FirebaseRepositoryBase.addUserToArray(
-          'events_attending', addToAttending));
+      updates.addAll(
+          FirebaseRepositoryBase.addEventToUserAttending(addToAttending));
     }
     if (removeFromAttending != null) {
-      updates.addAll(FirebaseRepositoryBase.removeUserFromArray(
-          'events_attending', removeFromAttending));
+      updates.addAll(FirebaseRepositoryBase.removeEventFromUserAttending(
+          removeFromAttending));
     }
     if (addToPending != null) {
-      updates.addAll(FirebaseRepositoryBase.addUserToArray(
-          'events_pending', addToPending));
+      updates
+          .addAll(FirebaseRepositoryBase.addEventToUserPending(addToPending));
     }
     if (removeFromPending != null) {
-      updates.addAll(FirebaseRepositoryBase.removeUserFromArray(
-          'events_pending', removeFromPending));
+      updates.addAll(
+          FirebaseRepositoryBase.removeEventFromUserPending(removeFromPending));
     }
     if (addToDeclined != null) {
-      updates.addAll(FirebaseRepositoryBase.addUserToArray(
-          'events_declined', addToDeclined));
+      updates
+          .addAll(FirebaseRepositoryBase.addEventToUserDeclined(addToDeclined));
     }
     if (removeFromDeclined != null) {
-      updates.addAll(FirebaseRepositoryBase.removeUserFromArray(
-          'events_declined', removeFromDeclined));
+      updates.addAll(FirebaseRepositoryBase.removeEventFromUserDeclined(
+          removeFromDeclined));
     }
 
     return updates;

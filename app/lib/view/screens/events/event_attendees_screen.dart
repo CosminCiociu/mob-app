@@ -58,13 +58,13 @@ class _EventAttendeesScreenState extends State<EventAttendeesScreen> {
         throw Exception('Event not found');
       }
 
-      // Get attendees array from event data
-      final List<dynamic> attendeeIds = eventData['attendees'] ?? [];
+      // Get attendees map from event data
+      final Map<String, dynamic> attendeesMap = eventData['attendees'] ?? {};
 
       // Fetch user details for each attendee
       final List<Map<String, dynamic>> attendeesList = [];
 
-      for (String attendeeId in attendeeIds.cast<String>()) {
+      for (String attendeeId in attendeesMap.keys) {
         try {
           // Get user document from Firebase
           final userDoc = await _usersRepository.getUserById(attendeeId);
@@ -77,8 +77,8 @@ class _EventAttendeesScreenState extends State<EventAttendeesScreen> {
               print('User data is null for user $attendeeId');
               final attendeeData = {
                 'id': attendeeId,
-                'name': 'Unknown User',
-                'displayName': 'Unknown User',
+                'name': 'Unknown Userr',
+                'displayName': 'Unknown Userr',
                 'profileImage': null,
                 'age': null,
                 'location': 'Location not set',
@@ -158,15 +158,20 @@ class _EventAttendeesScreenState extends State<EventAttendeesScreen> {
               }
             }
 
-            // Handle joinedAt timestamp properly
+            // Handle joinedAt timestamp from attendees map
             String joinedAtString;
             try {
-              if (eventData['createdAt'] is Timestamp) {
-                joinedAtString = (eventData['createdAt'] as Timestamp)
-                    .toDate()
-                    .toIso8601String();
-              } else if (eventData['createdAt'] is String) {
-                joinedAtString = eventData['createdAt'];
+              final attendeeData = attendeesMap[attendeeId];
+              if (attendeeData != null &&
+                  attendeeData is Map<String, dynamic>) {
+                final joinedAt = attendeeData['joinedAt'];
+                if (joinedAt is Timestamp) {
+                  joinedAtString = joinedAt.toDate().toIso8601String();
+                } else if (joinedAt is String) {
+                  joinedAtString = joinedAt;
+                } else {
+                  joinedAtString = DateTime.now().toIso8601String();
+                }
               } else {
                 joinedAtString = DateTime.now().toIso8601String();
               }
@@ -196,8 +201,8 @@ class _EventAttendeesScreenState extends State<EventAttendeesScreen> {
             print('User document not found for ID: $attendeeId');
             final attendeeData = {
               'id': attendeeId,
-              'name': 'Unknown User',
-              'displayName': 'Unknown User',
+              'name': 'Unknown Userr',
+              'displayName': 'Unknown Userr',
               'profileImage': null,
               'age': null,
               'location': 'Location not set',
@@ -210,8 +215,8 @@ class _EventAttendeesScreenState extends State<EventAttendeesScreen> {
           // Add a fallback entry for this attendee
           final attendeeData = {
             'id': attendeeId,
-            'name': 'Unknown User',
-            'displayName': 'Unknown User',
+            'name': 'Unknown Userr',
+            'displayName': 'Unknown Userr',
             'profileImage': null,
             'age': null,
             'location': 'Location not set',
