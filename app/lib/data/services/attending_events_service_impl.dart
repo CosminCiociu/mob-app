@@ -142,15 +142,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         return;
       }
 
-      // Debug: Print user data structure
-      print('👤 User data keys: ${userData.keys.toList()}');
-      print(
-          '📋 events_attending type: ${userData['events_attending'].runtimeType}');
-      print('📋 events_attending value: ${userData['events_attending']}');
-      print(
-          '📋 events_pending type: ${userData['events_pending'].runtimeType}');
-      print('📋 events_pending value: ${userData['events_pending']}');
-
       // Get attending event IDs with proper type checking
       final List<String> attendingEventIds =
           _extractEventIds(userData['events_attending']);
@@ -158,9 +149,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
       // Get pending event IDs (events where user applied but not approved yet)
       final List<String> pendingEventIds =
           _extractEventIds(userData['events_pending']);
-
-      print('✅ Extracted attending events: $attendingEventIds');
-      print('⏳ Extracted pending events: $pendingEventIds');
 
       if (attendingEventIds.isEmpty && pendingEventIds.isEmpty) {
         clearAllEvents();
@@ -176,7 +164,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         await _fetchEventsByIds(pendingEventIds, true);
       }
     } catch (e) {
-      print('❌ Error fetching attending events: $e');
       setErrorMessage('Failed to load attending events');
     } finally {
       setLoading(false);
@@ -277,7 +264,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      print('❌ Error leaving event: $e');
       Get.snackbar(
         'Error',
         'Failed to leave event',
@@ -309,7 +295,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      print('❌ Error toggling reminder: $e');
       Get.snackbar(
         'Error',
         'Failed to update reminder',
@@ -389,7 +374,6 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         }
       }
     } catch (e) {
-      print('⚠️ Failed to fetch host info: $e');
       eventData['hostName'] = 'Unknown Host';
     }
   }
@@ -403,8 +387,17 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
     final now = DateTime.now();
 
     for (final event in events) {
-      final eventDateTime = _parseEventDateTime(event['dateTime']);
-      if (eventDateTime == null) continue;
+      // Try different date field names
+      var eventDateTime = _parseEventDateTime(event['dateTime']);
+
+      // Fallback to createdAt if dateTime is null
+      if (eventDateTime == null) {
+        eventDateTime = _parseEventDateTime(event['createdAt']);
+      }
+
+      if (eventDateTime == null) {
+        continue;
+      }
 
       // Determine if event is active, upcoming, or past
       final eventEndTime =
@@ -420,12 +413,12 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
     }
 
     // Sort by date
-    upcoming.sort((a, b) => _parseEventDateTime(a['dateTime'])!
-        .compareTo(_parseEventDateTime(b['dateTime'])!));
-    active.sort((a, b) => _parseEventDateTime(a['dateTime'])!
-        .compareTo(_parseEventDateTime(b['dateTime'])!));
-    past.sort((a, b) => _parseEventDateTime(b['dateTime'])!.compareTo(
-        _parseEventDateTime(a['dateTime'])!)); // Reverse for past events
+    upcoming.sort((a, b) => _parseEventDateTime(a['createdAt'])!
+        .compareTo(_parseEventDateTime(b['createdAt'])!));
+    active.sort((a, b) => _parseEventDateTime(a['createdAt'])!
+        .compareTo(_parseEventDateTime(b['createdAt'])!));
+    past.sort((a, b) => _parseEventDateTime(b['createdAt'])!.compareTo(
+        _parseEventDateTime(a['createdAt'])!)); // Reverse for past events
 
     _upcomingEvents.clear();
     _activeEvents.clear();
@@ -459,8 +452,8 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         return eventData.map((item) => item.toString()).toList();
       }
 
-      // If it's a Map (like events_liked might be stored as a map)
-      if (eventData is Map<String, dynamic>) {
+      // If it's a Map (like events_attending might be stored as a map)
+      if (eventData is Map) {
         // If it has a 'list' or 'events' key containing the actual list
         if (eventData.containsKey('list')) {
           final list = eventData['list'];
@@ -476,8 +469,8 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
           }
         }
 
-        // If the map keys are the event IDs
-        return eventData.keys.toList();
+        // If the map keys are the event IDs (e.g. {eventId: {...}})
+        return eventData.keys.map((key) => key.toString()).toList();
       }
 
       // If it's a single string
@@ -485,10 +478,9 @@ class AttendingEventsServiceImpl implements AttendingEventsService {
         return [eventData];
       }
 
-      print('⚠️ Unexpected event data format: ${eventData.runtimeType}');
+      // Unexpected format
       return [];
     } catch (e) {
-      print('❌ Error extracting event IDs: $e');
       return [];
     }
   }
