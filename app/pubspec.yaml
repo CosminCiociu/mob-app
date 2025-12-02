@@ -46,6 +46,16 @@ dependencies:
   geoflutterfire_plus: ^0.0.24
   google_maps_flutter: ^2.6.0
   google_places_flutter: ^2.0.9
+  # Stream Chat for real-time messaging
+  stream_chat_flutter: ^9.7.0
+  stream_chat_flutter_core: ^9.7.0
+  stream_chat: ^9.7.0
+  rxdart: ^0.28.0
+
+dependency_overrides:
+  # Force compatible record package versions
+  record: ^6.0.0
+  record_linux: ^1.2.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0

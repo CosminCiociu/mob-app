@@ -1,0 +1,149 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidUser() {
+      return isAuthenticated() && 
+             request.auth.uid != null && 
+             request.auth.uid.size() > 0;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && isValidUserData();
+      allow delete: if isOwner(userId);
+      
+      function isValidUserData() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['name', 'email', 'streamChatId']) &&
+               data.name is string && data.name.size() > 0 &&
+               data.email is string && data.email.matches('.*@.*') &&
+               data.streamChatId is string;
+      }
+    }
+    
+    // Conversations collection
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() && 
+                     resource.data.participants.hasAny([request.auth.uid]);
+      allow create: if isAuthenticated() && 
+                       request.resource.data.participants.hasAny([request.auth.uid]) &&
+                       isValidConversationData();
+      allow update: if isAuthenticated() && 
+                       resource.data.participants.hasAny([request.auth.uid]) &&
+                       isValidConversationUpdate();
+      allow delete: if isAuthenticated() && 
+                       resource.data.createdBy == request.auth.uid;
+      
+      function isValidConversationData() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['type', 'participants', 'createdBy', 'createdAt']) &&
+               data.type in ['direct', 'group'] &&
+               data.participants is list &&
+               data.participants.size() >= 2 &&
+               data.participants.hasAll([request.auth.uid]) &&
+               data.createdBy == request.auth.uid;
+      }
+      
+      function isValidConversationUpdate() {
+        let data = request.resource.data;
+        let existing = resource.data;
+        // Allow updates to lastMessage, lastMessageAt, and unreadCounts
+        return data.diff(existing).affectedKeys().hasOnly(['lastMessage', 'lastMessageAt', 'unreadCounts', 'updatedAt']);
+      }
+    }
+    
+    // Channels collection
+    match /channels/{channelId} {
+      allow read: if isAuthenticated() && 
+                     (resource.data.isPrivate == false || 
+                      resource.data.members.hasAny([request.auth.uid]));
+      allow create: if isAuthenticated() && 
+                       request.resource.data.createdBy == request.auth.uid &&
+                       isValidChannelData();
+      allow update: if isAuthenticated() && 
+                       (resource.data.createdBy == request.auth.uid || 
+                        resource.data.admins.hasAny([request.auth.uid])) &&
+                       isValidChannelUpdate();
+      allow delete: if isAuthenticated() && 
+                       resource.data.createdBy == request.auth.uid;
+      
+      function isValidChannelData() {
+        let data = request.resource.data;
+        return data.keys().hasAll(['name', 'description', 'isPrivate', 'members', 'createdBy', 'createdAt']) &&
+               data.name is string && data.name.size() > 0 &&
+               data.description is string &&
+               data.isPrivate is bool &&
+               data.members is list &&
+               data.members.hasAll([request.auth.uid]) &&
+               data.createdBy == request.auth.uid;
+      }
+      
+      function isValidChannelUpdate() {
+        let data = request.resource.data;
+        let existing = resource.data;
+        // Admins can update most fields, members can only update lastActivity
+        return (existing.admins.hasAny([request.auth.uid]) && 
+                data.diff(existing).affectedKeys().hasOnly(['name', 'description', 'members', 'admins', 'lastActivityAt', 'updatedAt'])) ||
+               (existing.members.hasAny([request.auth.uid]) && 
+                data.diff(existing).affectedKeys().hasOnly(['lastActivityAt', 'updatedAt']));
+      }
+    }
+    
+    // User status subcollection
+    match /users/{userId}/status/{statusId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+    
+    // Conversation messages subcollection (if storing locally)
+    match /conversations/{conversationId}/messages/{messageId} {
+      allow read: if isAuthenticated() && 
+                     get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants.hasAny([request.auth.uid]);
+      allow create: if isAuthenticated() && 
+                       get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants.hasAny([request.auth.uid]) &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // Channel messages subcollection (if storing locally)
+    match /channels/{channelId}/messages/{messageId} {
+      allow read: if isAuthenticated() && 
+                     (get(/databases/$(database)/documents/channels/$(channelId)).data.isPrivate == false || 
+                      get(/databases/$(database)/documents/channels/$(channelId)).data.members.hasAny([request.auth.uid]));
+      allow create: if isAuthenticated() && 
+                       get(/databases/$(database)/documents/channels/$(channelId)).data.members.hasAny([request.auth.uid]) &&
+                       request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || 
+                        get(/databases/$(database)/documents/channels/$(channelId)).data.admins.hasAny([request.auth.uid]));
+    }
+    
+    // Admin collection (for system administration)
+    match /admin/{document=**} {
+      allow read, write: if isAuthenticated() && 
+                            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // System stats collection (read-only for users)
+    match /stats/{statsId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Only backend can write stats
+    }
+  }
+}

@@ -10,6 +10,13 @@ class Environment {
   static String defaultPhoneCode = "1";
   static String defaultCountryCode = "US";
   static int otpTime = 60;
+
+  // Stream Chat Configuration
+  // TODO: Replace with your actual Stream Chat credentials from dashboard
+  static const String streamChatApiKey =
+      'ny57pb8j3rns'; // From Stream Dashboard > General > API Key
+  static const String streamChatAppId =
+      '1455164'; // From Stream Dashboard > General > App ID
   List<String> mobileRechargeQuickAmount = [
     "10",
     "20",

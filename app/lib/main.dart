@@ -13,7 +13,8 @@ import 'core/di_service/di_services.dart' as di_service;
 import 'core/config/dependency_injection.dart';
 import 'core/theme/light/light.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:ovo_meet/services/stream_chat_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,14 +90,16 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+    return StreamBuilder<firebase_auth.User?>(
+      stream: firebase_auth.FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           print("Waiting for authentication...");
           return Center(child: CircularProgressIndicator()); // or splash screen
         } else if (snapshot.hasData) {
           print("User is authenticated: ${snapshot.data?.email}");
+          // Initialize Stream Chat when user is authenticated
+          _initializeStreamChat();
           if (RouteHelper().routes.isNotEmpty) {
             Future.microtask(() => Get.offAllNamed(RouteHelper.bottomNavBar));
           }
@@ -110,5 +113,16 @@ class AuthGate extends StatelessWidget {
         }
       },
     );
+  }
+
+  /// Initialize Stream Chat service when user is authenticated
+  void _initializeStreamChat() async {
+    try {
+      final streamChatService = Get.put(StreamChatService());
+      await streamChatService.initialize();
+      await streamChatService.connectUser();
+    } catch (e) {
+      print('❌ Failed to initialize Stream Chat: $e');
+    }
   }
 }
